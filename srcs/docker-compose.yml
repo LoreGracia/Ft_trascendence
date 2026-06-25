@@ -8,19 +8,16 @@ services:
     networks:
       - web
   cloudflared:
-    container_name: cloudflare
+    container_name: cloudflared
     image: cloudflare/cloudflared:latest
     env_file:
      - .env
     depends_on:
      - nginx
-    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CF_TOKEN}"]
+    command: tunnel --no-autoupdate --url http://nginx:80
     restart: unless-stopped
     networks:
       - web
-    # cap_add:
-    #   - NET_RAW
-    #   - NET_ADMIN
 
 networks:
   web:

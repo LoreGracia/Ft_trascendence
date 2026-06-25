@@ -3,6 +3,8 @@ DOCKER_COMPOSE = docker-compose -f srcs/docker-compose.yml
 
 all:
 	$(DOCKER_COMPOSE) up -d --build
+	@chmod +x srcs/get_url.sh
+	@./srcs/get_url.sh
 
 up:
 	$(DOCKER_COMPOSE) up all
