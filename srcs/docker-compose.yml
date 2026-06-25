@@ -1,0 +1,31 @@
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:mainline-alpine
+    volumes:
+      - ./web:/usr/share/nginx/html/:ro
+    restart: unless-stopped
+    networks:
+      - web
+  cloudflared:
+    container_name: cloudflare
+    image: cloudflare/cloudflared:latest
+    env_file:
+     - .env
+    depends_on:
+     - nginx
+    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CF_TOKEN}"]
+    restart: unless-stopped
+    networks:
+      - web
+    # cap_add:
+    #   - NET_RAW
+    #   - NET_ADMIN
+
+networks:
+  web:
+    driver: bridge
+
+    # docker run 
+    # cloudflare/cloudflared:latest 
+    # tunnel --no-autoupdate run --token
