@@ -18,6 +18,11 @@ services:
     restart: unless-stopped
     networks:
       - web
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -s http://localhost:4040/metrics >/dev/null || exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   web:

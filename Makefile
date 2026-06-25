@@ -6,9 +6,6 @@ all:
 	@chmod +x srcs/get_url.sh
 	@./srcs/get_url.sh
 
-up:
-	$(DOCKER_COMPOSE) up all
-
 down:
 	$(DOCKER_COMPOSE) down --rmi all
 
