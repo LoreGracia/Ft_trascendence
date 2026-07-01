@@ -1,0 +1,18 @@
+services:
+  next-app:
+    container_name: transcendence-app
+    build:
+      context: ./srcs
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./srcs
+          target: /app
+          
+        - action: rebuild
+          path: ./srcs/package.json
+
+    restart: no
+    ports:
+      - 3000:3000
