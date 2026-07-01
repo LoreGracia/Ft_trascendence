@@ -1,10 +1,8 @@
 NAME = inception
-DOCKER_COMPOSE = docker-compose -f srcs/docker-compose.yml
+DOCKER_COMPOSE = docker-compose 
 
 all:
 	$(DOCKER_COMPOSE) up -d --build
-	@chmod +x srcs/get_url.sh
-	@./srcs/get_url.sh
 
 down:
 	$(DOCKER_COMPOSE) down --rmi all
