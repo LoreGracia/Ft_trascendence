@@ -5,28 +5,6 @@
 
 ---
 
-## Epic 0 — Decisiones técnicas previas (propuesta)
-
-Antes de repartir trabajo, cerrar estas decisiones como equipo:
-
-- [ ] **Issue 0.1: Elegir stack de base de datos**
-  - [ ] PostgreSQL (recomendado, robusto para relaciones usuarios/partidas)
-  - [ ] ORM: Prisma (tipado fuerte con TS, migraciones sencillas)
-- [ ] **Issue 0.2: Elegir tecnología de tiempo real**
-  - [ ] Socket.io (reconexión automática, salas nativas) vs `ws` puro
-  - [ ] Redis como adapter/pub-sub si se despliega en varias instancias del backend
-- [ ] **Issue 0.3: Validación de datos**
-  - [ ] Zod (schemas compartidos entre frontend y backend en el monorepo)
-- [ ] **Issue 0.4: Testing**
-  - [ ] Vitest/Jest (unit + integración), Playwright (E2E)
-- [ ] **Issue 0.5: Infra**
-  - [ ] Docker Compose (frontend, backend, db, redis, nginx)
-  - [ ] Nginx como reverse proxy + terminación TLS (HTTPS/WSS obligatorio en Transcendence)
-- [ ] **Issue 0.6: Estructura de repo**
-  - [ ] Monorepo (turborepo o npm workspaces) con paquete `shared` para tipos y schemas Zod comunes
-
----
-
 ## Epic 1 — Infraestructura y DevOps
 
 - [ ] **Issue 1.1: Scaffolding del monorepo**
