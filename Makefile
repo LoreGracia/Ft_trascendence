@@ -4,6 +4,9 @@ DOCKER_COMPOSE = docker-compose
 all:
 	$(DOCKER_COMPOSE) up -d --build
 
+watch:
+	$(DOCKER_COMPOSE) up -w --build
+
 down:
 	$(DOCKER_COMPOSE) down --rmi all
 
