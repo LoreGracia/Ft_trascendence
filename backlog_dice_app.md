@@ -14,14 +14,14 @@
 - [ ] **Issue 1.2: Dockerización**
   - [ ] Dockerfile backend
   - [ ] Dockerfile frontend
-  - [ ] docker-compose.yml (db, redis, backend, frontend, nginx)
+  - [ ] docker-compose.yml (db, redis, backend, frontend, node)
   - [ ] Volúmenes persistentes para la base de datos
 - [ ] **Issue 1.3: Variables de entorno**
   - [ ] `.env.example` documentado
   - [ ] Gestión de secretos (JWT secret, DB URL, OAuth keys)
 - [ ] **Issue 1.4: HTTPS / WSS**
   - [ ] Certificados (self-signed para dev, Let's Encrypt si hay dominio)
-  - [ ] Config Nginx con proxy a WebSocket
+  - [ ] Config node con proxy a WebSocket
 - [ ] **Issue 1.5: CI/CD**
   - [ ] GitHub Actions: lint + typecheck en cada PR
   - [ ] GitHub Actions: tests automáticos
