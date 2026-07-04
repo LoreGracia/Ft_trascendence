@@ -1,8 +1,15 @@
+import "../../layout.tsx"
 
 export default function SignIn() {
   return (
-	<div>
-	  <h2>Signin</h2>
-	</div>
+<main className="container">
+  <section className="column">
+    Sign in
+  </section>
+
+  <section className="column">
+    sign in
+  </section>
+</main>
   )
 }
