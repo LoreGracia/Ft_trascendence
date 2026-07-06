@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "../components/button/Button.css";
-@import "../components/button/Box.css";
+@import "../components/Box.css";
+/* @import "../components/Input/Input.css"; */
 
 :root {
   --white: #ededed;
