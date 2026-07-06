@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../components/button/Button.css";
+@import "../components/button/Box.css";
 
 :root {
   --white: #ededed;
@@ -32,21 +34,64 @@ body {
   margin: 0;
 }
 
+h1 {
+  max-width: 20rem;
+  font-size: 3rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--black);
+}
+
+p {
+  color:color-mix(in srgb, var(--black) 80%, var(--white));
+  font-size: 1.4rem; /* 30px */
+}
+
 .container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-items: center;
   gap: 2rem;
 
-  width: min(1200px, 90vw);
+  width: 95vw;
   margin: 0 auto;
 
   min-height: 100vh;
-  align-items: center;
+  align-content: space-evenly;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-two{
+    grid-template-columns: 1fr 1fr;
+    width: min(1200px, 90vw);
+    align-items: center;
+    align-content: normal;
+  }
+
+  /* .column {
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+  }
+    .row {
+    align-items: flex-start;
+    text-align: left;
+  } */
 }
