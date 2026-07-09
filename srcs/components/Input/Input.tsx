@@ -1,5 +1,6 @@
 // components/TextInput.tsx
 import { InputHTMLAttributes } from "react";
+import "./Input.css";
 
 type TextInputProps = InputHTMLAttributes<HTMLInputElement>;
 

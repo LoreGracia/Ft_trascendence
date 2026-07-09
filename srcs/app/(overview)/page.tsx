@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from 'next/link';
 
-export default function Home() {
+// async function delay(ms: number) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
+
+export default async function Home() {
+  // await delay(3000); // Espera 3 segundos
   return (
     <main className="container container-two">
       <section className="column">
@@ -23,7 +28,7 @@ export default function Home() {
           </p>
         <div className="flex flex-row gap-4 text-base font-medium">
           <Link
-            className="button button--secondary"
+            className="button button-round button--secondary"
             href={'/login'}
             target="_self"
             rel="noopener noreferrer"
@@ -31,7 +36,7 @@ export default function Home() {
             Log in
           </Link>
           <Link
-            className="button button--primary"
+            className="button button-round button--highlight"
             href={'/signin'}
             target="_self"
             rel="noopener noreferrer"

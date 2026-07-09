@@ -1,14 +1,18 @@
 .input {
   width: 100%;
-  padding: 1rem 1rem;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--light);
   border-radius: 8px;
   font-size: 1rem;
 }
 
+.input::placeholder {
+  color: var(--light);
+}
+
 .input:focus {
   outline: none;
-  border-color: var(--dark);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  border-color: var(--light);
+  box-shadow: 0 0 0 3px var(--light);
 }
 /* border rounded-md px-3 py-2 w-full */

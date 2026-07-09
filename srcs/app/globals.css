@@ -1,13 +1,11 @@
 @import "tailwindcss";
 @import "../components/button/Button.css";
-@import "../components/Box.css";
-/* @import "../components/Input/Input.css"; */
 
 :root {
   --white: #ededed;
   --light: #e3d4ef;
   --black: #0a0a0a;
-  --dark: #261f28;
+  --dark: #6750A4;
   --background: /*#ffffff*/linear-gradient(var(--white), var(--light));
   --foreground: var(--black);
 }
@@ -49,6 +47,25 @@ p {
   font-size: 1.4rem; /* 30px */
 }
 
+.pattern {
+    position: fixed;
+    inset: -1100px;
+    background: url(../public/pattern.png) repeat;
+    background-repeat: repeat;
+    z-index: -1;
+
+    animation: mover 30s linear infinite;
+}
+
+@keyframes mover {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(1096px, 1096px);
+    }
+}
+
 .container {
   display: grid;
   grid-template-columns: 1fr;
@@ -85,14 +102,36 @@ p {
     align-items: center;
     align-content: normal;
   }
+}
 
-  /* .column {
-    justify-content: center;
-    align-items: center;
-    text-align: left;
-  }
-    .row {
-    align-items: flex-start;
-    text-align: left;
-  } */
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 3rem;
+  justify-content: center;
+  border-radius: 20px;/* rounded */
+  padding-inline: 1.25rem;
+  min-width: 300px;
+  height: fit-content;
+  flex: 1 0 auto;
+  box-sizing: border-box;
+  padding: 16px 24px;
+  text-align: left;
+}
+
+.box--primary {
+  background: var(--white);/* bg-foreground */
+  color: var(--black);/* text-(--light) */
+  border-color: var(--light);
+  border-width: 1px;
+}
+
+.corner {
+  position: absolute;
+  top: 40px;
+  /* right: max(16px, calc((100vw - 1200px) / 2)); */
+  right: 50px;
+  background: var(--dark);
+  color: var(--white);
 }

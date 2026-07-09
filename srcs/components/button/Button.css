@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 100px;/* rounded-full */
   padding-inline: 1.25rem;
   transition: background-color 150ms ease;
   max-width: 150px;
@@ -13,16 +12,25 @@
   box-sizing: border-box;
 }
 
-.button--primary {
-  background-color: var(--foreground);/* bg-foreground */
-  color: var(--light);/* text-(--light) */
+.button-round {
+  border-radius: 100px;/* rounded-full */
 }
 
-.button--primary:hover {
+.button-squere {
+  border-radius: 10px;/* rounded-full */
+  max-width: none;
+}
+
+.button--highlight {
+  background-color: var(--dark);/* bg-foreground */
+  color: var(--white);/* text-(--light) */
+}
+
+.button--highlight:hover {
   background-color: rgb(56, 56, 56);/* hover:bg-[#383838] */
 }
 
-.dark .button--primary:hover {
+.dark .button--highlight:hover {
   background-color: rgb(204, 204, 204);/* dark:hover:bg-[#ccc] */
 }
 
