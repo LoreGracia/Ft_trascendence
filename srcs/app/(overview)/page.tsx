@@ -8,6 +8,8 @@ import Link from 'next/link';
 export default async function Home() {
   // await delay(3000); // Espera 3 segundos
   return (
+    <>
+    <div className="pattern" />
     <main className="container container-two">
       <section className="column">
         <Image
@@ -47,5 +49,6 @@ export default async function Home() {
         </div>
       </section>
     </main>
+    </>
   );
 }

@@ -52,8 +52,8 @@ p {
     inset: -1100px;
     background: url(../public/pattern.png) repeat;
     background-repeat: repeat;
+    background-size: 600px;
     z-index: -1;
-
     animation: mover 30s linear infinite;
 }
 
@@ -64,6 +64,10 @@ p {
     to {
         transform: translate(1096px, 1096px);
     }
+}
+
+.pattern.paused {
+    animation-play-state: paused;
 }
 
 .container {
