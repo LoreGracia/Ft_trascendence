@@ -8,13 +8,15 @@ export default function SignIn() {
     const [paused, setPaused] = useState(false);
   return (
     <>
-    <div className='pattern  ${paused ? "paused" : ""}' />
+    <div className={`pattern ${paused ? "paused" : ""}`}  />
+    <button
+        onClick={() => setPaused(!paused)}
+        className="corner-left button button-round button--secondary">
+    {paused ? "Reanudar" : "Pausar"}
+    </button>
     <main className="container">
-        <button onClick={() => setPaused(!paused)}>
-        {paused ? "Reanudar" : "Pausar"}
-        </button>
         <Link
-        className="corner button button-squere button--highlight"
+        className="corner-right button button-squere button--highlight"
         href={'/login'}
         target="_self"
         rel="noopener noreferrer"

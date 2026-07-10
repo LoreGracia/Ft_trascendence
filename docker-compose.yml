@@ -4,14 +4,11 @@ services:
     build:
       context: ./srcs
       dockerfile: Dockerfile
-    develop:
-      watch:
-        - action: sync
-          path: ./srcs
-          target: /app
-          
-        - action: rebuild
-          path: ./srcs/package.json
+    environment:
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./srcs:/app
+      - /app/node_modules
 
     restart: no
     ports:

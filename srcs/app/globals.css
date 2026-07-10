@@ -62,7 +62,7 @@ p {
         transform: translate(0, 0);
     }
     to {
-        transform: translate(1096px, 1096px);
+        transform: translate(600px, 600px);
     }
 }
 
@@ -77,7 +77,7 @@ p {
   align-items: center;
   gap: 2rem;
 
-  width: 95vw;
+  /* width: 95vw; */
   margin: 0 auto;
 
   min-height: 100vh;
@@ -131,11 +131,15 @@ p {
   border-width: 1px;
 }
 
-.corner {
+.corner-left {
   position: absolute;
   top: 40px;
-  /* right: max(16px, calc((100vw - 1200px) / 2)); */
-  right: 50px;
-  background: var(--dark);
-  color: var(--white);
+  left: 50px;
 }
+
+.corner-right {
+  position: absolute;
+  top: 40px;
+  right: 50px;
+}
+
