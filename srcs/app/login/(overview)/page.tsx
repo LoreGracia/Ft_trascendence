@@ -1,19 +1,23 @@
 "use client";
 import TextInput from "@/components/Input/Input";
 import Link from 'next/link';
-import { Button } from "@/components/button/Button";
+import PatternControl from "@/components/PatternControl";
 import { useState } from "react";
 
 export default function LogIn() {
 const [paused, setPaused] = useState(false);
   return (
     <>
-    <div className={`pattern ${paused ? "paused" : ""}`}  />
+    {/* <div className={`pattern ${paused ? "paused" : ""}`}  />
     <button
         onClick={() => setPaused(!paused)}
         className="corner-left button button-round button--secondary">
     {paused ? "Reanudar" : "Pausar"}
-    </button>
+    </button> */}
+    <PatternControl
+        paused={paused}
+        onToggle={() => setPaused(!paused)}
+    />
     <main className="container">
         <Link
         className="corner-right button button-squere button--highlight"
