@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../components/button/Button.css";
+@import "../components/Pattern/Pattern.css";
 
 :root {
   --white: #ededed;
@@ -45,29 +46,6 @@ h1 {
 p {
   color:color-mix(in srgb, var(--black) 80%, var(--white));
   font-size: 1.4rem; /* 30px */
-}
-
-.pattern {
-    position: fixed;
-    inset: -1100px;
-    background: url(../public/pattern.png) repeat;
-    background-repeat: repeat;
-    background-size: 600px;
-    z-index: -1;
-    animation: mover 30s linear infinite;
-}
-
-@keyframes mover {
-    from {
-        transform: translate(0, 0);
-    }
-    to {
-        transform: translate(600px, 600px);
-    }
-}
-
-.pattern.paused {
-    animation-play-state: paused;
 }
 
 .container {

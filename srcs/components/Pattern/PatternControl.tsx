@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { Play, Pause } from "lucide-react";
 
 type PatternControlProps = {
   paused: boolean;
@@ -17,12 +17,10 @@ export default function PatternControl({
         onClick={onToggle}
         className="corner-left button button-round button--secondary"
       >
-        <Image
-			src={paused ? "/play-icon.svg" : "/pause-icon.svg"}
-			alt=""
-			width={24}
-			height={24}
-		/>
+		{paused ? (
+			<Play size={24} color="var(--black)" /> ) : 
+			(<Pause size={24} color="var(--black)" /> )
+		}
       </button>
     </>
   );

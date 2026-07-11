@@ -1,15 +1,17 @@
+"use client";
 import Image from "next/image";
 import Link from 'next/link';
+import PatternControl from "@/components/Pattern/PatternControl";
+import { useState } from "react";
 
-// async function delay(ms: number) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
-
-export default async function Home() {
-  // await delay(3000); // Espera 3 segundos
+export default function Home() {
+const [paused, setPaused] = useState(false);
   return (
     <>
-    <div className="pattern" />
+    <PatternControl
+        paused={paused}
+        onToggle={() => setPaused(!paused)}
+    />
     <main className="container container-two">
       <section className="column">
         <Image
