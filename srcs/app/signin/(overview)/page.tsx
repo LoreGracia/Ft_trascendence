@@ -6,6 +6,14 @@ import Form from "@/components/Form/Form";
 
 export default function SignIn() {
 const [paused, setPaused] = useState(false);
+function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    console.log(email, password);
+}
   return (
     <>
     <div className={`pattern ${paused ? "paused" : ""}`}  />
@@ -24,10 +32,11 @@ const [paused, setPaused] = useState(false);
         </Link>
         <div className="container">
             <section className="box box--primary">
-                <Form />
-                <div className="button button-squere bg-(--black) text-(--white) w-fill">
+                <Form onSubmit={handleRegister}>
+                <button type="submit" className="button button-squere button--basic mt-5">
                     <h2>Sign in</h2>
-                </div>
+                </button>
+                </Form>
             </section>
         </div>
     </main>

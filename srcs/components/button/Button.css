@@ -34,6 +34,15 @@
   background-color: rgb(204, 204, 204);/* dark:hover:bg-[#ccc] */
 }
 
+.button--basic {
+  background-color: var(--black);/* bg-foreground */
+  color: var(--white);/* text-(--light) */
+}
+
+.button--basic:hover {
+  background-color: var(--light);/* hover:bg-[#383838] */
+}
+
 .button--secondary {
   border-color: color-mix(in srgb, var(--black) 20%, transparent);
   border-width: 1px;

@@ -4,12 +4,16 @@ services:
     build:
       context: ./srcs
       dockerfile: Dockerfile
+
+    env_file:
+      - ./srcs/.env.local
+
     environment:
       WATCHPACK_POLLING: "true"
+
     volumes:
       - ./srcs:/app
       - /app/node_modules
 
-    restart: no
     ports:
-      - 3000:3000
+      - "3000:3000"
