@@ -29,4 +29,3 @@ export default function TextInput(props: TextInputProps) {
     </div>
   );
 }
-// absolute right-0 p-0 m-0 flex items-center justify-center leading-none

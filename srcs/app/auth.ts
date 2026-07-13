@@ -5,7 +5,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        username: {},
+        email: {},
         password: {},
       },
 
@@ -13,7 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials) return null;
 
         if (
-          credentials.username === "admin" &&
+          credentials.email === "admin@test.com" &&
           credentials.password === "1234"
         ) {
           return {

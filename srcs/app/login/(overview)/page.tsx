@@ -3,16 +3,21 @@ import Link from 'next/link';
 import PatternControl from "@/components/Pattern/PatternControl";
 import { useState } from "react";
 import Form from "@/components/Form/Form";
+import { signIn } from "next-auth/react";
 
 export default function LogIn() {
 const [paused, setPaused] = useState(false);
-function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    console.log("Formulario enviado");
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
-    console.log(email, password);
+    const res = await signIn("credentials", {
+        email: formData.get("email"),
+        password: formData.get("password"),
+        callbackUrl: "/game-selection",
+    });
+    console.log(res);
 }
   return (
     <>
