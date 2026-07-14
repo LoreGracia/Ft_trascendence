@@ -1,5 +1,6 @@
 import { auth } from "@/app/auth";
 import { redirect } from "next/navigation";
+import { LogoutButton } from "@/components/button/LogoutButton";
 
 export default async function ProtectedLayout({
   children,
@@ -12,5 +13,10 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
-  return <>{children}</>;
+  return (
+  <>
+    <LogoutButton/>
+    {children}
+  </>
+  );
 }
