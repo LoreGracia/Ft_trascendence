@@ -10,7 +10,7 @@ export function LogoutButton() {
         });
       }}
     >
-      <button type="submit">
+      <button type="submit" className="corner-right button button-round button--basic">
         Cerrar sesión
       </button>
     </form>

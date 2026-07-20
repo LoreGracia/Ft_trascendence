@@ -16,7 +16,6 @@ function handleRegister(e: React.FormEvent<HTMLFormElement>) {
 }
   return (
     <>
-    <div className={`pattern ${paused ? "paused" : ""}`}  />
     <PatternControl
         paused={paused}
         onToggle={() => setPaused(!paused)}
