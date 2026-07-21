@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dado 3D</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <canvas id="renderCanvas"></canvas>
+  <select id="diceTypeSelector">
+    <optgroup label="Básicos">
+      <option value="default">Default</option>
+      <option value="redDice">Rojo</option>
+      <option value="blueDice">Azul</option>
+      <option value="greenDice">Verde</option>
+      <option value="goldDice">Dorado</option>
+      <option value="blackDice">Negro</option>
+    </optgroup>
+    <optgroup label="Legendarios">
+      <option value="legendary:universe">Universe</option>
+      <option value="legendary:nature">Nature</option>
+      <option value="legendary:magician">Magician</option>
+      <option value="legendary:warrior">Warrior</option>
+      <option value="legendary:code">Code</option>
+    </optgroup>
+  </select>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
