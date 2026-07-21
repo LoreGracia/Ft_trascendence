@@ -7,6 +7,7 @@ import {
   ArcRotateCamera,
   HemisphericLight,
   Vector3,
+  Color4,
 } from "@babylonjs/core";
 import { rollDice } from "@/dice/diceRoll";
 import { animateDiceFlight } from "@/dice/diceAnimation";
@@ -52,6 +53,7 @@ export default function DiceScene() {
 
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
+    scene.clearColor = new Color4(0, 0, 0, 0); // rojo
     engineRef.current = engine;
     sceneRef.current = scene;
 
