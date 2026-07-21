@@ -1,4 +1,4 @@
-import { User, Menu, Home, Podium, Dices } from "lucide-react";
+import { User, Menu, Home, Podium, Dices, Cookie } from "lucide-react";
 import Link from 'next/link';
 
 import {
@@ -17,6 +17,7 @@ export function AppSidebar() {
         <SidebarMenuItem>
           <SidebarMenuButton
             tooltip="Menu"
+            className="default"
           >
             <Menu/>
             Menu
@@ -29,7 +30,7 @@ export function AppSidebar() {
               href={'/profile'}/>
             }
           >
-            <User/>
+            <User className="bg-(--sidebar-accent) rounded-full"/>
             Profile
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -69,7 +70,19 @@ export function AppSidebar() {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarContent>
-      <SidebarFooter>Footer</SidebarFooter>
+      <SidebarFooter>
+                <SidebarMenuItem>
+        <SidebarMenuButton
+            tooltip="Privacy & politics"
+            render={<Link
+              href={'/privacy-politics'}/>
+            }
+          >
+            <Cookie/>
+            Privacy & politics
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarFooter>
     </Sidebar>
   )
 }
