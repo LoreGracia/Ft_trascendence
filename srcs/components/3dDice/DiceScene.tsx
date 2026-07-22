@@ -51,7 +51,12 @@ export default function DiceScene() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const engine = new Engine(canvas, true);
+    const engine = new Engine(canvas, true, {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      alpha: true,
+      premultipliedAlpha: true,
+    });
     const scene = new Scene(engine);
     scene.clearColor = new Color4(0, 0, 0, 0); // rojo
     engineRef.current = engine;
