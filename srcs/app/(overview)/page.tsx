@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import PatternControl from "@/components/Pattern/PatternControl";
-import DiceScene from "@/components/DiceScene";
+import DiceScene from "@/components/3dDice/DiceScene";
 import { useState } from "react";
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
-          <DiceScene />
+          <DiceScene/>
         </section>
         <section className="column gap-8">
           <div className="row">
