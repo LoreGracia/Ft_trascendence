@@ -11,15 +11,8 @@
   --dark: #6750A4;
   --background: linear-gradient(var(--white), var(--light));
   --foreground: var(--black);
-  --primary: var(--white); /* ??*/
-  /* oklch(0.205 0 0); */
-  --secondary: var(--black); /* ??*/
-  /* oklch(0.97 0 0); */
   --radius: 0.625rem;
-  --sidebar-accent: color-mix(in srgb, var(--dark) 50%, var(--light));
-  /* oklch(0.97 0 0); */
-  --sidebar-border: var(--black); /* ??*/
-  /* oklch(0.922 0 0); */
+  --accent: color-mix(in srgb, var(--dark) 50%, var(--light));
 }
 
 @theme inline {

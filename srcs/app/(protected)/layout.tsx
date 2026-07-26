@@ -1,9 +1,14 @@
 import { auth } from "@/app/auth";
 import { redirect } from "next/navigation";
-import { LogoutButton } from "@/components/button/LogoutButton";
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
+// import { LogoutButton } from "@/components/button/LogoutButton";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebarLateral"
 import { AppSidebar } from "@/components/app-sidebar"
 import MenuButton from "@/components/Menu/Menu";
+import { LogoutButton } from "@/components/button/LogoutButton";
+import Link from "next/link";
+import { Menu } from "lucide-react";
+import { MobileBottomBar } from "@/components/BottomBar"
+import { navigation } from "@/lib/navigation";
 
 export default async function ProtectedLayout({
   children,
@@ -18,11 +23,49 @@ export default async function ProtectedLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar className="list-none hidden md:flex"/>
+      <MobileBottomBar className="list-none fixed bottom-0 left-0 right-0 z-50 flex h-16 border-t bg-(--light) md:hidden"/>
       <main>
-        <SidebarTrigger />
-        <LogoutButton/>
-        <MenuButton/>
+        <SidebarTrigger className="hidden md:flex"/>
+        <nav className="md:hidden [&_svg]:size-8 corner-left">
+          {navigation.header.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+              >
+                <Icon className="bg-(--accent) rounded-full"/>
+              </Link>
+            );
+          })}
+        <button/>
+        </nav>
+        <MenuButton
+          trigger={
+          <button
+            className="[&_svg]:size-8 pr-0 rounded-xs md:hover:bg-(--accent)"
+          >
+            <Menu/>
+          </button>}>
+          <button>
+            Settings
+          </button>
+          <button>
+            Language
+          </button>
+          <LogoutButton>
+            Log out
+          </LogoutButton>
+          <Link
+            href="/privacy-politics"
+            target="_self"
+            rel="noopener noreferrer"
+            >
+            Privacy
+          </Link>
+        </MenuButton>
         <SidebarInset>
         {children}
         </SidebarInset>

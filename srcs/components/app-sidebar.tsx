@@ -1,6 +1,7 @@
-import { User, Menu, Home, Podium, Dices, Cookie } from "lucide-react";
+"use client"
 import Link from 'next/link';
-
+import { navigation } from "@/lib/navigation";
+import { Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,81 +9,67 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebarLateral"
+export function AppSidebar({className}: {
+  className?: string;
+}) {
 
-export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className={className}>
       <SidebarHeader>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            tooltip="Menu"
-            className="default"
-          >
-            <Menu/>
-            Menu
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            tooltip="Profile"
-            render={<Link
-              href={'/profile'}/>
-            }
-          >
-            <User className="bg-(--sidebar-accent) rounded-full"/>
-            Profile
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {navigation.header.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                tooltip={item.label}
+                render={<Link href={item.href} />}
+              >
+                <Icon className="bg-(--accent) rounded-full" />
+                {item.label}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarHeader>
+
       <SidebarContent className="flex justify-center gap-10">
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            tooltip="Lobby"
-            render={<Link
-              href={'/game-selection'}/>
-            }
-          >
-            <Home/>
-            Lobby
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-        <SidebarMenuButton
-            tooltip="Leaderboard"
-            render={<Link
-              href={'/leaderboard'}/>
-            }
-          >
-            <Podium/>
-            Leaderboard
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-        <SidebarMenuButton
-            tooltip="Lobby"
-            render={<Link
-              href={'/lobby'}/>
-            }
-          >
-            <Dices/>
-            Lobby
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {navigation.content.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                tooltip={item.label}
+                render={<Link href={item.href} />}
+              >
+                <Icon />
+                {item.label}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarContent>
+
       <SidebarFooter>
-                <SidebarMenuItem>
-        <SidebarMenuButton
-            tooltip="Privacy & politics"
-            render={<Link
-              href={'/privacy-politics'}/>
-            }
-          >
-            <Cookie/>
-            Privacy & politics
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {navigation.footer.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <SidebarMenuItem key={item.href}>
+              <SidebarMenuButton
+                tooltip={item.label}
+                render={<Link href={item.href} />}
+              >
+                <Icon />
+                {item.label}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarFooter>
+
     </Sidebar>
   )
 }
