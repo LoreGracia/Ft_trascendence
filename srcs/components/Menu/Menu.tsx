@@ -4,7 +4,6 @@ import {
   cloneElement,
   isValidElement,
   ReactElement,
-  ReactNode,
   useState,
 } from "react";
 
@@ -24,7 +23,7 @@ export default function MenuButton({ trigger, children }: MenuButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col items-end corner-right"
+    <div className="absolut flex flex-col items-end corner-right"
       // onMouseEnter={() => setOpen(true)}
       // onMouseLeave={() => setOpen(false)}
     >
@@ -40,7 +39,7 @@ export default function MenuButton({ trigger, children }: MenuButtonProps) {
 
             return cloneElement(child, {
               ...child.props,
-              className: `w-full button hover:bg-(--light)/80 ${child.props.className ?? ""}`,
+              className: `w-full button hover:bg-(--light)/80 cursor-default ${child.props.className ?? ""}`,
             });
           })}
         </div>

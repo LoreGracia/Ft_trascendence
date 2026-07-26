@@ -67,7 +67,7 @@ export default async function ProtectedLayout({
           </Link>
         </MenuButton>
         <SidebarInset>
-        {children}
+            {children}
         </SidebarInset>
       </main>
     </SidebarProvider>
