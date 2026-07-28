@@ -242,6 +242,11 @@ No debería utilizarse como rama de experimentación.
 
 # 5. Rama `main`
 
+## 5.0. Para @encarbassotnopot
+
+Tienes que arreglar la parte del docker-compose watch. El problema reside al hacer cambios en vivo del frontend parece que hay algun problema de sincornizacion de archivos, a veces ocurre que el ultimo cambio no se visualiza y hay hacer un cambio mas para poder visualizarlo. Es dificil trabajar ya que no puedes ver el estado actual de lo que acabas de modificar, no sabes si ha funcionado lo que has hecho o si el error que te acaba de aparecer es por lo ultimo o lo anterior que hiciste, es confuso. Adjunto el warning que sale cuando ocurre:
+WARN[0356] Error handling changed files: copying files to 2250825d3e4b63122267d9c8a59105efbfcd7b315575ae2bf59a8c292c904522: Error response from daemon: failed to Lchown "/app/app/(overview)/page.tsx" for UID 101352, GID 4224: lchown /app/app/(overview)/page.tsx: invalid argument 
+
 ## 5.1. Responsabilidad
 
 `main` es la base común del proyecto.
