@@ -4,6 +4,16 @@
 **Fecha de revisión:** 28/07/2026
 
 ---
+# 0.Links de esquemas previos
+Nota: los links de figma tal vez os pidan crearos una cuenta para ver todo, pero podreis editar.
+
+**Subject desmembrado**
+
+https://www.figma.com/board/3ilCbUhnGYA5Enyf0uOhQ3/Trascendence?node-id=0-1&t=sqzhMCEeweuwPde1-1
+
+**Frontend template en figma**
+
+https://www.figma.com/design/p8ZsmQBQNQhG3MAetlIdGP/UI-2%C2%BA?node-id=502-511&t=fWfxETq0HprLQH4W-1
 
 # 1. Objetivo
 
