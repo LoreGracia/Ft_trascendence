@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link';
 import { navigation } from "@/lib/navigation";
-import { Home } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -10,10 +10,12 @@ import {
   SidebarHeader,
   SidebarMenuButton,
 } from "@/components/ui/sidebarLateral"
+import { cn } from "@/lib/utils";
+
 export function AppSidebar({className}: {
   className?: string;
 }) {
-
+  const pathname = usePathname();
   return (
     <Sidebar className={className}>
       <SidebarHeader>
@@ -43,6 +45,7 @@ export function AppSidebar({className}: {
               <SidebarMenuButton
                 tooltip={item.label}
                 render={<Link href={item.href} />}
+                className={cn(pathname === item.href && "text-(--accent)")}
               >
                 <Icon />
                 {item.label}
@@ -61,6 +64,7 @@ export function AppSidebar({className}: {
               <SidebarMenuButton
                 tooltip={item.label}
                 render={<Link href={item.href} />}
+                className={cn(pathname === item.href && "text-(--accent)")}
               >
                 <Icon />
                 {item.label}

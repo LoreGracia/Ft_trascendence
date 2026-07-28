@@ -12,10 +12,10 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
-          <DiceScene/>
+          {/* <DiceScene/> */}
         </section>
         <section className="column gap-8">
-          <div className="row">
+          <div className="column">
             <h1>This is Dice</h1>
             <p>Welcome</p>
             <div className="flex flex-row gap-4 text-base font-medium">
