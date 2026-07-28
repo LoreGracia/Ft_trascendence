@@ -247,6 +247,8 @@ No debería utilizarse como rama de experimentación.
 Tienes que arreglar la parte del docker-compose watch. El problema reside al hacer cambios en vivo del frontend parece que hay algun problema de sincornizacion de archivos, a veces ocurre que el ultimo cambio no se visualiza y hay hacer un cambio mas para poder visualizarlo. Es dificil trabajar ya que no puedes ver el estado actual de lo que acabas de modificar, no sabes si ha funcionado lo que has hecho o si el error que te acaba de aparecer es por lo ultimo o lo anterior que hiciste, es confuso. Adjunto el warning que sale cuando ocurre:
 WARN[0356] Error handling changed files: copying files to 2250825d3e4b63122267d9c8a59105efbfcd7b315575ae2bf59a8c292c904522: Error response from daemon: failed to Lchown "/app/app/(overview)/page.tsx" for UID 101352, GID 4224: lchown /app/app/(overview)/page.tsx: invalid argument 
 
+Por otra parte, tenemos un problema cuando trabajamos con visual que tal vez nos puedas solucionar. La situacion que tenemos es que si no hacemos npm install para generar node_modules, visual marca casi todo en rojo porque no encuentra las dependencias que estaran en el contenedor al ejecutarlo, el problema es que node_modules pesa 1G y apenas tenemos espacio. La idea es que con Docker-compose se haga un contendor o semejante que pueda tener node_modules mientras trabajamos y visual pueda detectarlos sin que se coma toda la memoria.
+
 ## 5.1. Responsabilidad
 
 `main` es la base común del proyecto.
