@@ -60,7 +60,7 @@ Por tanto, la estructura de trabajo prevista será:
                          Integración final
 ```
 
-**Importante:** el diagrama representa responsabilidades, no necesariamente que todas las ramas deban derivar directamente de `main` ni que los merges deban hacerse en ese orden exacto.
+**Importante:** el diagrama representa responsabilidades, no necesariamente que todas las ramas deban derivar directamente de `main` ni que los merges deban hacerse en ese orden exacto. Incluso pueden haber mas ramas, esto es solo un ejemplo de arquitectura principal de desarrollo.
 
 ---
 
