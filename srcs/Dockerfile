@@ -1,12 +1,14 @@
 FROM node:24-alpine
 
+USER node
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY . /app
+COPY . .
 
 # fck vercel
 ENV NEXT_TELEMETRY_DISABLED 1
