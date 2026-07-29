@@ -23,7 +23,7 @@ export default async function ProtectedLayout({
   return (
     <SidebarProvider>
       <AppSidebar className="list-none hidden md:flex"/>
-      <MobileBottomBar className="list-none fixed bottom-0 left-0 right-0 z-50 flex h-16 border-t bg-(--light) md:hidden"/>
+      <MobileBottomBar/>
         <SidebarTrigger className="hidden md:flex"/>
         <nav className="md:hidden [&_svg]:size-8 corner-left">
           {navigation.header.map((item) => {

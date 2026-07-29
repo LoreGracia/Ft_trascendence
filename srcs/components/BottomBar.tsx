@@ -9,7 +9,9 @@ export function MobileBottomBar({className} : {className?: string;} ) {
   const pathname = usePathname();
 
   return (
-    <nav className={className}>
+    <nav
+    className={cn("list-none fixed bottom-0 left-0 right-0 z-50",
+      "flex h-16 bg-(--light) shadow-2xl md:hidden", className)}>
       {navigation.content.map((item) => {
         const Icon = item.icon;
 
@@ -23,9 +25,9 @@ export function MobileBottomBar({className} : {className?: string;} ) {
             )}
           >
             <Icon />
-            <span className="text-[10px]">
+            {/* <span className="text-[10px]">
               {item.label}
-            </span>
+            </span> */}
           </Link>
         );
       })}
