@@ -1,0 +1,56 @@
+.button {
+  display: flex;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-inline: 1.25rem;
+  transition: background-color 150ms ease;
+  max-width: 150px;
+  min-height: fit-content;
+  flex: 1 0 auto;
+  box-sizing: border-box;
+}
+
+.button-round {
+  border-radius: 100px;/* rounded-full */
+}
+
+.button-squere {
+  border-radius: 10px;/* rounded-full */
+  max-width: none;
+}
+
+.button--highlight {
+  background-color: var(--dark);/* bg-foreground */
+  color: var(--white);/* text-(--light) */
+}
+
+.button--highlight:hover {
+  background-color: rgb(56, 56, 56);/* hover:bg-[#383838] */
+}
+
+.dark .button--highlight:hover {
+  background-color: rgb(204, 204, 204);/* dark:hover:bg-[#ccc] */
+}
+
+.button--basic {
+  background-color: var(--black);/* bg-foreground */
+  color: var(--white);/* text-(--light) */
+}
+
+.button--basic:hover {
+  background-color: var(--light);/* hover:bg-[#383838] */
+}
+
+.button--secondary {
+  border-color: color-mix(in srgb, var(--black) 20%, transparent);
+  border-width: 1px;
+}
+
+.button--secondary:hover {
+  background-color: rgba(255, 255, 255, 0.04);/* dark:hover:bg-[#ccc] */
+  border-color: rgba(var(--black), 0.04);
+  background-color: color-mix(in srgb, var(--black) 20%, transparent);/* dark:hover:bg-[#ccc] */
+}
+

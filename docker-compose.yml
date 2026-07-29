@@ -4,6 +4,8 @@ services:
     build:
       context: ./srcs
       dockerfile: Dockerfile
+    env_file:
+      - ./srcs/.env.local
     develop:
       watch:
         - action: sync

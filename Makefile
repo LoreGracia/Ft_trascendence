@@ -1,4 +1,3 @@
-NAME = inception
 DOCKER_COMPOSE = docker-compose 
 
 all:
