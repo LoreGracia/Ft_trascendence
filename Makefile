@@ -1,10 +1,13 @@
-DOCKER_COMPOSE = docker-compose 
+NAME = inception
+DOCKER_COMPOSE = docker-compose
 
-all:
-	$(DOCKER_COMPOSE) up -d --build
+all: up
 
-watch:
-	$(DOCKER_COMPOSE) up -w --build
+up:
+	$(DOCKER_COMPOSE) up
+
+re:
+	$(DOCKER_COMPOSE) up --build
 
 down:
 	$(DOCKER_COMPOSE) down --rmi all
@@ -17,7 +20,5 @@ fclean: clean
 
 prune: fclean
 	docker builder prune -af
-
-re: prune all
 
 .PHONY: all clean fclean prune re
