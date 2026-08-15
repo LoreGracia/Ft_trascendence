@@ -1,6 +1,4 @@
-FROM node:24-alpine
-
-USER node
+FROM node:24-bookworm
 
 WORKDIR /app
 
