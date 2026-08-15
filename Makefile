@@ -9,7 +9,8 @@ watch:
 down:
 	$(DOCKER_COMPOSE) down
 
-clean: down --rmi all
+clean:
+	down --rmi all
 
 fclean: clean
 	docker system prune -af
