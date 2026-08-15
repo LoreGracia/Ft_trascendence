@@ -11,7 +11,8 @@ re:
 down:
 	$(DOCKER_COMPOSE) down
 
-clean: down --rmi all
+clean:
+	down --rmi all
 
 fclean: clean
 	docker system prune -af
@@ -19,5 +20,7 @@ fclean: clean
 
 prune: fclean
 	docker builder prune -af
+
+re: prune all
 
 .PHONY: all clean fclean prune re
