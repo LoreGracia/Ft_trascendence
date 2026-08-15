@@ -4,17 +4,9 @@ services:
     build:
       context: ./srcs
       dockerfile: Dockerfile
-    env_file:
-      - ./srcs/.env.local
-    develop:
-      watch:
-        - action: sync
-          path: ./srcs
-          target: /app
-          
-        - action: rebuild
-          path: ./srcs/package.json
-
+    volumes:
+      - ./srcs:/app
+      - /app/node_modules
     restart: no
     ports:
       - 3000:3000
