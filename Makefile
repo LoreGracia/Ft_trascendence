@@ -1,5 +1,4 @@
-NAME = inception
-DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE = docker-compose --env-file ./srcs/.env.local
 
 all: up
 
@@ -10,9 +9,9 @@ re:
 	$(DOCKER_COMPOSE) up --build
 
 down:
-	$(DOCKER_COMPOSE) down --rmi all
+	$(DOCKER_COMPOSE) down
 
-clean: down 
+clean: down --rmi all
 
 fclean: clean
 	docker system prune -af
