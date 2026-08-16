@@ -12,7 +12,7 @@ down:
 	$(DOCKER_COMPOSE) down
 
 clean:
-	down --rmi all
+	$(DOCKER_COMPOSE) down --rmi all
 
 fclean: clean
 	docker system prune -af
