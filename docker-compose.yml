@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./srcs:/app
+      - ./prisma:/app/prisma
       - /app/node_modules
     restart: no
     ports:
