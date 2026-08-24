@@ -18,6 +18,11 @@ services:
     networks:
       - transcendence-net
 
+  server:
+    container_name: server-backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile
   db:
     image: postgres:17-alpine
     container_name: transcendence-db
