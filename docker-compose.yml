@@ -1,4 +1,18 @@
 services:
+  migrate:
+    build:
+      context: ./srcs
+      dockerfile: Dockerfile
+    volumes:
+      - ./prisma:/prisma
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: npx prisma migrate deploy
+    networks:
+      - transcendence-net
   next-app:
     container_name: transcendence-app
     build:
@@ -6,7 +20,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./srcs:/app
-      - ./prisma:/app/prisma
+      - ./prisma:/prisma
       - /app/node_modules
     restart: no
     ports:
@@ -14,8 +28,8 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     networks:
       - transcendence-net
 
