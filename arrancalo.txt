@@ -1,0 +1,3 @@
+Abres dos terminales.
+En un, desde el directorio CLIENT ejecutas -> npm start
+En otro, desde el directorio SERVER ejecutas -> npx tsx sockets/index.ts

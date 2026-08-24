@@ -1,8 +1,0 @@
-[] Comentar las diferentes partes
-[] Add + players
-[X] Select custom por partes
-[] Desvincular scene del dice, independencia en html
-[] Liberar main de responsabilidades
-[X] Hacer dados wapis
-[] Bug bloqueo de mouse en tiradas
-[] Bug bolqueo de custom en tirada
