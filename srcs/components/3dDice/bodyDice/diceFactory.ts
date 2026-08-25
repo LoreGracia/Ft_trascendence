@@ -6,7 +6,7 @@ import {
     StandardMaterial,
     TransformNode,
 } from "@babylonjs/core";
-import { DiceConfig, mergeDiceConfig } from "./diceConfig";
+import { DiceConfig, mergeDiceConfig } from "../modelDice/diceConfig";
 import { createRoundedBox } from "./roundedBox";
 
 export interface DiceInstance {

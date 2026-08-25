@@ -6,8 +6,8 @@
  */
 
 import { Scene, Color3, Vector3 } from "@babylonjs/core";
-import { createDiceInstance } from "./main";
-import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "./diceConfig";
+import { createDiceInstance } from "../bodyDice/diceFactory";
+import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "../modelDice/diceConfig";
 
 /**
  * Ejemplo 1: Crear un dado con colores personalizados

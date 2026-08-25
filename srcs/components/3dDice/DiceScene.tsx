@@ -9,10 +9,10 @@ import {
   Vector3,
   Color4,
 } from "@babylonjs/core";
-import { rollDice } from "@/dice/diceRoll";
-import { animateDiceFlight } from "@/dice/diceAnimation";
-import { createDiceInstance } from "@/dice/diceFactory";
-import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/dice/diceConfig";
+import { rollDice } from "@/components/3dDice/startThrow/diceRoll";
+import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
+import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
+import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/components/3dDice/modelDice/diceConfig";
 import styles from "./DiceScene.module.css";
 
 const PRESET_OPTIONS = [
