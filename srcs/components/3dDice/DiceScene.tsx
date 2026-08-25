@@ -128,10 +128,10 @@ export default function DiceScene() {
   };
 
   return (
-    <div className={styles.diceScene} onClick={handleRollClick}>
-      {/* <div className={styles.diceScene__status}>{resultText}</div> */}
+    <div className={styles.diceScene}>
+      <div className={styles.diceScene__status}>{resultText}</div>
       <div className={styles.diceScene__controls}>
-        {/* <select
+        <select
           className={styles.diceScene__select}
           value={selectedPreset}
           onChange={handlePresetChange}
@@ -159,7 +159,7 @@ export default function DiceScene() {
           disabled={isRolling}
         >
           {isRolling ? "Tirando..." : "Lanzar dado"}
-        </button> */}
+        </button>
       </div>
       <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
     </div>

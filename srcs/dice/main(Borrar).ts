@@ -12,7 +12,7 @@ import {
 } from "@babylonjs/core";
 import { rollDice } from "./diceRoll";
 import { animateDiceFlight } from "./diceAnimation";
-import { createHud, setResult, setBusy } from "./hud";
+import { createHud, setResult, setBusy } from "./hud(Borrar)";
 import { DiceConfig, mergeDiceConfig, DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "./diceConfig";
 import { createRoundedBox } from "./roundedBox";
 

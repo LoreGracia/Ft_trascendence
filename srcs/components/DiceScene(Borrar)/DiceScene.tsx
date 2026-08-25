@@ -13,7 +13,7 @@ import { rollDice } from "@/dice/diceRoll";
 import { animateDiceFlight } from "@/dice/diceAnimation";
 import { createDiceInstance } from "@/dice/diceFactory";
 import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/dice/diceConfig";
-import styles from "./DiceScene.module.css";
+import styles from "./DiceScene(Borrar).module.css";
 
 const PRESET_OPTIONS = [
   { value: "default", label: "Default", group: "Básicos" },
