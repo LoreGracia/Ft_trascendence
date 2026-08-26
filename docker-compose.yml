@@ -23,6 +23,10 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    networks:
+      - transcendence-net
   db:
     image: postgres:17-alpine
     container_name: transcendence-db
