@@ -19,10 +19,9 @@ export default function GameSelection() {
           selected={selectedMode}
           onChange={setSelectedMode}
         />
-
         <div className="flex flex-row gap-4 mt-5 text-base font-medium">
           <CreateRoomButton mode={selectedMode} />
-          <JoinButton />
+          <JoinButton/>
         </div>
       </div>
 
