@@ -10,6 +10,7 @@ export interface Players {
 
 export interface WaitingRoom {
 	roomCode:	string;
+	gameType:	GameType,
 	players:	Players[];
 	state:		WaitingRoomStatus;
 }
