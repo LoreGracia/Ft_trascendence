@@ -14,17 +14,15 @@ export const createRoundedBox = (
     cornerRadius: number,
     segments: number = 8
 ): Mesh => {
-    const r = Math.min(Math.max(cornerRadius, 0), size / 2 - 0.001);
-    const inner = size / 2 - r; // semi-extensión del núcleo central
+    const r = Math.min(Math.max(cornerRadius, 0), (size / 2) * 0.08);
+    const inner = size / 2 - r;
     const signs = [-1, 1];
     const tempMeshes: Mesh[] = [];
 
-    // Núcleo central
     tempMeshes.push(
         MeshBuilder.CreateBox("core", { width: inner * 2, height: inner * 2, depth: inner * 2 }, scene)
     );
 
-    // 8 esquinas
     for (const sx of signs) {
         for (const sy of signs) {
             for (const sz of signs) {
@@ -35,9 +33,8 @@ export const createRoundedBox = (
         }
     }
 
-    // 12 aristas (cilindros), 4 por cada eje
     const length = inner * 2;
-    const tessellation = segments * 2;
+    const tessellation = Math.max(6, Math.min(12, segments));
 
     for (const sy of signs) {
         for (const sz of signs) {
@@ -63,7 +60,6 @@ export const createRoundedBox = (
         }
     }
 
-    // Fusionar todo con CSG
     let csg = CSG.FromMesh(tempMeshes[0]);
     for (let i = 1; i < tempMeshes.length; i++) {
         csg = csg.union(CSG.FromMesh(tempMeshes[i]));
@@ -71,7 +67,6 @@ export const createRoundedBox = (
 
     const rounded = csg.toMesh("dado", null, scene);
 
-    // Limpiar meshes temporales (la geometría ya está fusionada en "rounded")
     tempMeshes.forEach((m) => m.dispose());
 
     return rounded;

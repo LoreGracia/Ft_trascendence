@@ -25,17 +25,35 @@ export interface DiceConfig {
     // Visibilidad
     visible?: boolean;
 }
+/**
+ * Valores por defecto para la configuración del dado index.
+ */
+
+export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
+    size: 2,
+    pipRadius: 0.11,
+    faceOffset: 0.86,
+    pipOffset: 0.38,
+    cornerRadius: 0.04,
+    cornerSegments: 4,
+    bodyColor: new Color3(0.95, 0.95, 0.92),
+    pipColor: new Color3(0.08, 0.08, 0.08),
+    emissiveColor: new Color3(0, 0, 0),
+    position: Vector3.Zero(),
+    rotation: Vector3.Zero(),
+    visible: true,
+};
 
 /**
  * Valores por defecto para la configuración del dado.
  */
 export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
     size: 2,
-    pipRadius: 0.13,
-    faceOffset: 1.02,
-    pipOffset: 0.52,
-    cornerRadius: 0.12,
-    cornerSegments: 8,
+    pipRadius: 0.11,
+    faceOffset: 0.86,
+    pipOffset: 0.38,
+    cornerRadius: 0.04,
+    cornerSegments: 4,
     bodyColor: new Color3(0.95, 0.95, 0.92),
     pipColor: new Color3(0.08, 0.08, 0.08),
     emissiveColor: new Color3(0, 0, 0),
