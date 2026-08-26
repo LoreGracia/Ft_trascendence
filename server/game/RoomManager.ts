@@ -1,6 +1,10 @@
-import { WaitingRoom, Players, MatchRoom } from "./game-types";
+import { WaitingRoom, Players, MatchRoom, GameType } from "./game-types";
+import { isGameWon } from "./DiceGame";
+import { Socket, Server } from "socket.io";
+import { matchRooms, turnTimeouts } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
+const TURN_TIME_LIMIT = 30000;
 
 
 export function generateRoomCode(length: number = 5): string {
@@ -15,9 +19,10 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string): WaitingRoom {
+export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
+		gameType: game,
 		players: [{ id:playerId, state:"UNLOCKED" }],
 		state: "OPEN",
 	};
@@ -43,7 +48,7 @@ export function openRoom(room: WaitingRoom): void {
 	room.state = "OPEN";
 }
 
-export function exitRoom(playerId: string, room: WaitingRoom) {
+export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
 	room.players = room.players.filter(p => p.id !== playerId);
 }
 
@@ -80,5 +85,60 @@ export function advanceToUnlocked(match: MatchRoom): void {
 			match.turn++;
 			attempts++;
 		}
+	}
+}
+
+export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
+	const match = matchRooms.get(roomCode);
+	if (match) {
+		const currentPlayer = match.players[match.turn % match.players.length].id;
+		exitRoom(socket.id, match);
+		socket.leave(roomCode);
+		console.log(`Room ${roomCode}: player ${socket.id} left.`);
+		if (match.players.length === 0) {
+			matchRooms.delete(roomCode);
+			clearTurnTimeout(roomCode);
+			console.log(`Room ${roomCode}: room deleted.`);
+		} else if (isGameWon(match)) {
+			clearTurnTimeout(roomCode);
+			matchRooms.delete(roomCode);
+			io.to(roomCode).emit("match_won", { match });
+		} else {
+			if (socket.id === currentPlayer) {
+				clearTurnTimeout(roomCode);
+				advanceToUnlocked(match);
+			}
+			resetTurnTimeout(io, roomCode);
+			io.to(roomCode).emit("player_status_changed", match);
+		}
+	}
+	else
+		console.log("Room no longer exists.")
+}
+
+export function resetTurnTimeout(io: Server, roomCode: string) {
+	clearTurnTimeout(roomCode);
+	const match = matchRooms.get(roomCode);
+	if (!match) return;
+
+	const timeout = setTimeout(() => {
+		match.players[match.turn % match.players.length].state = "LOCKED";
+		advanceToUnlocked(match);
+		io.to(roomCode).emit("turn_timeout", { match });
+		io.to(roomCode).emit("player_status_changed", match);
+		if (isGameWon(match)) {
+			io.to(roomCode).emit("match_won", { match, lastRoll: match.rolls[match.rolls.length] });
+			clearTurnTimeout(roomCode);
+			matchRooms.delete(roomCode);
+			return;
+		}
+	}, TURN_TIME_LIMIT);
+	turnTimeouts.set(roomCode, timeout);
+}
+
+export function clearTurnTimeout(roomCode: string) {
+	if (turnTimeouts.has(roomCode)) {
+		clearTimeout(turnTimeouts.get(roomCode)!);
+		turnTimeouts.delete(roomCode);
 	}
 }

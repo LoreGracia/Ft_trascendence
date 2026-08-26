@@ -1,4 +1,4 @@
-import { WaitingRoom, MatchRoom, GameType, RollResult, RoundRoll, Dices, Players } from "./game-types";
+import { WaitingRoom, MatchRoom, RollResult, RoundRoll, Dices, Players } from "./game-types";
 
 const MIN_RAND = 1;
 
@@ -25,13 +25,13 @@ function initSum(players: Players[]): Record<string, number> {
 	return res;
 }
 
-export function createMatch(gameType: GameType, room: WaitingRoom): MatchRoom { 
+export function createMatch(room: WaitingRoom): MatchRoom { 
 	const newOrder = shuffle(room.players);
 	for (const player of newOrder)
 		player.state = "UNLOCKED";
 	return {
 		roomCode:	room.roomCode,
-		gameType:	gameType,
+		gameType:	room.gameType,
 		players:	newOrder,
 		dices:		[Dices.d6],
 		rolls:		[],
@@ -151,11 +151,32 @@ function verifyAdd42Win(match: MatchRoom): boolean {
 export function isGameWon(match: MatchRoom): boolean {
 	switch (match.gameType) {
 		case "FREE_PLAY":
-			return verifyFreePlayWin(match);
+			return verifyFreePlayWin(match); // && send to db
 		case "ADD42":
-			return verifyAdd42Win(match);
+			return verifyAdd42Win(match); // && send to db
 		default:
 			console.log("Naughty, naughty... you shouldnt be here: isGameWon");
 			return false;
 		}
 }
+
+// function allDicesToZero(match: MatchRoom): RoundRoll[] {
+// 	const allTurnRolls: RoundRoll[] = [];
+// 	for (let i = 0; i < match.dices.length; i++) {
+// 		const singleRoll: RoundRoll = {
+// 			diceType: match.dices[i],
+// 			value: 0
+// 		}
+// 		allTurnRolls.push(singleRoll);
+// 	}
+// 	return allTurnRolls;
+// }
+
+// export function generateEmptyRoll(match: MatchRoom): RollResult {
+// 	const roll: RollResult = {
+// 		idPlayer: match.players[match.turn % match.players.length].id,
+// 		gameType: match.gameType,
+// 		nums: allDicesToZero(match),
+// 	}
+// 	return roll;
+// }
