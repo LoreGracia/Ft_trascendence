@@ -8,6 +8,7 @@ import {
 } from "@babylonjs/core";
 import { DiceConfig, mergeDiceConfig } from "../modelDice/diceConfig";
 import { createRoundedBox } from "./roundedBox";
+import { createSoftBox } from "./softBox";
 
 export interface DiceInstance {
     root: TransformNode;
@@ -100,7 +101,7 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
         pipMeshes = [];
 
         bodyMesh = resolvedConfig.cornerRadius > 0
-            ? createRoundedBox(scene, resolvedConfig.size, resolvedConfig.cornerRadius, resolvedConfig.cornerSegments)
+            ? createSoftBox({ radius: 0.05, arcSegments: 20 }, scene)
             : MeshBuilder.CreateBox(`${instanceName}_body`, { size: resolvedConfig.size }, scene);
         bodyMesh.name = `${instanceName}_body`;
         bodyMesh.parent = root;
