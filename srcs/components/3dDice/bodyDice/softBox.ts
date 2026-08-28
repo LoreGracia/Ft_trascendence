@@ -32,7 +32,7 @@ interface SoftBoxOptions {
 
 export const createSoftBox = (opt: SoftBoxOptions, scene: Scene): Mesh => {
 
-    const size = opt.size ?? 1;
+    const size = opt.size ?? 2;
     const height = opt.height ?? size / 2;
     const width = opt.width ?? size / 2;
     const depth = opt.depth ?? size / 2;

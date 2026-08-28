@@ -101,7 +101,7 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
         pipMeshes = [];
 
         bodyMesh = resolvedConfig.cornerRadius > 0
-            ? createSoftBox({ radius: 0.05, arcSegments: 20 }, scene)
+            ? createSoftBox({ radius: 0.1, arcSegments: 20 }, scene)
             : MeshBuilder.CreateBox(`${instanceName}_body`, { size: resolvedConfig.size }, scene);
         bodyMesh.name = `${instanceName}_body`;
         bodyMesh.parent = root;
