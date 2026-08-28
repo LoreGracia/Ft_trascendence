@@ -16,6 +16,7 @@ export interface DiceConfig {
     // Colores
     bodyColor?: Color3;
     pipColor?: Color3;
+    firstPipColor?: Color3;
     emissiveColor?: Color3; // luz propia del dado (0,0,0 = sin brillo)
 
     // Posición y orientación inicial
@@ -31,13 +32,14 @@ export interface DiceConfig {
 
 export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
     size: 2,
-    pipRadius: 0.11,
-    faceOffset: 0.86,
-    pipOffset: 0.38,
-    cornerRadius: 0.04,
-    cornerSegments: 4,
+    pipRadius: 0.13,
+    faceOffset: 1.02,
+    pipOffset: 0.52,
+    cornerRadius: 0.12,
+    cornerSegments: 8,
     bodyColor: new Color3(0.95, 0.95, 0.92),
     pipColor: new Color3(0.08, 0.08, 0.08),
+    firstPipColor: new Color3(0.8, 0.08, 0.08),
     emissiveColor: new Color3(0, 0, 0),
     position: Vector3.Zero(),
     rotation: Vector3.Zero(),
@@ -49,13 +51,14 @@ export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
  */
 export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
     size: 2,
-    pipRadius: 0.11,
-    faceOffset: 0.86,
-    pipOffset: 0.38,
-    cornerRadius: 0.04,
-    cornerSegments: 4,
+    pipRadius: 0.13,
+    faceOffset: 1.02,
+    pipOffset: 0.52,
+    cornerRadius: 0.12,
+    cornerSegments: 8,
     bodyColor: new Color3(0.95, 0.95, 0.92),
     pipColor: new Color3(0.08, 0.08, 0.08),
+    firstPipColor: undefined,
     emissiveColor: new Color3(0, 0, 0),
     position: Vector3.Zero(),
     rotation: Vector3.Zero(),
@@ -150,6 +153,7 @@ export const mergeDiceConfig = (
         cornerSegments: custom.cornerSegments ?? DEFAULT_DICE_CONFIG.cornerSegments,
         bodyColor: custom.bodyColor ?? DEFAULT_DICE_CONFIG.bodyColor,
         pipColor: custom.pipColor ?? DEFAULT_DICE_CONFIG.pipColor,
+        firstPipColor: custom.firstPipColor ?? DEFAULT_DICE_CONFIG.firstPipColor,
         emissiveColor: custom.emissiveColor ?? DEFAULT_DICE_CONFIG.emissiveColor,
         position: custom.position ?? DEFAULT_DICE_CONFIG.position,
         rotation: custom.rotation ?? DEFAULT_DICE_CONFIG.rotation,

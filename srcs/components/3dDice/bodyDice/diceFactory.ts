@@ -7,7 +7,6 @@ import {
     TransformNode,
 } from "@babylonjs/core";
 import { DiceConfig, mergeDiceConfig } from "../modelDice/diceConfig";
-import { createRoundedBox } from "./roundedBox";
 
 export interface DiceInstance {
     root: TransformNode;
@@ -75,6 +74,7 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
 
     let bodyMesh: Mesh | null = null;
     let pipMeshes: Mesh[] = [];
+    let overridePipMaterials: StandardMaterial[] = [];
     let userConfig: Partial<DiceConfig> = { ...config };
     let resolvedConfig = mergeDiceConfig(userConfig);
 
@@ -98,20 +98,33 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
 
         pipMeshes.forEach((pipMesh) => pipMesh.dispose());
         pipMeshes = [];
+        overridePipMaterials.forEach((material) => material.dispose());
+        overridePipMaterials = [];
 
-        bodyMesh = resolvedConfig.cornerRadius > 0
-            ? createRoundedBox(scene, resolvedConfig.size, resolvedConfig.cornerRadius, resolvedConfig.cornerSegments)
-            : MeshBuilder.CreateBox(`${instanceName}_body`, { size: resolvedConfig.size }, scene);
+        bodyMesh = MeshBuilder.CreateBox(`${instanceName}_body`, { size: resolvedConfig.size }, scene);
         bodyMesh.name = `${instanceName}_body`;
         bodyMesh.parent = root;
         bodyMesh.material = bodyMaterial;
 
         let pipIndex = 0;
-        const addPip = (x: number, y: number, z: number) => {
+        const addPip = (x: number, y: number, z: number, pipColorOverride?: Color3) => {
+            const pipMaterialToUse = pipColorOverride
+                ? (() => {
+                    const specialMaterial = new StandardMaterial(
+                        `${instanceName}_pipMaterial_${pipIndex}`,
+                        scene
+                    );
+                    specialMaterial.diffuseColor = pipColorOverride;
+                    specialMaterial.backFaceCulling = false;
+                    overridePipMaterials.push(specialMaterial);
+                    return specialMaterial;
+                })()
+                : pipMaterial;
+
             const pip = createPip(
                 scene,
                 root,
-                pipMaterial,
+                pipMaterialToUse,
                 resolvedConfig,
                 instanceName,
                 pipIndex++,
@@ -123,8 +136,9 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
         };
 
         const { faceOffset, pipOffset } = resolvedConfig;
+        const firstPipColor = resolvedConfig.firstPipColor;
 
-        addPip(0, 0, faceOffset);
+        addPip(0, 0, faceOffset, firstPipColor);
 
         addPip(-pipOffset, pipOffset, -faceOffset);
         addPip(pipOffset, pipOffset, -faceOffset);
@@ -182,6 +196,7 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
         dispose() {
             bodyMesh?.dispose();
             pipMeshes.forEach((pipMesh) => pipMesh.dispose());
+            overridePipMaterials.forEach((material) => material.dispose());
             bodyMaterial.dispose();
             pipMaterial.dispose();
             root.dispose();

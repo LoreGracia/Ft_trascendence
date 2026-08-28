@@ -147,6 +147,10 @@
   height: 100%;
   min-height: 24rem;
   display: block;
+  outline: none;
+  border: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .diceScene__controls {
