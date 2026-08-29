@@ -4,6 +4,7 @@ import PatternControl from "@/components/Pattern/PatternControl";
 import DiceScene from "@/components/3dDice/DiceScene";
 import IndexDice from "@/components/3dDice/IndexDice";
 import SelectDice from "@/components/3dDice/SelectDice";
+import ThrowDice from "@/components/3dDice/ThrowDice";
 import { useState } from "react";
 
 export default function Home() {
@@ -14,13 +15,14 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
-          {/* Fallback safety: keep the original 3D scene available if needed.*/}
-          <div style={{ display: "none" }} aria-hidden="true">
-            <DiceScene />
+
+          {/* <DiceScene />
             <IndexDice />
             <SelectDice />
-          </div>
-          <SelectDice roomCode="test-room" />
+            <ThrowDice /> 
+            <SelectDice roomCode="test-room" />*/}
+
+          <ThrowDice presetValue="default" roomCode="test-room" />
         </section>
         <section className="column gap-8">
           <div className="row">

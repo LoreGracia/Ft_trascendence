@@ -13,13 +13,20 @@ import type { Socket } from "socket.io-client";
 // ---------------------------------------------------------------------------
 const socket: Socket | null = null;
 
-interface RollResult {
-    playerId: string;
+// Tipos alineados con game-types.ts del backend.
+interface RoundRoll {
+    diceType: number; // Dices enum en backend (d6 = 6)
     value: number;
 }
 
+interface RollResult {
+    idPlayer: string;
+    gameType: string;
+    nums: RoundRoll[];
+}
+
 interface DiceRolledPayload {
-    match: unknown;
+    match: unknown; // TODO: tipar como MatchRoom real cuando se comparta el tipo
     roll: RollResult;
 }
 
@@ -34,6 +41,7 @@ export function useDiceSocket(roomCode: string) {
     useEffect(() => {
         if (!socket) return;
 
+        // YA EXISTE en el backend: io.to(roomCode).emit("dice_rolled", { match, roll })
         const handleDiceRolled = ({ roll }: DiceRolledPayload) => {
             setLastResult(roll);
         };
@@ -59,10 +67,12 @@ export function useDiceSocket(roomCode: string) {
         };
     }, []);
 
+    // YA EXISTE en el backend: socket.on("roll_dice", (roomCode: string) => {...})
     const rollDice = useCallback(() => {
         socket?.emit("roll_dice", roomCode);
     }, [roomCode]);
 
+    // TODO (BACKEND — pendiente): ver bloque de comentarios arriba.
     const selectDice = useCallback(
         (preset: string) => {
             socket?.emit("select_dice", { roomCode, preset });
