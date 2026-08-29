@@ -4,9 +4,15 @@ import {
     MeshBuilder,
     Scene,
     StandardMaterial,
+    Texture,
     TransformNode,
 } from "@babylonjs/core";
-import { DiceConfig, mergeDiceConfig } from "../modelDice/diceConfig";
+
+import {
+    DiceConfig,
+    mergeDiceConfig,
+} from "../modelDice/diceConfig";
+
 import { createRoundedBox } from "./roundedBox";
 
 export interface DiceInstance {
@@ -35,7 +41,7 @@ const createPip = (
     let pip: Mesh;
 
     // ----------------------------------------
-    // Detectamos la cara ORIGINAL
+    // DETECTAR LA CARA
     // ----------------------------------------
 
     const isZFace =
@@ -48,10 +54,11 @@ const createPip = (
         Math.abs(Math.abs(y) - config.faceOffset) < 0.001;
 
     // ----------------------------------------
-    // PIP BALL
+    // PIP GEOMETRY
     // ----------------------------------------
 
     if (config.pipStyle === "ball") {
+        // PIP ESFÉRICO / PLANETA
         pip = MeshBuilder.CreateSphere(
             `${instanceName}_pip_${pipIndex}`,
             {
@@ -61,8 +68,7 @@ const createPip = (
             scene
         );
 
-        // Controla cuánto sobresale la esfera.
-        // De momento dejamos 0.25 para probar.
+        // Ajuste de posición de las bolas.
         const ballOffset = config.pipRadius * 0.25;
 
         if (isZFace) {
@@ -72,13 +78,8 @@ const createPip = (
         } else if (isYFace) {
             y += y > 0 ? ballOffset : -ballOffset;
         }
-    }
-
-    // ----------------------------------------
-    // PIP DISC
-    // ----------------------------------------
-
-    else {
+    } else {
+        // PIP PLANO
         pip = MeshBuilder.CreateDisc(
             `${instanceName}_pip_${pipIndex}`,
             {
@@ -91,7 +92,7 @@ const createPip = (
     }
 
     // ----------------------------------------
-    // POSITION
+    // POSICIÓN
     // ----------------------------------------
 
     pip.position.set(x, y, z);
@@ -99,26 +100,18 @@ const createPip = (
     pip.material = pipMaterial;
 
     // ----------------------------------------
-    // ORIENTATION
+    // ORIENTACIÓN
     // ----------------------------------------
 
     if (isZFace) {
         pip.rotation.y = z > 0 ? 0 : Math.PI;
     } else if (isXFace) {
         pip.rotation.y =
-            x > 0
-                ? Math.PI / 2
-                : -Math.PI / 2;
+            x > 0 ? Math.PI / 2 : -Math.PI / 2;
     } else if (isYFace) {
         pip.rotation.x =
-            y > 0
-                ? -Math.PI / 2
-                : Math.PI / 2;
+            y > 0 ? -Math.PI / 2 : Math.PI / 2;
     }
-
-    // ----------------------------------------
-    // PARENT
-    // ----------------------------------------
 
     pip.parent = root;
 
@@ -129,12 +122,17 @@ export const createDiceInstance = (
     scene: Scene,
     config?: Partial<DiceConfig>
 ): DiceInstance => {
+
     const instanceName = `dice_${++diceInstanceCounter}`;
 
     const root = new TransformNode(
         `${instanceName}_root`,
         scene
     );
+
+    // ----------------------------------------
+    // MATERIALS
+    // ----------------------------------------
 
     const bodyMaterial = new StandardMaterial(
         `${instanceName}_bodyMaterial`,
@@ -148,8 +146,16 @@ export const createDiceInstance = (
 
     pipMaterial.backFaceCulling = false;
 
+    let bodyTexture: Texture | null = null;
+
+    // ----------------------------------------
+    // STATE
+    // ----------------------------------------
+
     let bodyMesh: Mesh | null = null;
+
     let pipMeshes: Mesh[] = [];
+
     let overridePipMaterials: StandardMaterial[] = [];
 
     let userConfig: Partial<DiceConfig> = {
@@ -159,25 +165,106 @@ export const createDiceInstance = (
     let resolvedConfig = mergeDiceConfig(userConfig);
 
     // ----------------------------------------
-    // MATERIALS
+    // DEBUG CONFIG
+    // ----------------------------------------
+
+    console.log("🌌 CONFIG DADO", resolvedConfig);
+
+    // ----------------------------------------
+    // MATERIAL SYNC
     // ----------------------------------------
 
     const syncMaterials = () => {
-        bodyMaterial.diffuseColor =
-            resolvedConfig.bodyColor;
 
-        bodyMaterial.emissiveColor =
-            resolvedConfig.emissiveColor;
+        console.log("🎲 DICE MATERIAL", {
+            bodyTexture: resolvedConfig.bodyTexture,
+            bodyColor: resolvedConfig.bodyColor,
+            pipStyle: resolvedConfig.pipStyle,
+        });
+
+        // ----------------------------------------
+        // BODY TEXTURE
+        // ----------------------------------------
+
+        if (bodyTexture) {
+            bodyTexture.dispose();
+            bodyTexture = null;
+        }
+
+        if (resolvedConfig.bodyTexture) {
+
+            console.log(
+                "🌌 CARGANDO TEXTURA:",
+                resolvedConfig.bodyTexture
+            );
+
+            bodyTexture = new Texture(
+                resolvedConfig.bodyTexture,
+                scene,
+                true,
+                false,
+                Texture.TRILINEAR_SAMPLINGMODE,
+                () => {
+                    console.log(
+                        "✅ TEXTURA CARGADA:",
+                        resolvedConfig.bodyTexture
+                    );
+                },
+                (message) => {
+                    console.error(
+                        "❌ ERROR CARGANDO TEXTURA:",
+                        resolvedConfig.bodyTexture,
+                        message
+                    );
+                }
+            );
+
+            bodyMaterial.diffuseTexture = bodyTexture;
+
+            // Blanco para no teñir la textura.
+            bodyMaterial.diffuseColor = new Color3(
+                1,
+                1,
+                1
+            );
+
+            // Sin emisión mientras probamos la textura.
+            bodyMaterial.emissiveColor = new Color3(
+                0,
+                0,
+                0
+            );
+
+        } else {
+
+            console.log(
+                "🎨 DADO SIN TEXTURA, USANDO COLOR:",
+                resolvedConfig.bodyColor
+            );
+
+            bodyMaterial.diffuseTexture = null;
+
+            bodyMaterial.diffuseColor =
+                resolvedConfig.bodyColor;
+
+            bodyMaterial.emissiveColor =
+                resolvedConfig.emissiveColor;
+        }
+
+        // ----------------------------------------
+        // PIPS
+        // ----------------------------------------
 
         pipMaterial.diffuseColor =
             resolvedConfig.pipColor;
     };
 
     // ----------------------------------------
-    // TRANSFORM
+    // TRANSFORM SYNC
     // ----------------------------------------
 
     const syncTransform = () => {
+
         root.position.copyFrom(
             resolvedConfig.position
         );
@@ -196,14 +283,11 @@ export const createDiceInstance = (
     // ----------------------------------------
 
     const rebuildGeometry = () => {
-        // BODY
 
         if (bodyMesh) {
             bodyMesh.dispose();
             bodyMesh = null;
         }
-
-        // PIPS
 
         pipMeshes.forEach((pipMesh) => {
             pipMesh.dispose();
@@ -211,19 +295,15 @@ export const createDiceInstance = (
 
         pipMeshes = [];
 
-        // SPECIAL MATERIALS
-
-        overridePipMaterials.forEach(
-            (material) => {
-                material.dispose();
-            }
-        );
+        overridePipMaterials.forEach((material) => {
+            material.dispose();
+        });
 
         overridePipMaterials = [];
 
-        // ----------------------------------------
+        // ------------------------------------
         // BODY
-        // ----------------------------------------
+        // ------------------------------------
 
         bodyMesh = createRoundedBox(
             `${instanceName}_body`,
@@ -238,11 +318,12 @@ export const createDiceInstance = (
         );
 
         bodyMesh.parent = root;
+
         bodyMesh.material = bodyMaterial;
 
-        // ----------------------------------------
+        // ------------------------------------
         // PIPS
-        // ----------------------------------------
+        // ------------------------------------
 
         let pipIndex = 0;
 
@@ -252,9 +333,11 @@ export const createDiceInstance = (
             z: number,
             pipColorOverride?: Color3
         ) => {
+
             const pipMaterialToUse =
                 pipColorOverride
                     ? (() => {
+
                         const specialMaterial =
                             new StandardMaterial(
                                 `${instanceName}_pipMaterial_${pipIndex}`,
@@ -272,6 +355,7 @@ export const createDiceInstance = (
                         );
 
                         return specialMaterial;
+
                     })()
                     : pipMaterial;
 
@@ -298,9 +382,9 @@ export const createDiceInstance = (
         const firstPipColor =
             resolvedConfig.firstPipColor;
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 1
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             0,
@@ -309,9 +393,9 @@ export const createDiceInstance = (
             firstPipColor
         );
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 6
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             -pipOffset,
@@ -349,9 +433,9 @@ export const createDiceInstance = (
             -faceOffset
         );
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 2
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             faceOffset,
@@ -365,9 +449,9 @@ export const createDiceInstance = (
             pipOffset
         );
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 5
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             -faceOffset,
@@ -399,9 +483,9 @@ export const createDiceInstance = (
             pipOffset
         );
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 3
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             -pipOffset,
@@ -421,9 +505,9 @@ export const createDiceInstance = (
             pipOffset
         );
 
-        // ----------------------------------------
+        // ------------------------------------
         // FACE 4
-        // ----------------------------------------
+        // ------------------------------------
 
         addPip(
             -pipOffset,
@@ -463,10 +547,11 @@ export const createDiceInstance = (
     syncInstance();
 
     // ----------------------------------------
-    // PUBLIC API
+    // INSTANCE API
     // ----------------------------------------
 
     return {
+
         root,
 
         get bodyMesh() {
@@ -486,6 +571,7 @@ export const createDiceInstance = (
         },
 
         updateConfig(next: Partial<DiceConfig>) {
+
             userConfig = {
                 ...userConfig,
                 ...next,
@@ -494,10 +580,16 @@ export const createDiceInstance = (
             resolvedConfig =
                 mergeDiceConfig(userConfig);
 
+            console.log(
+                "🔄 CONFIG ACTUALIZADA",
+                resolvedConfig
+            );
+
             syncInstance();
         },
 
         dispose() {
+
             bodyMesh?.dispose();
 
             pipMeshes.forEach((pipMesh) => {
@@ -510,8 +602,14 @@ export const createDiceInstance = (
                 }
             );
 
+            if (bodyTexture) {
+                bodyTexture.dispose();
+                bodyTexture = null;
+            }
+
             bodyMaterial.dispose();
             pipMaterial.dispose();
+
             root.dispose();
         },
     };

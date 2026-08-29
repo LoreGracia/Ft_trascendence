@@ -11,14 +11,15 @@ export interface DiceConfig {
     faceOffset?: number;
     pipOffset?: number;
     pipStyle?: "disc" | "ball";
-    cornerRadius?: number;   // 0 = aristas vivas (cubo normal)
-    cornerSegments?: number; // suavidad del redondeo (más = más caro)
+    cornerRadius?: number;
+    cornerSegments?: number;
 
-    // Colores
+    // Apariencia
     bodyColor?: Color3;
+    bodyTexture?: string;
     pipColor?: Color3;
     firstPipColor?: Color3;
-    emissiveColor?: Color3; // luz propia del dado (0,0,0 = sin brillo)
+    emissiveColor?: Color3;
 
     // Posición y orientación inicial
     position?: Vector3;
@@ -27,10 +28,10 @@ export interface DiceConfig {
     // Visibilidad
     visible?: boolean;
 }
+
 /**
  * Valores por defecto para la configuración del dado index.
  */
-
 export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
     size: 2,
     pipRadius: 0.13,
@@ -39,10 +40,14 @@ export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
     pipStyle: "disc",
     cornerRadius: 0.30,
     cornerSegments: 12,
+
     bodyColor: new Color3(0.95, 0.95, 0.92),
+    bodyTexture: undefined,
+
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: new Color3(0.8, 0.08, 0.08),
     emissiveColor: new Color3(0, 0, 0),
+
     position: Vector3.Zero(),
     rotation: Vector3.Zero(),
     visible: true,
@@ -59,10 +64,14 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
     pipStyle: "disc",
     cornerRadius: 0.30,
     cornerSegments: 12,
+
     bodyColor: new Color3(0.95, 0.95, 0.92),
+    bodyTexture: undefined,
+
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: undefined,
     emissiveColor: new Color3(0, 0, 0),
+
     position: Vector3.Zero(),
     rotation: Vector3.Zero(),
     visible: true,
@@ -73,23 +82,28 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
  */
 export const DICE_PRESETS = {
     default: DEFAULT_DICE_CONFIG,
+
     redDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.8, 0.1, 0.1),
     },
+
     blueDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.1, 0.3, 0.8),
     },
+
     greenDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.1, 0.7, 0.3),
     },
+
     goldDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.9, 0.8, 0.2),
         pipColor: new Color3(0.2, 0.15, 0.05),
     },
+
     blackDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.15, 0.15, 0.15),
@@ -98,25 +112,19 @@ export const DICE_PRESETS = {
 };
 
 /**
- * Dados "legendarios": skins curados con temática propia, con luz propia
- * (emissiveColor) para diferenciarse claramente de los presets básicos.
+ * Dados "legendarios": skins curados con temática propia.
  */
 export const DICE_LEGENDARY_PRESETS = {
-    // universe: {
-    //     ...DEFAULT_DICE_CONFIG,
-    //     bodyColor: new Color3(0.05, 0.03, 0.12),
-    //     pipColor: new Color3(0.85, 0.87, 0.95),
-    //     emissiveColor: new Color3(0.08, 0.04, 0.22),
-    //     cornerRadius: 0.18,
-    // },
     universe: {
         ...DEFAULT_DICE_CONFIG,
 
         pipStyle: "ball",
 
-        bodyColor: new Color3(0.05, 0.03, 0.12),
+        bodyTexture: "/textures/universe.jpg",
+
         pipColor: new Color3(0.85, 0.87, 0.95),
-        emissiveColor: new Color3(0.08, 0.04, 0.22),
+        emissiveColor: new Color3(0, 0, 0),
+        //  emissiveColor: new Color3(0.08, 0.04, 0.22),
         cornerRadius: 0.18,
     },
 
@@ -127,6 +135,7 @@ export const DICE_LEGENDARY_PRESETS = {
         emissiveColor: new Color3(0, 0, 0),
         cornerRadius: 0.3,
     },
+
     magician: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.28, 0.05, 0.42),
@@ -134,6 +143,7 @@ export const DICE_LEGENDARY_PRESETS = {
         emissiveColor: new Color3(0.18, 0.02, 0.28),
         cornerRadius: 0.16,
     },
+
     warrior: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.35, 0.04, 0.04),
@@ -141,6 +151,7 @@ export const DICE_LEGENDARY_PRESETS = {
         emissiveColor: new Color3(0, 0, 0),
         cornerRadius: 0.04,
     },
+
     code: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.03, 0.03, 0.03),
@@ -164,14 +175,35 @@ export const mergeDiceConfig = (
         faceOffset: custom.faceOffset ?? DEFAULT_DICE_CONFIG.faceOffset,
         pipOffset: custom.pipOffset ?? DEFAULT_DICE_CONFIG.pipOffset,
         pipStyle: custom.pipStyle ?? DEFAULT_DICE_CONFIG.pipStyle,
-        cornerRadius: custom.cornerRadius ?? DEFAULT_DICE_CONFIG.cornerRadius,
-        cornerSegments: custom.cornerSegments ?? DEFAULT_DICE_CONFIG.cornerSegments,
-        bodyColor: custom.bodyColor ?? DEFAULT_DICE_CONFIG.bodyColor,
-        pipColor: custom.pipColor ?? DEFAULT_DICE_CONFIG.pipColor,
-        firstPipColor: custom.firstPipColor ?? DEFAULT_DICE_CONFIG.firstPipColor,
-        emissiveColor: custom.emissiveColor ?? DEFAULT_DICE_CONFIG.emissiveColor,
-        position: custom.position ?? DEFAULT_DICE_CONFIG.position,
-        rotation: custom.rotation ?? DEFAULT_DICE_CONFIG.rotation,
-        visible: custom.visible ?? DEFAULT_DICE_CONFIG.visible,
+
+        cornerRadius:
+            custom.cornerRadius ?? DEFAULT_DICE_CONFIG.cornerRadius,
+
+        cornerSegments:
+            custom.cornerSegments ?? DEFAULT_DICE_CONFIG.cornerSegments,
+
+        bodyColor:
+            custom.bodyColor ?? DEFAULT_DICE_CONFIG.bodyColor,
+
+        bodyTexture:
+            custom.bodyTexture ?? DEFAULT_DICE_CONFIG.bodyTexture,
+
+        pipColor:
+            custom.pipColor ?? DEFAULT_DICE_CONFIG.pipColor,
+
+        firstPipColor:
+            custom.firstPipColor ?? DEFAULT_DICE_CONFIG.firstPipColor,
+
+        emissiveColor:
+            custom.emissiveColor ?? DEFAULT_DICE_CONFIG.emissiveColor,
+
+        position:
+            custom.position ?? DEFAULT_DICE_CONFIG.position,
+
+        rotation:
+            custom.rotation ?? DEFAULT_DICE_CONFIG.rotation,
+
+        visible:
+            custom.visible ?? DEFAULT_DICE_CONFIG.visible,
     };
 };
