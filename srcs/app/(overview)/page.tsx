@@ -18,8 +18,9 @@ export default function Home() {
           <div style={{ display: "none" }} aria-hidden="true">
             <DiceScene />
             <IndexDice />
+            <SelectDice />
           </div>
-          <SelectDice />
+          <SelectDice roomCode="test-room" />
         </section>
         <section className="column gap-8">
           <div className="row">

@@ -6,19 +6,24 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { PRESET_OPTIONS, getDicePreset } from "@/components/3dDice/select/diceOptions";
 import DiceCarouselItem from "@/components/3dDice/select/diceCarouselItem";
 import { createOrbitCamera } from "@/components/3dDice/utils/diceCamera";
+import { useDiceSocket } from "@/components/3dDice/connect/useDiceSocket";
 import styles from "./DiceScene.module.css";
 
 interface SelectDiceProps {
+    /** Código de la sala/partida — lo necesita useDiceSocket para roll_dice/select_dice */
+    roomCode: string;
     /** Se dispara cada vez que el usuario elige un dado; conéctalo al backend cuando toque. */
     onSelect?: (value: string) => void;
 }
 
-export default function SelectDice({ onSelect }: SelectDiceProps) {
+export default function SelectDice({ roomCode, onSelect }: SelectDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
     const diceInstanceRef = useRef<ReturnType<typeof createDiceInstance> | null>(null);
     const [selectedPreset, setSelectedPreset] = useState("default");
+
+    const { selectDice } = useDiceSocket(roomCode);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -72,6 +77,7 @@ export default function SelectDice({ onSelect }: SelectDiceProps) {
 
     const handlePick = (value: string) => {
         setSelectedPreset(value);
+        selectDice(value);
         onSelect?.(value);
     };
 
