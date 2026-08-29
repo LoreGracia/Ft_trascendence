@@ -1,5 +1,6 @@
 import { RoomCode, ExitButton } from "@/components/SocketComponent";
 import { redirect } from "next/navigation";
+import GameClient from "@/components/GameComponent";
 
 export default async function Lobby({
   searchParams,
@@ -8,15 +9,16 @@ export default async function Lobby({
 }) {
   const params = await searchParams;
   const roomCode = params?.roomCode ?? "";
-  if (!roomCode) {
-    redirect("/login");
-  }
+  // if (!roomCode) {
+  //   redirect("/login");
+  // }
   return (
 	<div>
-	  <RoomCode roomCode={roomCode ?? ""} />
+    <GameClient/>
+	  {/* <RoomCode roomCode={roomCode ?? ""} />
 	  <h2>Lobby</h2>
 	  <p>Aqui verias los ususrios en la misma room</p>
-    <ExitButton currentRoomCode={roomCode ?? ""}/>
+    <ExitButton currentRoomCode={roomCode ?? ""}/> */}
 	</div>
 	
   )
