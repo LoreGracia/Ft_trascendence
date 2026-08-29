@@ -41,7 +41,8 @@ export default function SelectDice() {
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
     const diceInstanceRef = useRef<ReturnType<typeof createDiceInstance> | null>(null);
-    const [selectedPreset, setSelectedPreset] = useState("default");
+    const [selectedPreset, setSelectedPreset] = useState("");
+    const [selectKey, setSelectKey] = useState(0);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -103,17 +104,26 @@ export default function SelectDice() {
 
     const handlePresetChange = (event: ChangeEvent<HTMLSelectElement>) => {
         setSelectedPreset(event.target.value);
+        // Remonta el <select> para que vuelva a mostrar el placeholder
+        // en vez de quedarse con la opción elegida.
+        setSelectKey((prevKey) => prevKey + 1);
     };
+
+    const selectedOption = PRESET_OPTIONS.find((option) => option.value === selectedPreset);
 
     return (
         <div className={styles.diceScene}>
             <div className={styles.diceScene__controls}>
                 <select
+                    key={selectKey}
                     className={styles.diceScene__select}
-                    value={selectedPreset}
+                    defaultValue=""
                     onChange={handlePresetChange}
                     aria-label="Select dice style"
                 >
+                    <option value="" disabled hidden>
+                        Selecciona tu dado
+                    </option>
                     <optgroup label="Básicos">
                         {PRESET_OPTIONS.filter((option) => option.group === "Básicos").map((option) => (
                             <option key={option.value} value={option.value}>
@@ -131,6 +141,11 @@ export default function SelectDice() {
                 </select>
             </div>
             <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
+            {selectedOption && (
+                <div className={styles.diceScene__status} style={{ textAlign: "center" }}>
+                    {selectedOption.label}
+                </div>
+            )}
         </div>
     );
 }
