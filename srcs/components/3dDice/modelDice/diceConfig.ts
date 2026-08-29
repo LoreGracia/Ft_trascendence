@@ -10,6 +10,7 @@ export interface DiceConfig {
     pipRadius?: number;
     faceOffset?: number;
     pipOffset?: number;
+    pipStyle?: "disc" | "ball";
     cornerRadius?: number;   // 0 = aristas vivas (cubo normal)
     cornerSegments?: number; // suavidad del redondeo (más = más caro)
 
@@ -35,8 +36,9 @@ export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
     pipRadius: 0.13,
     faceOffset: 1.02,
     pipOffset: 0.52,
-    cornerRadius: 0.12,
-    cornerSegments: 8,
+    pipStyle: "disc",
+    cornerRadius: 0.30,
+    cornerSegments: 12,
     bodyColor: new Color3(0.95, 0.95, 0.92),
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: new Color3(0.8, 0.08, 0.08),
@@ -54,8 +56,9 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
     pipRadius: 0.13,
     faceOffset: 1.02,
     pipOffset: 0.52,
-    cornerRadius: 0.12,
-    cornerSegments: 8,
+    pipStyle: "disc",
+    cornerRadius: 0.30,
+    cornerSegments: 12,
     bodyColor: new Color3(0.95, 0.95, 0.92),
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: undefined,
@@ -99,13 +102,24 @@ export const DICE_PRESETS = {
  * (emissiveColor) para diferenciarse claramente de los presets básicos.
  */
 export const DICE_LEGENDARY_PRESETS = {
+    // universe: {
+    //     ...DEFAULT_DICE_CONFIG,
+    //     bodyColor: new Color3(0.05, 0.03, 0.12),
+    //     pipColor: new Color3(0.85, 0.87, 0.95),
+    //     emissiveColor: new Color3(0.08, 0.04, 0.22),
+    //     cornerRadius: 0.18,
+    // },
     universe: {
         ...DEFAULT_DICE_CONFIG,
+
+        pipStyle: "ball",
+
         bodyColor: new Color3(0.05, 0.03, 0.12),
         pipColor: new Color3(0.85, 0.87, 0.95),
         emissiveColor: new Color3(0.08, 0.04, 0.22),
         cornerRadius: 0.18,
     },
+
     nature: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.16, 0.32, 0.14),
@@ -149,6 +163,7 @@ export const mergeDiceConfig = (
         pipRadius: custom.pipRadius ?? DEFAULT_DICE_CONFIG.pipRadius,
         faceOffset: custom.faceOffset ?? DEFAULT_DICE_CONFIG.faceOffset,
         pipOffset: custom.pipOffset ?? DEFAULT_DICE_CONFIG.pipOffset,
+        pipStyle: custom.pipStyle ?? DEFAULT_DICE_CONFIG.pipStyle,
         cornerRadius: custom.cornerRadius ?? DEFAULT_DICE_CONFIG.cornerRadius,
         cornerSegments: custom.cornerSegments ?? DEFAULT_DICE_CONFIG.cornerSegments,
         bodyColor: custom.bodyColor ?? DEFAULT_DICE_CONFIG.bodyColor,

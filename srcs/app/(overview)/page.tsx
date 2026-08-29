@@ -20,9 +20,10 @@ export default function Home() {
             <IndexDice />
             <SelectDice />
             <ThrowDice /> 
-            <SelectDice roomCode="test-room" />*/}
+            <SelectDice roomCode="test-room" />
+            <ThrowDice presetValue="default" roomCode="test-room" />*/}
+          <SelectDice roomCode="test-room" />
 
-          <ThrowDice presetValue="default" roomCode="test-room" />
         </section>
         <section className="column gap-8">
           <div className="row">
