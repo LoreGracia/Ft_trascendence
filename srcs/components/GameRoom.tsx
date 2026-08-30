@@ -65,25 +65,6 @@ useEffect(() => {
         </small>
       </p>
 
-      {/* {!waitingRoom && !matchRoom && (
-        <div style={{ border: '1px solid #444', padding: '15px', borderRadius: '8px' }}>
-          <h2>Unirse o Crear Sala</h2>
-          <button onClick={createRoom} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-            Crear Sala
-          </button>
-          <hr style={{ margin: '15px 0', borderColor: '#333' }} />
-          <input
-            placeholder="Código de sala"
-            value={roomCodeInput}
-            onChange={(e) => setRoomCodeInput(e.target.value)}
-            style={{ padding: '8px', marginRight: '10px' }}
-          />
-          <button onClick={joinRoom} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-            Unirse
-          </button>
-        </div>
-      )} */}
-
       {waitingRoom && !matchRoom && (
         <div style={{ border: '1px solid #00a8ff', padding: '15px', borderRadius: '8px' }}>
           <h2>

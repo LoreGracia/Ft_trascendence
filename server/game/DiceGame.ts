@@ -31,7 +31,7 @@ export function createMatch(gameType: GameType, room: WaitingRoom): MatchRoom {
 		player.state = "UNLOCKED";
 	return {
 		roomCode:	room.roomCode,
-		gameType:	gameType,
+		gameType:	room.gameType,
 		players:	newOrder,
 		dices:		[Dices.d6],
 		rolls:		[],

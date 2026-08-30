@@ -20,10 +20,6 @@ export default function Lobby( {roomCode} : Props ) {
 	<div>
     {/* <GameClient/> */}
     <GameRoom/>
-	  {/* <RoomCode roomCode={roomCode ?? ""} />
-	  <h2>Lobby</h2>
-	  <p>Aqui verias los ususrios en la misma room</p>
-    <ExitButton currentRoomCode={roomCode ?? ""}/> */}
 	</div>
 	
   )

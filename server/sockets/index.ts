@@ -32,8 +32,8 @@ io.on("connection", (socket: Socket) => {
 	console.log(`${socket.id} has accessed the server.`);
 
 	// Pantalla Inicial
-	socket.on("create_room", () => {
-		const newRoom = createWaitingRoom(socket.id);
+	socket.on("create_room", (gameType: GameType) => {
+		const newRoom = createWaitingRoom(socket.id, gameType);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
 		socket.emit("room_created", newRoom.roomCode);

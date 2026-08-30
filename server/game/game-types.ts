@@ -12,6 +12,7 @@ export interface WaitingRoom {
 	roomCode:	string;
 	players:	Players[];
 	state:		WaitingRoomStatus;
+	gameType:	GameType;
 }
 
 export enum Dices { 

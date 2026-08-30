@@ -12,6 +12,7 @@ const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string)
 };
 
 export function useGameSocket() {
+  const [gameType, setGameType] = useState<GameType>("FREE_PLAY");;
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
@@ -19,7 +20,7 @@ export function useGameSocket() {
   const [winnerMessage, setWinnerMessage] = useState('');
 
   const createRoom = useCallback(() => {
-    socket.emit('create_room');
+    socket.emit('create_room', gameType);
   }, []);
 
   const joinRoom = useCallback(() => {
@@ -129,6 +130,8 @@ export function useGameSocket() {
   return {
     roomCodeInput,
     setRoomCodeInput,
+    gameType,
+    setGameType,
     waitingRoom,
     matchRoom,
     lastRoll,

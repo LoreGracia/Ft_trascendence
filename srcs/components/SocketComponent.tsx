@@ -1,33 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { socket } from "@/lib/socket";
 import { Plus } from "lucide-react";
-import {
-  // createRoom,
-  // joinRoom,
-  // exitRoom,
-  changePlayerStatus,
-  startGame,
-  rollDice,
-  standPlayer,
-} from "@/services/room";
+import "@/components/Input/Input.css";
 
 import type {
-  Room,
-  MatchRoom,
-  LastRoll,
-  DiceRolledData,
-  MatchWonData,
   GameType,
 } from "@/types/game";
-// import { redirect } from "next/navigation";
 
 type CreateRoomButtonProps = {
   mode: GameType;
 };
 
-import { useRouter } from "next/navigation";
 import { useCreateRoom } from "@/hooks/useCreateRoom";
 
 export function CreateRoomButton({ mode }: CreateRoomButtonProps) {
@@ -83,20 +68,23 @@ export function JoinButton() {
 
   return (
     <div>
-      <input 
-      placeholder="Room code" 
-      value={roomCodeInput} 
-      onChange={(e) => setRoomCodeInput(e.target.value)} 
-      style={{ padding: "8px", marginRight: "10px" }}
-      />
-      <button
-      onClick={() => joinRoom(roomCodeInput)}
-      type="submit"
-      disabled={roomCodeInput? false: true}
-      className="button button-round bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
-      >
-        {isJoining ? "Uniéndose..." : "Join room"}
-      </button>
+      <div className="row">
+        <input 
+        placeholder="Code" 
+        maxLength={5}
+        value={roomCodeInput} 
+        onChange={(e) => setRoomCodeInput(e.target.value)} 
+        className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30"
+        />
+        <button
+        onClick={() => joinRoom(roomCodeInput)}
+        type="submit"
+        disabled={!roomCodeInput? true: false}
+        className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
+        >
+          {isJoining ? "Uniéndose..." : "Join room"}
+        </button>
+      </div>
       {error && <p>{error}</p>}
     </div>
   );

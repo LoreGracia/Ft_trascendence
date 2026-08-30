@@ -1,4 +1,4 @@
-import { WaitingRoom, Players, MatchRoom } from "./game-types";
+import { WaitingRoom, Players, MatchRoom, GameType } from "./game-types";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 
@@ -15,11 +15,12 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string): WaitingRoom {
+export function createWaitingRoom(playerId: string, gameType: GameType): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		players: [{ id:playerId, state:"UNLOCKED" }],
 		state: "OPEN",
+		gameType: gameType,
 	};
 	return room;
 }

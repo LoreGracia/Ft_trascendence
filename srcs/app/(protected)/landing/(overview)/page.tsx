@@ -13,17 +13,7 @@ export default function GameSelection() {
 
   return (
     <div className="container container-two">
-      <div className="box items-center"> 
         <LandingClient/>
-        {/* <ToggleModeButton
-          selected={selectedMode}
-          onChange={setSelectedMode}
-        />
-        <div className="flex flex-row gap-4 mt-5 text-base font-medium">
-          <CreateRoomButton mode={selectedMode} />
-          <JoinButton/>
-        </div> */}
-      </div>
 
       <div className="box items-center">
         <Image
