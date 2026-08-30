@@ -4,22 +4,18 @@ import {
     MeshBuilder,
     Scene,
     StandardMaterial,
+    Texture,
     TransformNode,
 } from "@babylonjs/core";
 import { DiceConfig } from "../modelDice/diceConfig";
+import { createFaceIcon } from "./faceIconFactory";
 
 export interface PipsResult {
     pipMeshes: Mesh[];
     overridePipMaterials: StandardMaterial[];
+    pipTextures: Texture[];
 }
 
-/**
- * Crea un único pip (disco o esfera, según config.pipStyle), posicionado
- * y orientado sobre la cara correspondiente del dado.
- *
- * Punto único donde añadir nuevos estilos de pip: solo hace falta un
- * nuevo caso en el if/else de geometría, sin tocar diceFactory.ts.
- */
 const createPip = (
     scene: Scene,
     root: TransformNode,
@@ -75,11 +71,55 @@ const createPip = (
     return pip;
 };
 
+type AddPipFn = (x: number, y: number, z: number, colorOverride?: Color3) => void;
+type FacePipBuilder = (addPip: AddPipFn, faceOffset: number, pipOffset: number, color?: Color3) => void;
+
+// Cada función construye el patrón de pips de UNA cara (1-6). Separarlas
+// permite que el orquestador (createDicePips) sustituya cualquiera de
+// ellas por un icono/emoji sin tocar las demás.
+const FACE_PIP_BUILDERS: Record<number, FacePipBuilder> = {
+    1: (addPip, faceOffset, _pipOffset, color) => {
+        addPip(0, 0, faceOffset, color);
+    },
+    6: (addPip, faceOffset, pipOffset, color) => {
+        addPip(-pipOffset, pipOffset, -faceOffset, color);
+        addPip(pipOffset, pipOffset, -faceOffset, color);
+        addPip(-pipOffset, 0, -faceOffset, color);
+        addPip(pipOffset, 0, -faceOffset, color);
+        addPip(-pipOffset, -pipOffset, -faceOffset, color);
+        addPip(pipOffset, -pipOffset, -faceOffset, color);
+    },
+    2: (addPip, faceOffset, pipOffset, color) => {
+        addPip(faceOffset, pipOffset, -pipOffset, color);
+        addPip(faceOffset, -pipOffset, pipOffset, color);
+    },
+    5: (addPip, faceOffset, pipOffset, color) => {
+        addPip(-faceOffset, pipOffset, -pipOffset, color);
+        addPip(-faceOffset, pipOffset, pipOffset, color);
+        addPip(-faceOffset, 0, 0, color);
+        addPip(-faceOffset, -pipOffset, -pipOffset, color);
+        addPip(-faceOffset, -pipOffset, pipOffset, color);
+    },
+    3: (addPip, faceOffset, pipOffset, color) => {
+        addPip(-pipOffset, faceOffset, -pipOffset, color);
+        addPip(0, faceOffset, 0, color);
+        addPip(pipOffset, faceOffset, pipOffset, color);
+    },
+    4: (addPip, faceOffset, pipOffset, color) => {
+        addPip(-pipOffset, -faceOffset, -pipOffset, color);
+        addPip(pipOffset, -faceOffset, -pipOffset, color);
+        addPip(-pipOffset, -faceOffset, pipOffset, color);
+        addPip(pipOffset, -faceOffset, pipOffset, color);
+    },
+};
+
+const FACE_ORDER = [1, 6, 2, 5, 3, 4]; // mismo orden que tenía el archivo original
+
 /**
- * Genera los 21 pips de un dado d6 estándar (una posición por cara),
- * respetando el pipStyle y el color especial del primer pip. Devuelve
- * tanto las mallas como los materiales "override" creados para pips
- * con color propio, para que el caller pueda hacer dispose() de todo.
+ * Genera las 6 caras de un dado d6: para cada una, o bien los pips
+ * estándar (respetando pipStyle y color por cara vía facePipColors), o
+ * bien, si config.faceIcons trae una entrada para esa cara, un único
+ * plano con imagen/emoji que sustituye a los pips de esa cara entera.
  */
 export const createDicePips = (
     scene: Scene,
@@ -90,16 +130,17 @@ export const createDicePips = (
 ): PipsResult => {
     const pipMeshes: Mesh[] = [];
     const overridePipMaterials: StandardMaterial[] = [];
+    const pipTextures: Texture[] = [];
     let pipIndex = 0;
 
-    const addPip = (x: number, y: number, z: number, pipColorOverride?: Color3) => {
-        const pipMaterialToUse = pipColorOverride
+    const addPip: AddPipFn = (x, y, z, colorOverride) => {
+        const pipMaterialToUse = colorOverride
             ? (() => {
                 const specialMaterial = new StandardMaterial(
                     `${instanceName}_pipMaterial_${pipIndex}`,
                     scene
                 );
-                specialMaterial.diffuseColor = pipColorOverride;
+                specialMaterial.diffuseColor = colorOverride;
                 specialMaterial.backFaceCulling = false;
                 overridePipMaterials.push(specialMaterial);
                 return specialMaterial;
@@ -110,40 +151,32 @@ export const createDicePips = (
         pipMeshes.push(pip);
     };
 
-    const { faceOffset, pipOffset, firstPipColor } = config;
+    const { faceOffset, pipOffset, firstPipColor, facePipColors, faceIcons } = config;
 
-    // FACE 1
-    addPip(0, 0, faceOffset, firstPipColor);
+    const faceColor = (faceValue: number, fallback?: Color3) =>
+        facePipColors?.[faceValue - 1] ?? fallback;
 
-    // FACE 6
-    addPip(-pipOffset, pipOffset, -faceOffset);
-    addPip(pipOffset, pipOffset, -faceOffset);
-    addPip(-pipOffset, 0, -faceOffset);
-    addPip(pipOffset, 0, -faceOffset);
-    addPip(-pipOffset, -pipOffset, -faceOffset);
-    addPip(pipOffset, -pipOffset, -faceOffset);
+    for (const faceNumber of FACE_ORDER) {
+        const icon = faceIcons?.[faceNumber];
 
-    // FACE 2
-    addPip(faceOffset, pipOffset, -pipOffset);
-    addPip(faceOffset, -pipOffset, pipOffset);
+        if (icon) {
+            const { mesh, material, texture } = createFaceIcon(
+                scene,
+                root,
+                config,
+                instanceName,
+                faceNumber,
+                icon
+            );
+            pipMeshes.push(mesh);
+            overridePipMaterials.push(material);
+            pipTextures.push(texture as Texture);
+            continue;
+        }
 
-    // FACE 5
-    addPip(-faceOffset, pipOffset, -pipOffset);
-    addPip(-faceOffset, pipOffset, pipOffset);
-    addPip(-faceOffset, 0, 0);
-    addPip(-faceOffset, -pipOffset, -pipOffset);
-    addPip(-faceOffset, -pipOffset, pipOffset);
+        const fallbackColor = faceNumber === 1 ? firstPipColor : undefined;
+        FACE_PIP_BUILDERS[faceNumber](addPip, faceOffset, pipOffset, faceColor(faceNumber, fallbackColor));
+    }
 
-    // FACE 3
-    addPip(-pipOffset, faceOffset, -pipOffset);
-    addPip(0, faceOffset, 0);
-    addPip(pipOffset, faceOffset, pipOffset);
-
-    // FACE 4
-    addPip(-pipOffset, -faceOffset, -pipOffset);
-    addPip(pipOffset, -faceOffset, -pipOffset);
-    addPip(-pipOffset, -faceOffset, pipOffset);
-    addPip(pipOffset, -faceOffset, pipOffset);
-
-    return { pipMeshes, overridePipMaterials };
+    return { pipMeshes, overridePipMaterials, pipTextures };
 };

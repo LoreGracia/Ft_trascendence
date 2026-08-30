@@ -1,6 +1,14 @@
 import { Color3, Vector3 } from "@babylonjs/core";
 
 /**
+ * Un icono que sustituye los pips de una cara entera: imagen de archivo
+ * (con transparencia) o un emoji renderizado en una textura generada.
+ */
+export type FaceIcon =
+    | { type: "image"; src: string }
+    | { type: "emoji"; char: string };
+
+/**
  * Configuración personalizable para un dado 3D.
  * Todos los valores tienen defaults sensatos.
  */
@@ -19,6 +27,9 @@ export interface DiceConfig {
     bodyTexture?: string;
     pipColor?: Color3;
     firstPipColor?: Color3;
+    facePipColors?: Color3[]; // índice 0 = cara 1 ... índice 5 = cara 6
+    faceIcons?: Partial<Record<number, FaceIcon>>; // clave = número de cara (1-6)
+    faceIconSize?: number; // tamaño del plano del icono, relativo a "size" (0..1)
     emissiveColor?: Color3;
 
     // Posición y orientación inicial
@@ -46,6 +57,9 @@ export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
 
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: new Color3(0.8, 0.08, 0.08),
+    facePipColors: undefined,
+    faceIcons: undefined,
+    faceIconSize: 0.8,
     emissiveColor: new Color3(0, 0, 0),
 
     position: Vector3.Zero(),
@@ -70,6 +84,9 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
 
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: undefined,
+    facePipColors: undefined,
+    faceIcons: undefined,
+    faceIconSize: 0.8,
     emissiveColor: new Color3(0, 0, 0),
 
     position: Vector3.Zero(),
@@ -81,7 +98,12 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
  * Presets para dados personalizados comunes.
  */
 export const DICE_PRESETS = {
-    default: DEFAULT_DICE_CONFIG,
+    default: {
+        ...DEFAULT_DICE_CONFIG,
+        faceIcons: {
+            1: { type: "emoji", char: "🃏" },
+        },
+    },
 
     redDice: {
         ...DEFAULT_DICE_CONFIG,
@@ -124,16 +146,25 @@ export const DICE_LEGENDARY_PRESETS = {
 
         pipColor: new Color3(0.85, 0.87, 0.95),
         emissiveColor: new Color3(0, 0, 0),
-        //  emissiveColor: new Color3(0.08, 0.04, 0.22),
         cornerRadius: 0.18,
     },
 
-    nature: {
+    pride: {
         ...DEFAULT_DICE_CONFIG,
-        bodyColor: new Color3(0.16, 0.32, 0.14),
-        pipColor: new Color3(0.86, 0.78, 0.6),
+        pipStyle: "ball",
+        bodyColor: new Color3(0.92, 0.92, 0.92),
         emissiveColor: new Color3(0, 0, 0),
-        cornerRadius: 0.3,
+        cornerRadius: 0.42, // cuerpo blando: muy redondeado, por debajo del
+        // límite seguro para pipOffset (0.52) que ya
+        // vimos que evita que los pips asomen
+        facePipColors: [
+            new Color3(0.9, 0.15, 0.15),  // cara 1 — rojo
+            new Color3(0.95, 0.55, 0.1),  // cara 2 — naranja
+            new Color3(0.95, 0.85, 0.15), // cara 3 — amarillo
+            new Color3(0.15, 0.75, 0.3),  // cara 4 — verde
+            new Color3(0.15, 0.4, 0.9),   // cara 5 — azul
+            new Color3(0.55, 0.15, 0.75), // cara 6 — violeta
+        ],
     },
 
     magician: {
@@ -193,6 +224,15 @@ export const mergeDiceConfig = (
 
         firstPipColor:
             custom.firstPipColor ?? DEFAULT_DICE_CONFIG.firstPipColor,
+
+        facePipColors:
+            custom.facePipColors ?? DEFAULT_DICE_CONFIG.facePipColors,
+
+        faceIcons:
+            custom.faceIcons ?? DEFAULT_DICE_CONFIG.faceIcons,
+
+        faceIconSize:
+            custom.faceIconSize ?? DEFAULT_DICE_CONFIG.faceIconSize,
 
         emissiveColor:
             custom.emissiveColor ?? DEFAULT_DICE_CONFIG.emissiveColor,

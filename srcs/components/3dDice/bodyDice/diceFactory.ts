@@ -67,6 +67,8 @@ export const createDiceInstance = (
 
     let overridePipMaterials: StandardMaterial[] = [];
 
+    let pipTextures: Texture[] = [];
+
     let userConfig: Partial<DiceConfig> = {
         ...config,
     };
@@ -179,6 +181,9 @@ export const createDiceInstance = (
         overridePipMaterials.forEach((material) => material.dispose());
         overridePipMaterials = [];
 
+        pipTextures.forEach((texture) => texture.dispose());
+        pipTextures = [];
+
         // ------------------------------------
         // BODY
         // ------------------------------------
@@ -200,11 +205,15 @@ export const createDiceInstance = (
         // PIPS
         // ------------------------------------
 
-        const { pipMeshes: newPipMeshes, overridePipMaterials: newOverrideMaterials } =
-            createDicePips(scene, root, pipMaterial, resolvedConfig, instanceName);
+        const {
+            pipMeshes: newPipMeshes,
+            overridePipMaterials: newOverrideMaterials,
+            pipTextures: newPipTextures,
+        } = createDicePips(scene, root, pipMaterial, resolvedConfig, instanceName);
 
         pipMeshes = newPipMeshes;
         overridePipMaterials = newOverrideMaterials;
+        pipTextures = newPipTextures;
     };
 
     // ----------------------------------------
@@ -254,6 +263,7 @@ export const createDiceInstance = (
             bodyMesh?.dispose();
             pipMeshes.forEach((pipMesh) => pipMesh.dispose());
             overridePipMaterials.forEach((material) => material.dispose());
+            pipTextures.forEach((texture) => texture.dispose());
 
             if (bodyTexture) {
                 bodyTexture.dispose();
