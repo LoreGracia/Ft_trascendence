@@ -12,7 +12,7 @@ import {
 } from "@babylonjs/core";
 import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
 import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
-import { INDEX_DICE_CONFIG } from "@/components/3dDice/modelDice/diceConfig";
+import { INDEX_DICE_CONFIG } from "@/components/3dDice/modelDice/modelDice";
 import styles from "./DiceScene.module.css";
 
 export default function IndexDice() {
@@ -56,12 +56,13 @@ export default function IndexDice() {
 
         const dice = createDiceInstance(scene, {
             ...INDEX_DICE_CONFIG,
-            size: 2.2,
             position: new Vector3(0, 0, 0),
             rotation: Vector3.Zero(),
             visible: true,
         });
         rootRef.current = dice.root;
+
+        const randomResult = Math.floor(Math.random() * 6) + 1;
 
         animateDiceFlight(scene, dice.root, {
             startPosition: new Vector3(-8, 1.5, 0),
@@ -69,7 +70,7 @@ export default function IndexDice() {
             jumpHeight: 2.1,
             durationInFrames: 150,
             rotations: 4,
-            result: 1,
+            result: randomResult,
         });
 
         engine.runRenderLoop(() => {

@@ -1,14 +1,20 @@
 import {
     Color3,
     Mesh,
-    MeshBuilder,
     Scene,
     StandardMaterial,
+    Texture,
     TransformNode,
 } from "@babylonjs/core";
-import { DiceConfig, mergeDiceConfig } from "../modelDice/diceConfig";
+
+import {
+    DiceConfig,
+    mergeDiceConfig,
+} from "../modelDice/diceConfig";
+
 import { createRoundedBox } from "./roundedBox";
 import { createSoftBox } from "./softBox";
+import { createDicePips } from "./pipFactory";
 
 export interface DiceInstance {
     root: TransformNode;
@@ -22,68 +28,148 @@ export interface DiceInstance {
 
 let diceInstanceCounter = 0;
 
-const createDiceMaterials = (scene: Scene, instanceName: string, config: Required<DiceConfig>) => {
-    const bodyMaterial = new StandardMaterial(`${instanceName}_bodyMaterial`, scene);
-    bodyMaterial.diffuseColor = config.bodyColor;
-    bodyMaterial.emissiveColor = config.emissiveColor;
-
-    const pipMaterial = new StandardMaterial(`${instanceName}_pipMaterial`, scene);
-    pipMaterial.diffuseColor = config.pipColor;
-    pipMaterial.backFaceCulling = false;
-
-    return { bodyMaterial, pipMaterial };
-};
-
-const createPip = (
+export const createDiceInstance = (
     scene: Scene,
-    root: TransformNode,
-    pipMaterial: StandardMaterial,
-    config: Required<DiceConfig>,
-    instanceName: string,
-    pipIndex: number,
-    x: number,
-    y: number,
-    z: number
-) => {
-    const pip = MeshBuilder.CreateDisc(
-        `${instanceName}_pip_${pipIndex}`,
-        { radius: config.pipRadius, tessellation: 32, sideOrientation: Mesh.DOUBLESIDE },
+    config?: Partial<DiceConfig>
+): DiceInstance => {
+
+    const instanceName = `dice_${++diceInstanceCounter}`;
+
+    const root = new TransformNode(
+        `${instanceName}_root`,
         scene
     );
 
-    pip.position.set(x, y, z);
-    pip.material = pipMaterial;
+    // ----------------------------------------
+    // MATERIALS
+    // ----------------------------------------
 
-    if (Math.abs(Math.abs(z) - config.faceOffset) < 0.001) {
-        pip.rotation.y = z > 0 ? 0 : Math.PI;
-    } else if (Math.abs(Math.abs(x) - config.faceOffset) < 0.001) {
-        pip.rotation.y = x > 0 ? Math.PI / 2 : -Math.PI / 2;
-    } else if (Math.abs(Math.abs(y) - config.faceOffset) < 0.001) {
-        pip.rotation.x = y > 0 ? -Math.PI / 2 : Math.PI / 2;
-    }
+    const bodyMaterial = new StandardMaterial(
+        `${instanceName}_bodyMaterial`,
+        scene
+    );
 
-    pip.parent = root;
-    return pip;
-};
+    const pipMaterial = new StandardMaterial(
+        `${instanceName}_pipMaterial`,
+        scene
+    );
 
-export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): DiceInstance => {
-    const instanceName = `dice_${++diceInstanceCounter}`;
-    const root = new TransformNode(`${instanceName}_root`, scene);
-
-    const bodyMaterial = new StandardMaterial(`${instanceName}_bodyMaterial`, scene);
-    const pipMaterial = new StandardMaterial(`${instanceName}_pipMaterial`, scene);
     pipMaterial.backFaceCulling = false;
 
+    let bodyTexture: Texture | null = null;
+
+    // ----------------------------------------
+    // STATE
+    // ----------------------------------------
+
     let bodyMesh: Mesh | null = null;
+
     let pipMeshes: Mesh[] = [];
-    let userConfig: Partial<DiceConfig> = { ...config };
+
+    let overridePipMaterials: StandardMaterial[] = [];
+
+    let pipTextures: Texture[] = [];
+
+    let userConfig: Partial<DiceConfig> = {
+        ...config,
+    };
+
     let resolvedConfig = mergeDiceConfig(userConfig);
 
+    // ----------------------------------------
+    // DEBUG CONFIG
+    // ----------------------------------------
+
+    console.log("🌌 CONFIG DADO", resolvedConfig);
+
+    // ----------------------------------------
+    // MATERIAL SYNC
+    // ----------------------------------------
+
     const syncMaterials = () => {
-        bodyMaterial.diffuseColor = resolvedConfig.bodyColor;
-        bodyMaterial.emissiveColor = resolvedConfig.emissiveColor;
+
+        console.log("🎲 DICE MATERIAL", {
+            bodyTexture: resolvedConfig.bodyTexture,
+            bodyColor: resolvedConfig.bodyColor,
+            pipStyle: resolvedConfig.pipStyle,
+        });
+
+        // ----------------------------------------
+        // BODY TEXTURE
+        // ----------------------------------------
+
+        if (bodyTexture) {
+            bodyTexture.dispose();
+            bodyTexture = null;
+        }
+
+        if (resolvedConfig.bodyTexture) {
+
+            console.log(
+                "🌌 CARGANDO TEXTURA:",
+                resolvedConfig.bodyTexture
+            );
+
+            bodyTexture = new Texture(
+                resolvedConfig.bodyTexture,
+                scene,
+                true,
+                false,
+                Texture.TRILINEAR_SAMPLINGMODE,
+                () => {
+                    console.log(
+                        "✅ TEXTURA CARGADA:",
+                        resolvedConfig.bodyTexture
+                    );
+                },
+                (message) => {
+                    console.error(
+                        "❌ ERROR CARGANDO TEXTURA:",
+                        resolvedConfig.bodyTexture,
+                        message
+                    );
+                }
+            );
+
+            bodyMaterial.diffuseTexture = bodyTexture;
+
+            bodyMaterial.diffuseColor = new Color3(1, 1, 1);
+            bodyMaterial.emissiveColor = new Color3(0, 0, 0);
+
+        } else {
+
+            console.log(
+                "🎨 DADO SIN TEXTURA, USANDO COLOR:",
+                resolvedConfig.bodyColor
+            );
+
+            bodyMaterial.diffuseTexture = null;
+            bodyMaterial.diffuseColor = resolvedConfig.bodyColor;
+            bodyMaterial.emissiveColor = resolvedConfig.emissiveColor;
+
+            bodyMaterial.alpha = resolvedConfig.bodyAlpha;
+
+            if (resolvedConfig.bodyAlpha < 1) {
+                bodyMaterial.transparencyMode = 2;
+            }
+        }
+
+        // ----------------------------------------
+        // PIPS
+        // ----------------------------------------
+
         pipMaterial.diffuseColor = resolvedConfig.pipColor;
+        pipMaterial.emissiveColor = resolvedConfig.pipColor;
+        pipMaterial.alpha = resolvedConfig.pipAlpha;
+
+        if (resolvedConfig.pipAlpha < 1) {
+            pipMaterial.transparencyMode = 2;
+        }
     };
+
+    // ----------------------------------------
+    // TRANSFORM SYNC
+    // ----------------------------------------
 
     const syncTransform = () => {
         root.position.copyFrom(resolvedConfig.position);
@@ -91,7 +177,12 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
         root.setEnabled(resolvedConfig.visible);
     };
 
+    // ----------------------------------------
+    // GEOMETRY
+    // ----------------------------------------
+
     const rebuildGeometry = () => {
+
         if (bodyMesh) {
             bodyMesh.dispose();
             bodyMesh = null;
@@ -122,36 +213,47 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
             );
             pipMeshes.push(pip);
         };
+        overridePipMaterials.forEach((material) => material.dispose());
+        overridePipMaterials = [];
 
-        const { faceOffset, pipOffset } = resolvedConfig;
+        pipTextures.forEach((texture) => texture.dispose());
+        pipTextures = [];
 
-        addPip(0, 0, faceOffset);
+        // ------------------------------------
+        // BODY
+        // ------------------------------------
 
-        addPip(-pipOffset, pipOffset, -faceOffset);
-        addPip(pipOffset, pipOffset, -faceOffset);
-        addPip(-pipOffset, 0, -faceOffset);
-        addPip(pipOffset, 0, -faceOffset);
-        addPip(-pipOffset, -pipOffset, -faceOffset);
-        addPip(pipOffset, -pipOffset, -faceOffset);
+        bodyMesh = createRoundedBox(
+            `${instanceName}_body`,
+            scene,
+            {
+                size: resolvedConfig.size,
+                cornerRadius: resolvedConfig.cornerRadius,
+                cornerSegments: resolvedConfig.cornerSegments,
+            }
+        );
 
-        addPip(faceOffset, pipOffset, -pipOffset);
-        addPip(faceOffset, -pipOffset, pipOffset);
+        bodyMesh.parent = root;
+        bodyMesh.material = bodyMaterial;
 
-        addPip(-faceOffset, pipOffset, -pipOffset);
-        addPip(-faceOffset, pipOffset, pipOffset);
-        addPip(-faceOffset, 0, 0);
-        addPip(-faceOffset, -pipOffset, -pipOffset);
-        addPip(-faceOffset, -pipOffset, pipOffset);
+        // ------------------------------------
+        // PIPS
+        // ------------------------------------
 
-        addPip(-pipOffset, faceOffset, -pipOffset);
-        addPip(0, faceOffset, 0);
-        addPip(pipOffset, faceOffset, pipOffset);
+        const {
+            pipMeshes: newPipMeshes,
+            overridePipMaterials: newOverrideMaterials,
+            pipTextures: newPipTextures,
+        } = createDicePips(scene, root, pipMaterial, resolvedConfig, instanceName);
 
-        addPip(-pipOffset, -faceOffset, -pipOffset);
-        addPip(pipOffset, -faceOffset, -pipOffset);
-        addPip(-pipOffset, -faceOffset, pipOffset);
-        addPip(pipOffset, -faceOffset, pipOffset);
+        pipMeshes = newPipMeshes;
+        overridePipMaterials = newOverrideMaterials;
+        pipTextures = newPipTextures;
     };
+
+    // ----------------------------------------
+    // SYNC
+    // ----------------------------------------
 
     const syncInstance = () => {
         syncMaterials();
@@ -161,28 +263,48 @@ export const createDiceInstance = (scene: Scene, config?: Partial<DiceConfig>): 
 
     syncInstance();
 
+    // ----------------------------------------
+    // INSTANCE API
+    // ----------------------------------------
+
     return {
+
         root,
+
         get bodyMesh() {
             return bodyMesh as Mesh;
         },
+
         get bodyMaterial() {
             return bodyMaterial;
         },
+
         get pipMaterial() {
             return pipMaterial;
         },
+
         get config() {
             return resolvedConfig;
         },
+
         updateConfig(next: Partial<DiceConfig>) {
             userConfig = { ...userConfig, ...next };
             resolvedConfig = mergeDiceConfig(userConfig);
+            console.log("🔄 CONFIG ACTUALIZADA", resolvedConfig);
             syncInstance();
         },
+
         dispose() {
             bodyMesh?.dispose();
             pipMeshes.forEach((pipMesh) => pipMesh.dispose());
+            overridePipMaterials.forEach((material) => material.dispose());
+            pipTextures.forEach((texture) => texture.dispose());
+
+            if (bodyTexture) {
+                bodyTexture.dispose();
+                bodyTexture = null;
+            }
+
             bodyMaterial.dispose();
             pipMaterial.dispose();
             root.dispose();
