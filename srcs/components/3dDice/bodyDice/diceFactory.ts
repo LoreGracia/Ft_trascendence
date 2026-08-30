@@ -145,6 +145,12 @@ export const createDiceInstance = (
             bodyMaterial.diffuseTexture = null;
             bodyMaterial.diffuseColor = resolvedConfig.bodyColor;
             bodyMaterial.emissiveColor = resolvedConfig.emissiveColor;
+
+            bodyMaterial.alpha = resolvedConfig.bodyAlpha;
+
+            if (resolvedConfig.bodyAlpha < 1) {
+                bodyMaterial.transparencyMode = 2;
+            }
         }
 
         // ----------------------------------------
@@ -152,6 +158,12 @@ export const createDiceInstance = (
         // ----------------------------------------
 
         pipMaterial.diffuseColor = resolvedConfig.pipColor;
+        pipMaterial.emissiveColor = resolvedConfig.pipColor;
+        pipMaterial.alpha = resolvedConfig.pipAlpha;
+
+        if (resolvedConfig.pipAlpha < 1) {
+            pipMaterial.transparencyMode = 2;
+        }
     };
 
     // ----------------------------------------

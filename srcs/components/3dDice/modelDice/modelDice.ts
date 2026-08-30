@@ -42,7 +42,8 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
 
     bodyColor: new Color3(0.95, 0.95, 0.92),
     bodyTexture: undefined,
-
+    bodyAlpha: 1.0,
+    pipAlpha: 1.0,
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: undefined,
     facePipColors: undefined,
@@ -125,11 +126,34 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         ],
     },
 
+    // magician: {
+    //     ...DEFAULT_DICE_CONFIG,
+
+    //     bodyColor: new Color3(0.025, 0.002, 0.08),
+    //     bodyAlpha: 0.88,
+
+    //     pipColor: new Color3(0.95, 1.0, 0.0),
+    //     pipAlpha: 1.0,
+
+    //     emissiveColor: new Color3(0.85, 0.01, 1.0),
+
+    //     cornerRadius: 0.16,
+    // },
+
     magician: {
         ...DEFAULT_DICE_CONFIG,
-        bodyColor: new Color3(0.28, 0.05, 0.42),
-        pipColor: new Color3(0.85, 0.68, 0.15),
-        emissiveColor: new Color3(0.18, 0.02, 0.28),
+
+        // Cuerpo: violeta muy oscuro
+        bodyColor: new Color3(157, 0, 255),
+        bodyAlpha: 0.88,
+
+        // Pips: amarillo limón fluorescente
+        pipColor: new Color3(0.85, 1.0, 0.02),
+        pipAlpha: 1.0,
+
+        // Luz interior: violeta intenso
+        emissiveColor: new Color3(0.75, 0.01, 1.0),
+
         cornerRadius: 0.16,
     },
 

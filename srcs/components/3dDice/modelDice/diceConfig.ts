@@ -26,6 +26,8 @@ export interface DiceConfig {
     // Apariencia
     bodyColor?: Color3;
     bodyTexture?: string;
+    bodyAlpha?: number;
+    pipAlpha?: number;
     pipColor?: Color3;
     firstPipColor?: Color3;
     facePipColors?: Color3[]; // índice 0 = cara 1 ... índice 5 = cara 6
@@ -67,7 +69,10 @@ export const mergeDiceConfig = (
 
         bodyTexture:
             custom.bodyTexture ?? DEFAULT_DICE_CONFIG.bodyTexture,
-
+        bodyAlpha:
+            custom.bodyAlpha ?? DEFAULT_DICE_CONFIG.bodyAlpha,
+        pipAlpha:
+            custom.pipAlpha ?? DEFAULT_DICE_CONFIG.pipAlpha,
         pipColor:
             custom.pipColor ?? DEFAULT_DICE_CONFIG.pipColor,
 
