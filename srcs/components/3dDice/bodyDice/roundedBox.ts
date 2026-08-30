@@ -27,6 +27,7 @@ const FACES: FaceAxes[] = [
 const addFace = (
     positions: number[],
     indices: number[],
+    uvs: number[],
     face: FaceAxes,
     halfSize: number,
     segments: number
@@ -43,14 +44,15 @@ const addFace = (
                 face.normal.y * halfSize + face.u.y * u * halfSize + face.v.y * v * halfSize,
                 face.normal.z * halfSize + face.u.z * u * halfSize + face.v.z * v * halfSize
             );
+            // UV 0..1 por cara — necesario para que cualquier textura
+            // (bodyTexture) se pueda mapear sobre la geometría custom.
+            // MeshBuilder.CreateBox generaba esto automáticamente; al
+            // construir la malla a mano con VertexData hay que hacerlo
+            // explícitamente, o el material solo muestrea un color plano.
+            uvs.push(ix / segments, iy / segments);
         }
     }
 
-    // Comprueba una vez por cara hacia qué lado queda el triángulo con el
-    // orden de índices "por defecto", y elige el sentido de bobinado que
-    // apunte hacia fuera. Así no hace falta adivinar a mano el winding
-    // correcto para cada una de las 6 caras (fácil de equivocarse y dejar
-    // el dado invisible o mal iluminado).
     const i0 = base;
     const i1 = base + 1;
     const i2 = base + row;
@@ -83,13 +85,6 @@ const addFace = (
     }
 };
 
-/**
- * Crea una caja con aristas/esquinas redondeadas, con el centro de cada
- * cara perfectamente plano (mismo faceOffset de siempre). A diferencia de
- * MeshBuilder.CreateBox (solo 8 vértices, sin geometría intermedia que
- * curvar), esta caja se subdivide en una rejilla por cara; solo se curvan
- * los vértices que caen fuera de la "caja interior" (halfSize - cornerRadius).
- */
 export const createRoundedBox = (
     name: string,
     scene: Scene,
@@ -102,8 +97,9 @@ export const createRoundedBox = (
 
     const positions: number[] = [];
     const indices: number[] = [];
+    const uvs: number[] = [];
 
-    FACES.forEach((face) => addFace(positions, indices, face, halfSize, segments));
+    FACES.forEach((face) => addFace(positions, indices, uvs, face, halfSize, segments));
 
     if (radius > 0) {
         for (let i = 0; i < positions.length; i += 3) {
@@ -136,6 +132,7 @@ export const createRoundedBox = (
     vertexData.positions = positions;
     vertexData.indices = indices;
     vertexData.normals = normals;
+    vertexData.uvs = uvs;
 
     const mesh = new Mesh(name, scene);
     vertexData.applyToMesh(mesh, true);
