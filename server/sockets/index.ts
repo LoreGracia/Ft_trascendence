@@ -3,12 +3,16 @@ import http from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
 import { MatchRoom, WaitingRoom, RollResult, GameType } from "../game/game-types";
-import { createMatch, generateRoll, isPlayerTurn, 
-			isGameWon, isPlayerBusted } from "../game/DiceGame";
-import { createWaitingRoom,	addPlayerToRoom, exitRoom, 
-			closeRoom, validateLockedPlayers, changePlayerStatus,
-			advanceToUnlocked, exitMatchRoom, clearTurnTimeout, 
-			resetTurnTimeout } from "../game/RoomManager"
+import {
+	createMatch, generateRoll, isPlayerTurn,
+	isGameWon, isPlayerBusted
+} from "../game/DiceGame";
+import {
+	createWaitingRoom, addPlayerToRoom, exitRoom,
+	closeRoom, validateLockedPlayers, changePlayerStatus,
+	advanceToUnlocked, exitMatchRoom, clearTurnTimeout,
+	resetTurnTimeout
+} from "../game/RoomManager"
 
 const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
@@ -19,7 +23,7 @@ app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-	cors: { 
+	cors: {
 		origin: "http://localhost:3000",
 		methods: ["GET", "POST"],
 	},
@@ -38,7 +42,7 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("join_room", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
-		if(room) {
+		if (room) {
 			if (!addPlayerToRoom(socket.id, room))
 				socket.emit("join_error");
 			else {
@@ -85,6 +89,8 @@ io.on("connection", (socket: Socket) => {
 		else
 			console.log("Room no longer exists.")
 	});
+
+	socket.on("info_room", (roomCode: string) =>)
 
 	socket.on("start_game", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
@@ -142,7 +148,7 @@ io.on("connection", (socket: Socket) => {
 			io.to(roomCode).emit("dice_rolled", { match, roll });
 			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
 			return;
-		} 
+		}
 		advanceToUnlocked(match);
 		io.to(roomCode).emit("dice_rolled", { match, roll });
 		resetTurnTimeout(io, match.roomCode);
@@ -156,7 +162,7 @@ io.on("connection", (socket: Socket) => {
 				break;
 			}
 		}
-	});	
+	});
 });
 
 server.listen(3001, () => {
