@@ -2,17 +2,29 @@ import express from "express";
 import http from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
-import { MatchRoom, WaitingRoom, RollResult, GameType } from "../game/game-types";
 import {
-	createMatch, generateRoll, isPlayerTurn,
-	isGameWon, isPlayerBusted
+	MatchRoom,
+	WaitingRoom,
+	RollResult,
+	GameType
+} from "../game/GameTypes";
+import {
+	generateRoll,
+	isPlayerTurn,
 } from "../game/DiceGame";
 import {
-	createWaitingRoom, addPlayerToRoom, exitRoom,
-	closeRoom, validateLockedPlayers, changePlayerStatus,
-	advanceToUnlocked, exitMatchRoom, clearTurnTimeout,
+	createWaitingRoom,
+	addPlayerToRoom,
+	exitRoom,
+	closeRoom,
+	validateLockedPlayers,
+	changePlayerStatus,
+	advanceToUnlocked,
+	exitMatchRoom,
+	clearTurnTimeout,
 	resetTurnTimeout
-} from "../game/RoomManager"
+} from "../game/RoomManager";
+import { getGameFactory } from "../game/Product";
 
 const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
@@ -90,13 +102,12 @@ io.on("connection", (socket: Socket) => {
 			console.log("Room no longer exists.")
 	});
 
-	socket.on("info_room", (roomCode: string) =>)
-
 	socket.on("start_game", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
-				const newMatch = createMatch(room);
+				const factory = getGameFactory(room.gameType);
+				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);
 				io.to(roomCode).emit("game_started", newMatch)
 				waitingRooms.delete(roomCode);
@@ -115,7 +126,7 @@ io.on("connection", (socket: Socket) => {
 		if (match) {
 			changePlayerStatus(match, socket.id);
 			io.to(roomCode).emit("player_status_changed", match);
-			if (isGameWon(match)) {
+			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
 				matchRooms.delete(roomCode);
 				io.to(roomCode).emit("match_won", { match });
@@ -140,9 +151,10 @@ io.on("connection", (socket: Socket) => {
 		}
 		const roll: RollResult = generateRoll(match, socket.id);
 		match.rolls.push(roll);
-		if (match.gameType == "ADD42")
-			isPlayerBusted(match, socket.id);
-		if (isGameWon(match)) {
+
+		match.rules.evaluateRoll(match, socket.id);
+
+		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
 			matchRooms.delete(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match, roll });
@@ -154,7 +166,7 @@ io.on("connection", (socket: Socket) => {
 		resetTurnTimeout(io, match.roomCode);
 	});
 
-	socket.on("disconnect", (reason: string, roomCode: string) => {
+	socket.on("disconnect", (reason: string) => {
 		console.log(`Socket ${socket.id} desconected. Reason: ${reason}`);
 		for (const [roomCode, match] of matchRooms.entries()) {
 			if (match.players.some(p => p.id === socket.id)) {

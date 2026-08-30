@@ -9,6 +9,7 @@ import { Menu } from "lucide-react";
 import { MobileBottomBar } from "@/components/BottomBar"
 import { navigation } from "@/lib/navigation";
 
+
 export default async function ProtectedLayout({
   children,
 }: {

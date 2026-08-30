@@ -15,7 +15,7 @@ async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     const res = await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
-        callbackUrl: "/game-selection",
+        callbackUrl: "/landing",
     });
     console.log(res);
 }

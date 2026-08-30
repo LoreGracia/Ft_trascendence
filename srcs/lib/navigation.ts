@@ -17,7 +17,7 @@ export const navigation = {
 
   content: [
     {
-      href: "/game-selection",
+      href: "/landing",
       label: "Home",
       icon: Home,
     },
