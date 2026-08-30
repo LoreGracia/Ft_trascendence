@@ -57,6 +57,15 @@ io.on("connection", (socket: Socket) => {
 		}
 	});
 
+	// LORENA: I TOUCH IT
+	socket.on('get_room', (roomCode: string) => {
+		const room = waitingRooms.get(roomCode);
+		if (room) socket.emit('player_joined', room);
+		const match = matchRooms.get(roomCode);
+		if (match) socket.emit('player_status_changed', match);
+	});
+	// LORENA
+
 	// Waiting Room Or Match Room
 	socket.on("exit_room", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);

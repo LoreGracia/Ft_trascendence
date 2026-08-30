@@ -1,28 +1,28 @@
-"use client";
-
-import { useState } from "react";
+// import { useState } from "react";
 import Image from "next/image";
 
 import ToggleModeButton from "@/components/button/ToggleModeButton";
 import type { GameType } from "@/types/game";
 
 import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
+import LandingClient from "@/components/LandingClient";
 
 export default function GameSelection() {
-  const [selectedMode, setSelectedMode] =
-    useState<GameType>("FREE_PLAY");
+  // const [selectedMode, setSelectedMode] =
+  //   useState<GameType>("FREE_PLAY");
 
   return (
     <div className="container container-two">
-      <div className="box items-center">
-        <ToggleModeButton
+      <div className="box items-center"> 
+        <LandingClient/>
+        {/* <ToggleModeButton
           selected={selectedMode}
           onChange={setSelectedMode}
         />
         <div className="flex flex-row gap-4 mt-5 text-base font-medium">
           <CreateRoomButton mode={selectedMode} />
           <JoinButton/>
-        </div>
+        </div> */}
       </div>
 
       <div className="box items-center">

@@ -9,37 +9,28 @@ export interface Player {
   state: PlayerState;
 }
 
-export interface Room {
+export type WaitingRoom = {
   roomCode: string;
   players: Player[];
-}
+  state?: 'OPEN' | 'CLOSED';
+};
 
-export interface MatchRoom extends Room {
+export interface MatchRoom extends WaitingRoom {
+  roomCode: string;
   gameType: GameType;
+  players: Player[];
+  dices: number[];
+  rolls: LastRoll[];
+  sum: Record<string, number> | Map<string, number>;
   turn: number;
-  sum?: Map<string, number> | Record<string, number>;
 }
 
-export interface Dice {
+export type DiceRoll = {
   value: number;
-}
+};
 
 export interface LastRoll {
   idPlayer: string;
-  nums: Dice[];
-}
-
-export interface DiceRolledData {
-  match: MatchRoom;
-  roll: LastRoll;
-}
-
-export interface MatchWonData {
-  match?: MatchRoom;
-  lastRoll?: LastRoll;
-  players?: Player[];
-  roomCode?: string;
-  gameType?: GameType;
-  turn?: number;
-  sum?: Map<string, number> | Record<string, number>;
+  gameType: GameType;
+  nums: DiceRoll[];
 }
