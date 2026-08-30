@@ -1,4 +1,4 @@
-import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/components/3dDice/modelDice/diceConfig";
+import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/components/3dDice/modelDice/modelDice";
 
 export const PRESET_OPTIONS = [
     { value: "default", label: "Default", group: "Básicos" },

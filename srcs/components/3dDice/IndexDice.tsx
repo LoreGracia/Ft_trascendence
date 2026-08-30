@@ -12,7 +12,7 @@ import {
 } from "@babylonjs/core";
 import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
 import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
-import { INDEX_DICE_CONFIG } from "@/components/3dDice/modelDice/diceConfig";
+import { INDEX_DICE_CONFIG } from "@/components/3dDice/modelDice/modelDice";
 import styles from "./DiceScene.module.css";
 
 export default function IndexDice() {

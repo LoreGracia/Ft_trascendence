@@ -22,7 +22,7 @@ export default function Home() {
             <ThrowDice /> 
             <SelectDice roomCode="test-room" />
             <ThrowDice presetValue="default" roomCode="test-room" />*/}
-          <SelectDice roomCode="test-room" />
+          <IndexDice />
 
         </section>
         <section className="column gap-8">

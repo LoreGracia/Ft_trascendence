@@ -40,7 +40,7 @@ const createPip = (
             scene
         );
 
-        const ballOffset = config.pipRadius * 0.25;
+        const ballOffset = config.pipRadius * 0.05;
         if (isZFace) {
             z += z > 0 ? ballOffset : -ballOffset;
         } else if (isXFace) {
