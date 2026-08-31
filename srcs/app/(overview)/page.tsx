@@ -16,13 +16,13 @@ export default function Home() {
       <main className="container container-two">
         <section className="column">
 
-          {/* <DiceScene />
+            <IndexDice />
+          {/*
             <IndexDice />
             <SelectDice />
             <ThrowDice /> 
             <SelectDice roomCode="test-room" />
             <ThrowDice presetValue="default" roomCode="test-room" />*/}
-          <SelectDice roomCode="test-room" />
 
         </section>
         <section className="column gap-8">
