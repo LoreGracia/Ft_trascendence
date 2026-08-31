@@ -91,7 +91,7 @@ export const DICE_PRESETS: Record<string, DiceConfig> = {
     blackDice: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.15, 0.15, 0.15),
-        pipColor: new Color3(0.95, 0.95, 0.92),
+        pipColor: new Color3(0.2, 0.2, 0.2),
     },
 };
 
@@ -144,7 +144,7 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         ...DEFAULT_DICE_CONFIG,
 
         // Cuerpo: violeta muy oscuro
-        bodyColor: new Color3(157, 0, 255),
+        bodyColor: new Color3(0.5, 0.002, 0.5),
         bodyAlpha: 0.88,
 
         // Pips: amarillo limón fluorescente
@@ -152,7 +152,8 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         pipAlpha: 1.0,
 
         // Luz interior: violeta intenso
-        emissiveColor: new Color3(0.75, 0.01, 1.0),
+        // emissiveColor: new Color3(0.5, 0.5, 0.5),
+        // emissiveColor: new Color3(0.75, 0.01, 1.0),
 
         cornerRadius: 0.16,
     },
@@ -170,6 +171,5 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         bodyColor: new Color3(0.03, 0.03, 0.03),
         pipColor: new Color3(0.1, 0.95, 0.35),
         emissiveColor: new Color3(0.02, 0.18, 0.06),
-        cornerRadius: 0.1,
     },
 };
