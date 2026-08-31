@@ -1,15 +1,18 @@
-DOCKER_COMPOSE = docker-compose 
+DOCKER_COMPOSE = docker-compose --env-file ./srcs/.env.local
 
-all:
-	$(DOCKER_COMPOSE) up -d --build
+all: up
 
-watch:
-	$(DOCKER_COMPOSE) up -w --build
+up:
+	$(DOCKER_COMPOSE) up
+
+re:
+	$(DOCKER_COMPOSE) up --build
 
 down:
-	$(DOCKER_COMPOSE) down --rmi all
+	$(DOCKER_COMPOSE) down
 
-clean: down 
+clean:
+	$(DOCKER_COMPOSE) down --rmi all
 
 fclean: clean
 	docker system prune -af

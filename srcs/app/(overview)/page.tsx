@@ -26,7 +26,7 @@ export default function Home() {
 
         </section>
         <section className="column gap-8">
-          <div className="row">
+          <div className="column">
             <h1>This is Dice</h1>
             <p>Welcome</p>
             <div className="flex flex-row gap-4 text-base font-medium">

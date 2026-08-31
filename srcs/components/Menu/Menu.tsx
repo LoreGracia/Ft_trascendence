@@ -1,34 +1,47 @@
 "use client";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  ReactElement,
+  useState,
+} from "react";
 
-import { useState } from "react";
-import { Menu } from "lucide-react";
+type MenuButtonProps = {
+  trigger: ReactElement<TriggerProps>;
+  children: React.ReactNode;
+};
+type MenuItemProps = {
+  className?: string;
+};
 
-export default function MenuButton() {
+type TriggerProps = {
+  onClick?: () => void;
+};
+
+export default function MenuButton({ trigger, children }: MenuButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div
-      className="relative corner-right"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+    <div className="absolut flex flex-col items-end corner-right"
+      // onMouseEnter={() => setOpen(true)}
+      // onMouseLeave={() => setOpen(false)}
     >
-      <button>
-        <Menu/>
-      </button>
+      {cloneElement(trigger, {
+        ...trigger.props,
+        onClick: () => setOpen((prev) => !prev),
+      })}
 
       {open && (
-        <div>
-          <button className="w-full button--highlight">
-            Acción 1
-          </button>
+          <div className="bg-(--white) rounded-b-lg rounded-s-lg outline-(--light) outline-1 overflow-hidden">
+          {Children.map(children, (child) => {
+            if (!isValidElement<MenuItemProps>(child)) return child;
 
-          <button className="w-full button--highlight" >
-            Acción 2
-          </button>
-
-          <button className="w-full button--highlight">
-            Acción 3
-          </button>
+            return cloneElement(child, {
+              ...child.props,
+              className: `w-full button hover:bg-(--light)/80 cursor-default ${child.props.className ?? ""}`,
+            });
+          })}
         </div>
       )}
     </div>

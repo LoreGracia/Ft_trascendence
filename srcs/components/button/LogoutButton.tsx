@@ -1,17 +1,18 @@
-import { signOut } from "@/app/auth";
+import { logout } from "@/actions/auth";
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+  className?: string;
+  children: React.ReactNode;
+};
+
+export function LogoutButton({
+  className = "",
+  children,
+}: LogoutButtonProps) {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut({
-          redirectTo: "/login",
-        });
-      }}
-    >
-      <button type="submit" className="corner-right button button-round button--basic">
-        Cerrar sesión
+    <form action={logout} className={className}>
+      <button type="submit">
+        {children}
       </button>
     </form>
   );
