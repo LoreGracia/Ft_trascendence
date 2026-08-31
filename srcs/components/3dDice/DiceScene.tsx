@@ -9,10 +9,10 @@ import {
   Vector3,
   Color4,
 } from "@babylonjs/core";
-import { rollDice } from "@/dice/diceRoll";
-import { animateDiceFlight } from "@/dice/diceAnimation";
-import { createDiceInstance } from "@/dice/diceFactory";
-import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/dice/diceConfig";
+import { rollDice } from "@/components/3dDice/startThrow/diceRoll";
+import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
+import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
+import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/components/3dDice/modelDice/diceConfig";
 import styles from "./DiceScene.module.css";
 
 const PRESET_OPTIONS = [
@@ -128,10 +128,10 @@ export default function DiceScene() {
   };
 
   return (
-    <div className={styles.diceScene} onClick={handleRollClick}>
-      {/* <div className={styles.diceScene__status}>{resultText}</div> */}
+    <div className={styles.diceScene}>
+      <div className={styles.diceScene__status}>{resultText}</div>
       <div className={styles.diceScene__controls}>
-        {/* <select
+        <select
           className={styles.diceScene__select}
           value={selectedPreset}
           onChange={handlePresetChange}
@@ -159,7 +159,7 @@ export default function DiceScene() {
           disabled={isRolling}
         >
           {isRolling ? "Tirando..." : "Lanzar dado"}
-        </button> */}
+        </button>
       </div>
       <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
     </div>
