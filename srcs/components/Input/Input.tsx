@@ -12,7 +12,7 @@ export default function TextInput(props: TextInputProps) {
       <input
         {...props}
         type={isPassword && showPassword ? "text" : props.type}
-        className={`input ${props.className ?? ""}`}
+        className={`input ${props.className ?? ""}, className="rounded-lg ps-4 pb-2 pt-2 "`}
       />
       {isPassword && (
           <button
