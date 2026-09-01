@@ -8,7 +8,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("Seeding database...");
+  console.log("En algun momento esto hara seed");
 
   // Example: create a test user
   // await prisma.user.create({
@@ -17,8 +17,6 @@ async function main() {
   //     email: "test@example.com",
   //   },
   // });
-
-  console.log("Seed completed.");
 }
 
 main()
