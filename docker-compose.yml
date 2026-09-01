@@ -7,12 +7,14 @@ services:
       - ./prisma:/prisma
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      NODE_PATH: /app/node_modules
     depends_on:
       db:
         condition: service_healthy
-    command: npx prisma migrate deploy
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npx prisma db seed"
     networks:
       - transcendence-net
+  
   next-app:
     container_name: transcendence-app
     build:
@@ -38,20 +40,22 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    volumes:
+      - ./prisma:/prisma
     ports:
       - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     networks:
       - transcendence-net
+ 
   db:
     image: postgres:17-alpine
     container_name: transcendence-db
     restart: unless-stopped
-    env_file:
-      - ./srcs/.env.local
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:

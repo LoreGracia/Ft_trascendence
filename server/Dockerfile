@@ -11,4 +11,4 @@ COPY . .
 # fck vercel
 ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD npx tsx sockets/index.ts
+CMD npx prisma generate && npx tsx sockets/index.ts
