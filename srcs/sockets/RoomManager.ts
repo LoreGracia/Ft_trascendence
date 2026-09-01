@@ -1,10 +1,13 @@
 import { WaitingRoom, Players, MatchRoom, GameType } from "./GameTypes";
 import { Socket, Server } from "socket.io";
-import { matchRooms, turnTimeouts } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
 
+
+export const matchRooms = new Map<string, MatchRoom>();
+
+export const turnTimeouts = new Map<string, NodeJS.Timeout>();
 
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
