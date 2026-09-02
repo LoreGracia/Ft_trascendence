@@ -25,11 +25,13 @@ import {
 	resetTurnTimeout
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
+import { validateToken } from "./TokenValidation";
 
 const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
 export const turnTimeouts = new Map<string, NodeJS.Timeout>();
 const app = express();
+// const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 app.use(cors());
 
@@ -41,21 +43,34 @@ const io = new Server(server, {
 	},
 });
 
+io.use(async (socket: Socket, next) => {
+	const token = socket.handshake.auth?.token;
+	if (!token)
+		return next(new Error("Authentication error: Token missing"));
+	try {
+		const payload = await validateToken(token);
+		socket.data.userId = payload.id;
+		next();
+	} catch (err) {
+		next(new Error("Authentication error: Token missing"));
+	}
+});
+
 io.on("connection", (socket: Socket) => {
 	console.log(`${socket.id} has accessed the server.`);
 
 	socket.on("create_room", (game: GameType) => {
-		const newRoom = createWaitingRoom(socket.id, game);
+		const newRoom = createWaitingRoom(socket.data.userId, socket.id, game);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
 		socket.emit("room_created", newRoom.roomCode);
-		console.log(`Room ${newRoom.roomCode}: created by player ${socket.id}`);
+		console.log(`Room ${newRoom.roomCode}: created by player ${socket.data.userId}`);
 	});
 
 	socket.on("join_room", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
-			if (!addPlayerToRoom(socket.id, room))
+			if (!addPlayerToRoom(socket.data.userId, socket.id, room))
 				socket.emit("join_error");
 			else {
 				socket.join(roomCode);
@@ -79,18 +94,19 @@ io.on("connection", (socket: Socket) => {
 	// Waiting Room
 	socket.on("exit_waiting_room", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
-		if (room) {
-			exitRoom(socket.id, room);
-			socket.leave(roomCode);
-			console.log(`Room ${roomCode}: player ${socket.id} left.`);
-			if (room.players.length === 0) {
-				waitingRooms.delete(roomCode);
-				console.log(`Room ${roomCode}: room deleted.`);
-			} else
-				io.to(roomCode).emit("player_joined", room);
+		if (!room) {
+			console.log(`Room ${roomCode} no longer exists.`);
+			return;
 		}
-		else
-			console.log("Room no longer exists.")
+		exitRoom(socket.data.userId, room);
+		socket.leave(roomCode);
+		console.log(`Room ${roomCode}: player ${socket.data.userId} left.`);
+		if (room.players.length === 0) {
+			waitingRooms.delete(roomCode);
+			console.log(`Room ${roomCode}: room deleted.`);
+		} else {
+			io.to(roomCode).emit("player_joined", room);
+		}
 	});
 
 	socket.on("exit_match_room", (roomCode: string) => {
@@ -101,9 +117,9 @@ io.on("connection", (socket: Socket) => {
 	socket.on("change_player_status", (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
-			changePlayerStatus(room, socket.id);
+			changePlayerStatus(room, socket.data.userId);
 			io.to(roomCode).emit("player_status_changed", room);
-			console.log(`Room ${room.roomCode}: player ${socket.id} locked.`);
+			console.log(`Room ${room.roomCode}: player ${socket.data.userId} with socket ${socket.id} locked.`);
 		}
 		else
 			console.log("Room no longer exists.")
@@ -113,6 +129,7 @@ io.on("connection", (socket: Socket) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
+				closeRoom(room);
 				const factory = getGameFactory(room.gameType);
 				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);
@@ -131,7 +148,7 @@ io.on("connection", (socket: Socket) => {
 	socket.on("player_locked", (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
 		if (match) {
-			changePlayerStatus(match, socket.id);
+			changePlayerStatus(match, socket.data.userId);
 			io.to(roomCode).emit("player_status_changed", match);
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
@@ -139,7 +156,7 @@ io.on("connection", (socket: Socket) => {
 				io.to(roomCode).emit("match_won", { match });
 				return;
 			}
-			console.log(`Room ${match.roomCode}: player ${socket.id} locked.`);
+			console.log(`Room ${match.roomCode}: player ${socket.data.userId} with socket ${socket.id} locked.`);
 			advanceToUnlocked(match);
 			io.to(roomCode).emit("player_status_changed", match);
 			resetTurnTimeout(io, match.roomCode);
@@ -152,14 +169,14 @@ io.on("connection", (socket: Socket) => {
 			console.log("Incorrect Match.")
 			return;
 		}
-		if (!isPlayerTurn(match, socket.id)) {
+		if (!isPlayerTurn(match, socket.data.userId)) {
 			socket.emit("error_turn", "Not your turn.");
 			return;
 		}
-		const roll: RollResult = generateRoll(match, socket.id);
+		const roll: RollResult = generateRoll(match, socket.data.userId);
 		match.rolls.push(roll);
 
-		match.rules.evaluateRoll(match, socket.id);
+		match.rules.evaluateRoll(match, socket.data.userId);
 
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
@@ -174,9 +191,9 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	socket.on("disconnect", (reason: string) => {
-		console.log(`Socket ${socket.id} desconected. Reason: ${reason}`);
+		console.log(`Player ${socket.data.userId} with socket ${socket.id} desconected. Reason: ${reason}`);
 		for (const [roomCode, match] of matchRooms.entries()) {
-			if (match.players.some(p => p.id === socket.id)) {
+			if (match.players.some(p => p.playerId === socket.data.userId)) {
 				exitMatchRoom(io, socket, roomCode);
 				break;
 			}

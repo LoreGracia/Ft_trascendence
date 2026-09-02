@@ -16,20 +16,20 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom {
+export function createWaitingRoom(playerId: string, socketId: string, game: GameType): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ id: playerId, state: "UNLOCKED" }],
+		players: [{ playerId: playerId, socketId: socketId, state: "UNLOCKED" }],
 		state: "OPEN",
 	};
 	return room;
 }
 
-export function addPlayerToRoom(playerId: string, room: WaitingRoom): boolean {
+export function addPlayerToRoom(playerId: string, socketId: string, room: WaitingRoom): boolean {
 	if (room.state === "OPEN") {
-		room.players.push({ id: playerId, state: "UNLOCKED" });
-		console.log(`Room ${room.roomCode}: player ${playerId} joined.`);
+		room.players.push({ playerId: playerId, socketId: socketId, state: "UNLOCKED" });
+		console.log(`Room ${room.roomCode}: player ${playerId} joined on socket ${socketId}.`);
 		return true
 	} else {
 		console.log("Room Closed."); // Esto se transformara a algun aviso a lore.
@@ -46,11 +46,11 @@ export function openRoom(room: WaitingRoom): void {
 }
 
 export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
-	room.players = room.players.filter(p => p.id !== playerId);
+	room.players = room.players.filter(p => p.playerId !== playerId);
 }
 
 export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string): void {
-	const player = room.players.find(p => p.id === playerId);
+	const player = room.players.find(p => p.playerId === playerId);
 	if (!player) return;
 	player.state = player.state === "LOCKED" ? "UNLOCKED" : "LOCKED";
 }
@@ -86,10 +86,10 @@ export function advanceToUnlocked(match: MatchRoom): void {
 export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 	const match = matchRooms.get(roomCode);
 	if (match) {
-		const currentPlayer = match.players[match.turn % match.players.length].id;
-		exitRoom(socket.id, match);
+		const currentPlayer = match.players[match.turn % match.players.length].playerId;
+		exitRoom(socket.data.userId, match);
 		socket.leave(roomCode);
-		console.log(`Room ${roomCode}: player ${socket.id} left.`);
+		console.log(`Room ${roomCode}: player ${socket.data.userId} with socket ${socket.id} left.`);
 		if (match.players.length === 0) {
 			matchRooms.delete(roomCode);
 			clearTurnTimeout(roomCode);
@@ -99,7 +99,7 @@ export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 			matchRooms.delete(roomCode);
 			io.to(roomCode).emit("match_won", { match });
 		} else {
-			if (socket.id === currentPlayer) {
+			if (socket.data.userId === currentPlayer) {
 				clearTurnTimeout(roomCode);
 				advanceToUnlocked(match);
 			}
@@ -122,7 +122,7 @@ export function resetTurnTimeout(io: Server, roomCode: string) {
 		io.to(roomCode).emit("turn_timeout", { match });
 		io.to(roomCode).emit("player_status_changed", match);
 		if (match.rules.isGameWon(match)) {
-			io.to(roomCode).emit("match_won", { match, lastRoll: match.rolls[match.rolls.length] });
+			io.to(roomCode).emit("match_won", { match, lastRoll: match.rolls[match.rolls.length - 1] });
 			clearTurnTimeout(roomCode);
 			matchRooms.delete(roomCode);
 			return;

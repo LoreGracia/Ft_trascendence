@@ -12,7 +12,7 @@ export function createMatchRoom(room: WaitingRoom, rules: GameRules): MatchRoom 
 	shuffledPlayers.forEach(p => (p.state = "UNLOCKED"));
 
 	const initialSum: Record<string, number> = {};
-	shuffledPlayers.forEach(p => (initialSum[p.id] = 0));
+	shuffledPlayers.forEach(p => (initialSum[p.playerId] = 0));
 
 	return {
 		roomCode: room.roomCode,
@@ -26,7 +26,7 @@ export function createMatchRoom(room: WaitingRoom, rules: GameRules): MatchRoom 
 	};
 }
 
-function doRoll(room: MatchRoom, playerId: string): RoundRoll[] {
+function doRoll(room: MatchRoom, playerIdent: string): RoundRoll[] {
 	const allTurnRolls: RoundRoll[] = [];
 	for (let i = 0; i < room.dices.length; i++) {
 		const singleRoll: RoundRoll = {
@@ -34,16 +34,16 @@ function doRoll(room: MatchRoom, playerId: string): RoundRoll[] {
 			value: randomRollFromInterval(room.dices[i])
 		};
 		allTurnRolls.push(singleRoll);
-		updateSum(room, playerId, singleRoll.value);
+		updateSum(room, playerIdent, singleRoll.value);
 	}
 	return allTurnRolls;
 }
 
-export function generateRoll(match: MatchRoom, playerId: string): RollResult {
+export function generateRoll(match: MatchRoom, playerIdent: string): RollResult {
 	return {
-		idPlayer: playerId,
+		idPlayer: playerIdent,
 		gameType: match.gameType,
-		nums: doRoll(match, playerId),
+		nums: doRoll(match, playerIdent),
 	};
 }
 
@@ -52,43 +52,22 @@ function updateSum(room: MatchRoom, playerId: string, toAdd: number) {
 	room.sum[playerId] = prev + toAdd;
 }
 
-export function isPlayerTurn(match: MatchRoom, playerId: string): boolean {
+export function isPlayerTurn(match: MatchRoom, playerIdent: string): boolean {
 	const currentPlayer = match.players[match.turn % match.players.length];
-	if (currentPlayer.id !== playerId) {
-		console.log(`Room ${match.roomCode}: player ${playerId} not your turn.`);
+	if (currentPlayer.playerId !== playerIdent) {
+		console.log(`Room ${match.roomCode}: player ${playerIdent} not your turn.`);
 		return false;
 	}
 	if (match.gameType != "FREE_PLAY" && currentPlayer.state === "LOCKED") {
-		console.log(`Room ${match.roomCode}: player ${playerId} passed.`);
+		console.log(`Room ${match.roomCode}: player ${playerIdent} passed.`);
 		return false;
 	}
 	return true;
 }
 
-export function isPlayerBusted(match: MatchRoom, playerId: string) {
-	const player = match.players.find(p => p.id === playerId)!;
-	const playerSum = match.sum[playerId] ?? 0;
+export function isPlayerBusted(match: MatchRoom, playerIdent: string) {
+	const player = match.players.find(p => p.playerId === playerIdent)!;
+	const playerSum = match.sum[playerIdent] ?? 0;
 	if (playerSum > 42)
 		player.state = "LOCKED";
 }
-
-// function allDicesToZero(match: MatchRoom): RoundRoll[] {
-// 	const allTurnRolls: RoundRoll[] = [];
-// 	for (let i = 0; i < match.dices.length; i++) {
-// 		const singleRoll: RoundRoll = {
-// 			diceType: match.dices[i],
-// 			value: 0
-// 		}
-// 		allTurnRolls.push(singleRoll);
-// 	}
-// 	return allTurnRolls;
-// }
-
-// export function generateEmptyRoll(match: MatchRoom): RollResult {
-// 	const roll: RollResult = {
-// 		idPlayer: match.players[match.turn % match.players.length].id,
-// 		gameType: match.gameType,
-// 		nums: allDicesToZero(match),
-// 	}
-// 	return roll;
-// }

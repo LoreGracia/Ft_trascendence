@@ -6,7 +6,8 @@ export type PLAYER_STATE = "LOCKED" | "UNLOCKED";
 export type PLAYER_ENDGAME = "WIN" | "LOSE" | "TIE";
 
 export interface Players {
-	id: string;
+	playerId: string;
+	socketId: string;
 	state: PLAYER_STATE | PLAYER_ENDGAME;
 }
 
