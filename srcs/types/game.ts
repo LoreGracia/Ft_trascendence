@@ -11,6 +11,7 @@ export interface Player {
 
 export type WaitingRoom = {
   roomCode: string;
+	gameType: GameType;
   players: Player[];
   state?: 'OPEN' | 'CLOSED';
 };

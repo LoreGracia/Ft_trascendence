@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
-import type { WaitingRoom } from '@/types/game';
 import { useSearchParams } from 'next/navigation';
+import { ArrowRight } from "lucide-react";
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
+  const selectedMode = searchParams.get('selectedMode');
 
   // const { room } = params;
 //   searchParams,
@@ -19,15 +20,11 @@ export default function GameRoom() {
   
   const router = useRouter();
   const {
-    // roomCodeInput,
-    // setRoomCodeInput,
     waitingRoom,
     matchRoom,
     lastRoll,
     winnerMessage,
     isMyTurn,
-    // createRoom,
-    // joinRoom,
     exitRoom,
     toggleReadyStatus,
     startGame,
@@ -57,8 +54,7 @@ useEffect(() => {
 }, []);
 
   return (
-    <main style={{ backgroundColor: '#121212', minHeight: '100vh', color: 'white', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>🎲 Dice Game Tester</h1>
+    <div>
       <p>
         <small>
           Tu Socket ID: <code>{socket.id}</code>
@@ -66,34 +62,43 @@ useEffect(() => {
       </p>
 
       {waitingRoom && !matchRoom && (
-        <div style={{ border: '1px solid #00a8ff', padding: '15px', borderRadius: '8px' }}>
-          <h2>
-            Sala de Espera: <span style={{ color: '#00a8ff' }}>{waitingRoom.roomCode}</span>
-          </h2>
-          <h3>Jugadores ({waitingRoom.players.length}):</h3>
+        <>
+        <div className="box">
+          <h1 className="row gap-5">
+            🎲  
+            <span className="text-(--dark)"> {waitingRoom.roomCode}
+            </span>
+            <p>
+              {waitingRoom.players.length} / 2
+              <small> (max 6)</small> 
+              <ArrowRight/>
+            </p>
+          </h1>
+
           <ul>
             {waitingRoom.players.map((p) => (
-              <li key={p.id}>
+              <li className="flex flex-col" key={p.id}>
                 {p.id} {p.id === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
               </li>
             ))}
           </ul>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+          <div className="box">
             <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
               Cambiar Estado (Listo / No listo)
             </button>
             <button onClick={() => startGame('FREE_PLAY')} style={{ backgroundColor: '#44bd32', color: 'white', padding: '8px' }}>
               Iniciar FREE_PLAY
             </button>
-            <button onClick={() => startGame('ADD42')} style={{ backgroundColor: '#8c7ae6', color: 'white', padding: '8px' }}>
+            <button onClick={() => startGame('ADD42')} className="button rounded-3xl button--highlight">
               Iniciar ADD42
-            </button>
-            <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white', padding: '8px' }}>
-              Salir
             </button>
           </div>
         </div>
+        <button onClick={exitRoom} className="absolute button button--secondary rounded-3xl mb-0">
+          Salir
+        </button>
+        </>
       )}
 
       {matchRoom && (
@@ -206,6 +211,6 @@ useEffect(() => {
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }
