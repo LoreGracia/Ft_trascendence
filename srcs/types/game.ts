@@ -18,7 +18,6 @@ export type WaitingRoom = {
 
 export interface MatchRoom extends WaitingRoom {
   roomCode: string;
-  gameType: GameType;
   players: Player[];
   dices: number[];
   rolls: LastRoll[];

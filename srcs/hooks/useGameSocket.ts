@@ -59,13 +59,13 @@ export function useGameSocket() {
 
   useEffect(() => {
     const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED' }] });
+      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED' }], gameType: gameType });
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      if ('gameType' in data) setMatchRoom(data as MatchRoom);
+      if (data.state === 'CLOSED') setMatchRoom(data as MatchRoom);
       else setWaitingRoom(data as WaitingRoom);
     };
 

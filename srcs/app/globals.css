@@ -1,7 +1,7 @@
-@import "tailwindcss";
 @import "../components/button/Button.css";
 @import "../components/Pattern/Pattern.css";
 @import "tw-animate-css";
+@import "tailwindcss";
 @import "shadcn/tailwind.css";
 
 :root {

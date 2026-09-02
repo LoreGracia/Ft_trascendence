@@ -10,14 +10,6 @@ import { ArrowRight } from "lucide-react";
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
-  const selectedMode = searchParams.get('selectedMode');
-
-  // const { room } = params;
-//   searchParams,
-// }: {
-//   searchParams?: Promise<{ roomCode?: string }>;
-// }) {
-  
   const router = useRouter();
   const {
     waitingRoom,
@@ -49,9 +41,6 @@ useEffect(() => {
     }
   }
 }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-useEffect(() => {
-  console.log('GameRoom mounted (simple effect)', { socketConnected: socket.connected, socketId: socket.id });
-}, []);
 
   return (
     <div>
@@ -65,7 +54,7 @@ useEffect(() => {
         <>
         <div className="box">
           <h1 className="row gap-5">
-            🎲  
+            🎲  {waitingRoom.gameType} : 
             <span className="text-(--dark)"> {waitingRoom.roomCode}
             </span>
             <p>
@@ -85,12 +74,20 @@ useEffect(() => {
 
           <div className="box">
             <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
-              Cambiar Estado (Listo / No listo)
+              Status (Ready / Not ready)
             </button>
-            <button onClick={() => startGame('FREE_PLAY')} style={{ backgroundColor: '#44bd32', color: 'white', padding: '8px' }}>
+            <button
+              onClick={() => startGame('FREE_PLAY')}
+              disabled={waitingRoom.players.length === 1}
+              className="button rounded-3xl button--highlight"
+              >
               Iniciar FREE_PLAY
             </button>
-            <button onClick={() => startGame('ADD42')} className="button rounded-3xl button--highlight">
+            <button
+              onClick={() => startGame('ADD42')}
+              className="button rounded-3xl button--highlight"
+              disabled={waitingRoom.players.length === 1}
+              >
               Iniciar ADD42
             </button>
           </div>
