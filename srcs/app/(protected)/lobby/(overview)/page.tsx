@@ -15,10 +15,10 @@ export default function Lobby() {
   //   redirect("/login");
   // }
   return (
-	<main>
+	<>
     {/* <GameClient/> */}
     <GameRoom/>
-	</main>
+	</>
 	
   )
 }

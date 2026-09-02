@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import PatternControl from "@/components/Pattern/PatternControl";
-import DiceScene from "@/components/3dDice/DiceScene";
 import IndexDice from "@/components/3dDice/IndexDice";
 import SelectDice from "@/components/3dDice/SelectDice";
 import ThrowDice from "@/components/3dDice/ThrowDice";

@@ -6,6 +6,8 @@ import type { GameType } from "@/types/game";
 
 import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
 import LandingClient from "@/components/LandingClient";
+import SelectDice from "@/components/3dDice/SelectDice";
+import ThrowDice from "@/components/3dDice/ThrowDice";
 
 export default function GameSelection() {
   // const [selectedMode, setSelectedMode] =
@@ -16,12 +18,14 @@ export default function GameSelection() {
         <LandingClient/>
 
       <div className="box items-center">
-        <Image
+            <SelectDice roomCode="test-room" />
+            {/* <ThrowDice presetValue="default" roomCode="test-room" /> */}
+        {/* <Image
           src="/dice-mockup.svg"
           alt="dice"
           width={180}
           height={180}
-        />
+        /> */}
       </div>
     </div>
   );
