@@ -1,6 +1,11 @@
-generator client {
+generator client_app {
   provider = "prisma-client"
   output   = "/generated/prisma"
+}
+
+generator client_server {
+  provider = "prisma-client"
+  output   = "/server/generated/prisma"
 }
 
 datasource db {
