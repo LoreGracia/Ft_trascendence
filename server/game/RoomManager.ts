@@ -1,10 +1,18 @@
-import { WaitingRoom, Players, MatchRoom, GameType } from "./GameTypes";
+import { WaitingRoom, Players, MatchRoom, GameType, BaseRoom } from "./GameTypes";
 import { Socket, Server } from "socket.io";
-import { matchRooms, turnTimeouts } from "../sockets/index";
+import { matchRooms, turnTimeouts, waitingRooms } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
 
+// export function reconnectPlayer(playerIdent: string, socket: Socket) {
+// 	for (const room of waitingRooms.values()) {
+// 		room.players.forEach((player, index) => {
+// 			if (player.playerId === playerIdent)
+// 				socket.
+// 		})
+// 	}
+// }
 
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
@@ -80,6 +88,23 @@ export function advanceToUnlocked(match: MatchRoom): void {
 	) {
 		match.turn++;
 		attempts++;
+	}
+}
+
+export function exitWaitingRoom(io: Server, socket: Socket, roomCode: string) {
+	const room = waitingRooms.get(roomCode);
+	if (!room) {
+		console.log(`Room ${roomCode} no longer exists.`);
+		return;
+	}
+	exitRoom(socket.data.userId, room);
+	socket.leave(roomCode);
+	console.log(`Room ${roomCode}: player ${socket.data.userId} left.`);
+	if (room.players.length === 0) {
+		waitingRooms.delete(roomCode);
+		console.log(`Room ${roomCode}: room deleted.`);
+	} else {
+		io.to(roomCode).emit("player_joined", room);
 	}
 }
 

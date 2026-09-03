@@ -20,17 +20,20 @@ import {
 	validateLockedPlayers,
 	changePlayerStatus,
 	advanceToUnlocked,
+	exitWaitingRoom,
 	exitMatchRoom,
 	clearTurnTimeout,
-	resetTurnTimeout
+	resetTurnTimeout,
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
 
-const waitingRooms = new Map<string, WaitingRoom>();
+export const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
 export const turnTimeouts = new Map<string, NodeJS.Timeout>();
+export const disconnectionTimeouts = new Map<string, NodeJS.Timeout>();
 const app = express();
+const TIME_TO_DISCONNECT = 30000;
 // const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 app.use(cors());
@@ -58,6 +61,21 @@ io.use(async (socket: Socket, next) => {
 
 io.on("connection", (socket: Socket) => {
 	console.log(`${socket.id} has accessed the server.`);
+
+	if (disconnectionTimeouts.has(socket.data.userId)) {
+		clearTimeout(disconnectionTimeouts.get(socket.data.userId));
+		disconnectionTimeouts.delete(socket.data.userIduserId);
+		console.log("");
+	}
+	for (const [roomCode, match] of matchRooms) {
+		const player = match.players.find(p => p.playerId === socket.data.userId);
+		if (player) {
+			player.socketId = socket.id;
+			socket.join(roomCode);
+			io.to(roomCode).emit("player_status_changed", match);
+			break;
+		}
+	}
 
 	socket.on("create_room", (game: GameType) => {
 		const newRoom = createWaitingRoom(socket.data.userId, socket.id, game);
@@ -93,20 +111,7 @@ io.on("connection", (socket: Socket) => {
 
 	// Waiting Room
 	socket.on("exit_waiting_room", (roomCode: string) => {
-		const room = waitingRooms.get(roomCode);
-		if (!room) {
-			console.log(`Room ${roomCode} no longer exists.`);
-			return;
-		}
-		exitRoom(socket.data.userId, room);
-		socket.leave(roomCode);
-		console.log(`Room ${roomCode}: player ${socket.data.userId} left.`);
-		if (room.players.length === 0) {
-			waitingRooms.delete(roomCode);
-			console.log(`Room ${roomCode}: room deleted.`);
-		} else {
-			io.to(roomCode).emit("player_joined", room);
-		}
+		exitWaitingRoom(io, socket, roomCode);
 	});
 
 	socket.on("exit_match_room", (roomCode: string) => {
@@ -192,11 +197,25 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("disconnect", (reason: string) => {
 		console.log(`Player ${socket.data.userId} with socket ${socket.id} desconected. Reason: ${reason}`);
+		for (const [roomCode, room] of waitingRooms.entries()) {
+			if (room.players.some(p => p.playerId === socket.data.userId)) {
+				exitWaitingRoom(io, socket, roomCode);
+				return;
+			}
+		}
+		let roomLeft: string | undefined;
 		for (const [roomCode, match] of matchRooms.entries()) {
 			if (match.players.some(p => p.playerId === socket.data.userId)) {
-				exitMatchRoom(io, socket, roomCode);
+				roomLeft = roomCode;
 				break;
 			}
+		}
+		if (roomLeft) {
+			const timeout = setTimeout(() => {
+				exitMatchRoom(io, socket, roomLeft);
+				disconnectionTimeouts.delete(socket.data.userId)
+			}, TIME_TO_DISCONNECT);
+			disconnectionTimeouts.set(socket.data.userId, timeout);
 		}
 	});
 });
