@@ -11,4 +11,4 @@ COPY . .
 # fck vercel
 ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD npx prisma generate && npm run dev
+CMD npx prisma generate --generator client_app && npm run dev

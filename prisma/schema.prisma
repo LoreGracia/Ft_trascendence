@@ -1,6 +1,11 @@
-generator client {
+generator client_app {
   provider = "prisma-client"
-  output   = "/generated/prisma"
+  output   = "/app/generated/prisma"
+}
+
+generator client_server {
+  provider = "prisma-client"
+  output   = "/server/generated/prisma"
 }
 
 datasource db {
@@ -90,6 +95,18 @@ model Verification {
 
 	@@index([identifier])
 	@@map("verification")
+}
+
+model Jwks {
+  id         String    @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime
+  expiresAt  DateTime?
+  alg        String?
+  crv        String?
+
+  @@map("jwks")
 }
 
 model Game {
