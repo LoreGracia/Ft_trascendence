@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock, LockOpen } from "lucide-react";
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
@@ -41,9 +41,10 @@ useEffect(() => {
     }
   }
 }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-
+const myPlayerState =
+  waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
   return (
-    <div>
+    <div className="w-full h-full p-20">
       <p>
         <small>
           Tu Socket ID: <code>{socket.id}</code>
@@ -52,7 +53,7 @@ useEffect(() => {
 
       {waitingRoom && !matchRoom && (
         <>
-        <div className="box">
+        <div className="justify-end gap-5">
           <h1 className="row gap-5">
             🎲  {waitingRoom.gameType} : 
             <span className="text-(--dark)"> {waitingRoom.roomCode}
@@ -66,17 +67,27 @@ useEffect(() => {
 
           <ul>
             {waitingRoom.players.map((p) => (
-              <li className="flex flex-col" key={p.id}>
-                {p.id} {p.id === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
+              <li className="flex flex-row" key={p.id}>
+                {p.id} ➡️ <b>{p.state}</b>
+                {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+              {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
+            </button> : ''} 
               </li>
             ))}
           </ul>
 
           <div className="box">
-            <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
-              Status (Ready / Not ready)
-            </button>
+            {/* <button onClick={toggleReadyStatus} className="button rounded-lg button--secondary">
+              {myPlayerState === 'LOCKED' ? <Lock/> : <LockOpen/>}
+            </button> */}
             <button
+              onClick={() => startGame(waitingRoom.gameType)}
+              disabled={waitingRoom.players.length === 1}
+              className="button rounded-3xl button--highlight"
+              >
+              Play
+            </button>
+            {/* <button
               onClick={() => startGame('FREE_PLAY')}
               disabled={waitingRoom.players.length === 1}
               className="button rounded-3xl button--highlight"
@@ -89,11 +100,11 @@ useEffect(() => {
               disabled={waitingRoom.players.length === 1}
               >
               Iniciar ADD42
-            </button>
+            </button> */}
           </div>
         </div>
-        <button onClick={exitRoom} className="absolute button button--secondary rounded-3xl mb-0">
-          Salir
+        <button onClick={exitRoom} className="absolute p-3 button--secondary rounded-3xl mb-0">
+          Exit
         </button>
         </>
       )}
