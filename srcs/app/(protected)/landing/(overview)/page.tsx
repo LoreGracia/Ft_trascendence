@@ -5,10 +5,7 @@ export default function GameSelection() {
   return (
     <div className="container container-two">
         <LandingClient/>
-
-      <div className="box items-center">
-            <SelectDice roomCode="test-room" />
-      </div>
+        <SelectDice roomCode="test-room" />
     </div>
   );
 }
