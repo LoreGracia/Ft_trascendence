@@ -16,7 +16,7 @@ export default function Home() {
       <main className="container container-two">
         <section className="column">
 
-          <SelectDice roomCode="test-room" />
+          <IndexDice />
           {/*
             <IndexDice />
             <SelectDice />
@@ -46,6 +46,15 @@ export default function Home() {
               >
                 Sign in
               </Link>
+
+              <Link
+                className="button button-round button--highlight"
+                href="/errorPages/404"
+              >
+                Test Error
+              </Link>
+
+
             </div>
           </div>
         </section>
