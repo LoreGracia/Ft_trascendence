@@ -18,6 +18,159 @@ export interface PipsResult {
     pipTextures: Texture[];
 }
 
+const CODE_DICE_PATTERNS: Record<number, number[]> = {
+    1: [4],                    // Centro
+    2: [0, 8],                 // Diagonal
+    3: [0, 4, 8],              // Diagonal completa
+    4: [0, 2, 6, 8],           // Esquinas
+    5: [0, 2, 4, 6, 8],        // Esquinas + centro
+    6: [0, 1, 2, 6, 7, 8],     // Dos columnas (patrón clásico)
+};
+
+const GRID_POSITIONS = [
+    { x: -1, y: 1 },   // 0
+    { x: 0, y: 1 },    // 1
+    { x: 1, y: 1 },    // 2
+    { x: -1, y: 0 },   // 3
+    { x: 0, y: 0 },    // 4
+    { x: 1, y: 0 },    // 5
+    { x: -1, y: -1 },  // 6
+    { x: 0, y: -1 },   // 7
+    { x: 1, y: -1 },   // 8
+];
+
+const GRID_SPACING = 0.45;
+const BLOCK_SIZE = 0.2;
+
+export const createCodeDicePips = (
+    scene: Scene,
+    root: TransformNode,
+    config: Required<DiceConfig>,
+    instanceName: string
+): PipsResult => {
+    const pipMeshes: Mesh[] = [];
+    const overridePipMaterials: StandardMaterial[] = [];
+    const pipTextures: Texture[] = [];
+
+    const faceOffset = config.faceOffset;
+
+    // Material para LEDs apagados
+    const offMaterial = new StandardMaterial(
+        `${instanceName}_led_off`,
+        scene
+    );
+    offMaterial.diffuseColor = config.bodyColor;
+    offMaterial.emissiveColor = config.bodyColor;
+    offMaterial.backFaceCulling = false;
+
+    // Material para LEDs encendidos (verde neón)
+    const onMaterial = new StandardMaterial(
+        `${instanceName}_led_on`,
+        scene
+    );
+
+    // onMaterial.diffuseColor = config.pipColor;
+    // onMaterial.emissiveColor = config.emissiveColor;
+    // onMaterial.specularColor = new Color3(0.6, 0.8, 0.6);
+    // onMaterial.specularPower = 48;
+    onMaterial.diffuseColor = config.pipColor;
+    onMaterial.emissiveColor = new Color3(0.12, 0.6, 0.25);  // Emissive más fuerte para LEDs
+    onMaterial.specularColor = new Color3(0.8, 1, 0.8);      // Brillo especular más intenso
+    onMaterial.specularPower = 64;                            // Aumenta el poder del brillo
+    onMaterial.backFaceCulling = false;
+
+    overridePipMaterials.push(offMaterial, onMaterial);
+
+    // Definir las 6 caras con sus posiciones y rotaciones
+    const faces = [
+        {
+            number: 1,
+            pos: { x: 0, y: 0, z: faceOffset },
+            rot: { x: 0, y: 0, z: 0 },
+        },
+        {
+            number: 6,
+            pos: { x: 0, y: 0, z: -faceOffset },
+            rot: { x: 0, y: Math.PI, z: 0 },
+        },
+        {
+            number: 2,
+            pos: { x: faceOffset, y: 0, z: 0 },
+            rot: { x: 0, y: Math.PI / 2, z: 0 },
+        },
+        {
+            number: 5,
+            pos: { x: -faceOffset, y: 0, z: 0 },
+            rot: { x: 0, y: -Math.PI / 2, z: 0 },
+        },
+        {
+            number: 3,
+            pos: { x: 0, y: faceOffset, z: 0 },
+            rot: { x: -Math.PI / 2, y: 0, z: 0 },
+        },
+        {
+            number: 4,
+            pos: { x: 0, y: -faceOffset, z: 0 },
+            rot: { x: Math.PI / 2, y: 0, z: 0 },
+        },
+    ];
+
+    // Crear la matriz de LEDs para cada cara
+    for (const face of faces) {
+        const faceNumber = face.number;
+        const enabledIndices = new Set(
+            CODE_DICE_PATTERNS[faceNumber]
+        );
+
+        // Contenedor para la cara (matriz 3x3)
+        const faceContainer = new TransformNode(
+            `${instanceName}_face_${faceNumber}`,
+            scene
+        );
+        faceContainer.position.set(
+            face.pos.x,
+            face.pos.y,
+            face.pos.z
+        );
+        faceContainer.rotation.set(
+            face.rot.x,
+            face.rot.y,
+            face.rot.z
+        );
+        faceContainer.parent = root;
+
+        // Crear los 9 LEDs planos (discos) de la matriz
+        for (let i = 0; i < 9; i++) {
+            const gridPos = GRID_POSITIONS[i];
+            const isEnabled = enabledIndices.has(i);
+            const material = isEnabled ? onMaterial : offMaterial;
+
+            const led = MeshBuilder.CreatePlane(
+                `${instanceName}_code_led_${faceNumber}_${i}`,
+                { size: BLOCK_SIZE },
+                scene
+            );
+
+            led.position.set(
+                gridPos.x * GRID_SPACING,
+                gridPos.y * GRID_SPACING,
+                0.001  // Mínimo desplazamiento para evitar z-fighting
+            );
+
+            led.material = material;
+            led.parent = faceContainer;
+
+            pipMeshes.push(led);
+        }
+    }
+
+    return {
+        pipMeshes,
+        overridePipMaterials,
+        pipTextures,
+    };
+};
+
 const createSquarePyramid = (
     name: string,
     height: number,
@@ -108,7 +261,8 @@ const createPip = (
         } else if (isYFace) {
             y += y > 0 ? ballOffset : -ballOffset;
         }
-    } else if (isTriangle) {
+
+    } else if (config.pipStyle === "triangle") {
         const pipDepth = config.pipRadius * 2.5;
 
         pip = createSquarePyramid(

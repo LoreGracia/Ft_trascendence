@@ -154,10 +154,24 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         cornerRadius: 0.16,
     },
 
+    // code: {
+    //     ...DEFAULT_DICE_CONFIG,
+    //     bodyColor: new Color3(0.03, 0.03, 0.03),
+    //     pipColor: new Color3(0.1, 0.95, 0.35),
+    //     emissiveColor: new Color3(0.02, 0.18, 0.06),
+    // },
     code: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.03, 0.03, 0.03),
         pipColor: new Color3(0.1, 0.95, 0.35),
-        emissiveColor: new Color3(0.02, 0.18, 0.06),
+        // emissiveColor: new Color3(0.08, 0.4, 0.15),
+        //emissiveColor: new Color3(0.02, 0.12, 0.05),
+        //emissiveColor: new Color3(0.05, 0.25, 0.08),
+        // emissiveColor: new Color3(0.06, 0.28, 0.09),
+        emissiveColor: new Color3(0.03, 0.18, 0.07),
+
+        pipStyle: "code",
+        cornerRadius: 0.16,
     },
+
 };

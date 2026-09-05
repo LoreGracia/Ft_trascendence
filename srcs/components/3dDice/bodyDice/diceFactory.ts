@@ -13,7 +13,8 @@ import {
 } from "../modelDice/diceConfig";
 
 import { createRoundedBox } from "./roundedBox";
-import { createDicePips } from "./pipFactory";
+//import { createDicePips } from "./pipFactory";
+import { createDicePips, createCodeDicePips } from "./pipFactory";
 
 export interface DiceInstance {
     root: TransformNode;
@@ -217,11 +218,19 @@ export const createDiceInstance = (
         // PIPS
         // ------------------------------------
 
+        let pipsResult: PipsResult;
+
+        if (resolvedConfig.pipStyle === "code") {
+            pipsResult = createCodeDicePips(scene, root, resolvedConfig, instanceName);
+        } else {
+            pipsResult = createDicePips(scene, root, pipMaterial, resolvedConfig, instanceName);
+        }
+
         const {
             pipMeshes: newPipMeshes,
             overridePipMaterials: newOverrideMaterials,
             pipTextures: newPipTextures,
-        } = createDicePips(scene, root, pipMaterial, resolvedConfig, instanceName);
+        } = pipsResult;
 
         pipMeshes = newPipMeshes;
         overridePipMaterials = newOverrideMaterials;
