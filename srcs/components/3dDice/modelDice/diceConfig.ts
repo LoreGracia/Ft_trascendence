@@ -19,7 +19,7 @@ export interface DiceConfig {
     pipRadius?: number;
     faceOffset?: number;
     pipOffset?: number;
-    pipStyle?: "disc" | "ball";
+    pipStyle?: "disc" | "ball" | "triangle";
     cornerRadius?: number;
     cornerSegments?: number;
 

@@ -16,7 +16,7 @@ export default function Home() {
       <main className="container container-two">
         <section className="column">
 
-            <IndexDice />
+          <SelectDice roomCode="test-room" />
           {/*
             <IndexDice />
             <SelectDice />

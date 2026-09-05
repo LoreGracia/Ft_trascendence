@@ -14,12 +14,12 @@ export const INDEX_DICE_CONFIG: Required<DiceConfig> = {
     cornerSegments: 12,
 
     bodyColor: new Color3(0.95, 0.95, 0.92),
-    bodyTexture: undefined,
+    // bodyTexture: undefined,
 
     pipColor: new Color3(0.08, 0.08, 0.08),
     firstPipColor: new Color3(0.8, 0.08, 0.08),
-    facePipColors: undefined,
-    faceIcons: undefined,
+    // facePipColors: undefined,
+    // faceIcons: undefined,
     faceIconSize: 0.8,
     emissiveColor: new Color3(0, 0, 0),
 
@@ -126,20 +126,6 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         ],
     },
 
-    // magician: {
-    //     ...DEFAULT_DICE_CONFIG,
-
-    //     bodyColor: new Color3(0.025, 0.002, 0.08),
-    //     bodyAlpha: 0.88,
-
-    //     pipColor: new Color3(0.95, 1.0, 0.0),
-    //     pipAlpha: 1.0,
-
-    //     emissiveColor: new Color3(0.85, 0.01, 1.0),
-
-    //     cornerRadius: 0.16,
-    // },
-
     magician: {
         ...DEFAULT_DICE_CONFIG,
 
@@ -160,10 +146,12 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
 
     warrior: {
         ...DEFAULT_DICE_CONFIG,
-        bodyColor: new Color3(0.35, 0.04, 0.04),
-        pipColor: new Color3(0.78, 0.74, 0.62),
-        emissiveColor: new Color3(0, 0, 0),
-        cornerRadius: 0.04,
+        // bodyColor: new Color3(0.7, 0.7, 0.75),
+        bodyTexture: "/textures/metalic2.jpg",
+        pipColor: new Color3(0.25, 0.02, 0.02),
+        //   emissiveColor: new Color3(0, 0, 0),
+        pipStyle: "triangle",
+        cornerRadius: 0.16,
     },
 
     code: {

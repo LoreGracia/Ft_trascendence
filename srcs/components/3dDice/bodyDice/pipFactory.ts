@@ -6,7 +6,9 @@ import {
     StandardMaterial,
     Texture,
     TransformNode,
+    VertexData,
 } from "@babylonjs/core";
+
 import { DiceConfig } from "../modelDice/diceConfig";
 import { createFaceIcon } from "./faceIconFactory";
 
@@ -15,6 +17,53 @@ export interface PipsResult {
     overridePipMaterials: StandardMaterial[];
     pipTextures: Texture[];
 }
+
+const createSquarePyramid = (
+    name: string,
+    height: number,
+    baseSize: number,
+    scene: Scene
+): Mesh => {
+    const mesh = new Mesh(name, scene);
+
+    const half = baseSize / 2;
+
+    const vertices = [
+        // Base: cuadrado
+        half, 0, half,          // 0
+        -half, 0, half,         // 1
+        -half, 0, -half,        // 2
+        half, 0, -half,         // 3
+
+        // Punta
+        0, height, 0,           // 4
+    ];
+
+    const indices = [
+        // Base (dos triángulos)
+        0, 1, 2,
+        0, 2, 3,
+
+        // Caras laterales
+        0, 4, 1,
+        1, 4, 2,
+        2, 4, 3,
+        3, 4, 0,
+    ];
+
+    const normals: number[] = [];
+
+    VertexData.ComputeNormals(vertices, indices, normals);
+
+    const vertexData = new VertexData();
+    vertexData.positions = vertices;
+    vertexData.indices = indices;
+    vertexData.normals = normals;
+
+    vertexData.applyToMesh(mesh);
+
+    return mesh;
+};
 
 const createPip = (
     scene: Scene,
@@ -29,18 +78,29 @@ const createPip = (
 ): Mesh => {
     let pip: Mesh;
 
-    const isZFace = Math.abs(Math.abs(z) - config.faceOffset) < 0.001;
-    const isXFace = Math.abs(Math.abs(x) - config.faceOffset) < 0.001;
-    const isYFace = Math.abs(Math.abs(y) - config.faceOffset) < 0.001;
+    const isZFace =
+        Math.abs(Math.abs(z) - config.faceOffset) < 0.001;
+
+    const isXFace =
+        Math.abs(Math.abs(x) - config.faceOffset) < 0.001;
+
+    const isYFace =
+        Math.abs(Math.abs(y) - config.faceOffset) < 0.001;
+
+    const isTriangle = config.pipStyle === "triangle";
 
     if (config.pipStyle === "ball") {
         pip = MeshBuilder.CreateSphere(
             `${instanceName}_pip_${pipIndex}`,
-            { diameter: config.pipRadius * 2, segments: 16 },
+            {
+                diameter: config.pipRadius * 2,
+                segments: 16,
+            },
             scene
         );
 
         const ballOffset = config.pipRadius * 0.05;
+
         if (isZFace) {
             z += z > 0 ? ballOffset : -ballOffset;
         } else if (isXFace) {
@@ -48,10 +108,41 @@ const createPip = (
         } else if (isYFace) {
             y += y > 0 ? ballOffset : -ballOffset;
         }
+    } else if (isTriangle) {
+        const pipDepth = config.pipRadius * 2.5;
+
+        pip = createSquarePyramid(
+            `${instanceName}_pip_${pipIndex}`,
+            pipDepth,
+            config.pipRadius * 2.5,
+            scene
+        );
+
+        /*
+         * Posiciona y orienta la pirámide perpendicular a cada cara.
+         * La base (Y=0 local) quedará tocando la superficie del dado.
+         */
+        if (isZFace) {
+            const outward = z > 0 ? 1 : -1;
+            // z se mantiene en config.faceOffset (la base toca la cara)
+            pip.rotation.x = outward * Math.PI / 2;
+        } else if (isXFace) {
+            const outward = x > 0 ? 1 : -1;
+            // x se mantiene en config.faceOffset (la base toca la cara)
+            pip.rotation.z = -outward * Math.PI / 2;
+        } else if (isYFace) {
+            const outward = y > 0 ? 1 : -1;
+            // y se mantiene en config.faceOffset (la base toca la cara)
+            pip.rotation.x = outward > 0 ? 0 : Math.PI;
+        }
     } else {
         pip = MeshBuilder.CreateDisc(
             `${instanceName}_pip_${pipIndex}`,
-            { radius: config.pipRadius, tessellation: 32, sideOrientation: Mesh.DOUBLESIDE },
+            {
+                radius: config.pipRadius,
+                tessellation: 32,
+                sideOrientation: Mesh.DOUBLESIDE,
+            },
             scene
         );
     }
@@ -59,67 +150,105 @@ const createPip = (
     pip.position.set(x, y, z);
     pip.material = pipMaterial;
 
-    if (isZFace) {
-        pip.rotation.y = z > 0 ? 0 : Math.PI;
-    } else if (isXFace) {
-        pip.rotation.y = x > 0 ? Math.PI / 2 : -Math.PI / 2;
-    } else if (isYFace) {
-        pip.rotation.x = y > 0 ? -Math.PI / 2 : Math.PI / 2;
+    /*
+     * Las pirámides ya tienen su orientación aplicada dentro
+     * de su propia rama. No sobrescribimos esa rotación aquí.
+     *
+     * Esta orientación se mantiene para las bolas y los discos.
+     */
+    if (!isTriangle) {
+        if (isZFace) {
+            pip.rotation.y = z > 0 ? 0 : Math.PI;
+        } else if (isXFace) {
+            pip.rotation.y = x > 0
+                ? Math.PI / 2
+                : -Math.PI / 2;
+        } else if (isYFace) {
+            pip.rotation.x = y > 0
+                ? -Math.PI / 2
+                : Math.PI / 2;
+        }
     }
 
     pip.parent = root;
+
     return pip;
 };
 
-type AddPipFn = (x: number, y: number, z: number, colorOverride?: Color3) => void;
-type FacePipBuilder = (addPip: AddPipFn, faceOffset: number, pipOffset: number, color?: Color3) => void;
+type AddPipFn = (
+    x: number,
+    y: number,
+    z: number,
+    colorOverride?: Color3
+) => void;
 
-// Cada función construye el patrón de pips de UNA cara (1-6). Separarlas
-// permite que el orquestador (createDicePips) sustituya cualquiera de
-// ellas por un icono/emoji sin tocar las demás.
+type FacePipBuilder = (
+    addPip: AddPipFn,
+    faceOffset: number,
+    pipOffset: number,
+    color?: Color3
+) => void;
+
+// Cada función construye el patrón de pips de UNA cara (1-6).
+// Separarlas permite que el orquestador (createDicePips)
+// sustituya cualquiera de ellas por un icono/emoji
+// sin tocar las demás.
+
 const FACE_PIP_BUILDERS: Record<number, FacePipBuilder> = {
     1: (addPip, faceOffset, _pipOffset, color) => {
         addPip(0, 0, faceOffset, color);
     },
+
     6: (addPip, faceOffset, pipOffset, color) => {
         addPip(-pipOffset, pipOffset, -faceOffset, color);
         addPip(pipOffset, pipOffset, -faceOffset, color);
+
         addPip(-pipOffset, 0, -faceOffset, color);
         addPip(pipOffset, 0, -faceOffset, color);
+
         addPip(-pipOffset, -pipOffset, -faceOffset, color);
         addPip(pipOffset, -pipOffset, -faceOffset, color);
     },
+
     2: (addPip, faceOffset, pipOffset, color) => {
         addPip(faceOffset, pipOffset, -pipOffset, color);
         addPip(faceOffset, -pipOffset, pipOffset, color);
     },
+
     5: (addPip, faceOffset, pipOffset, color) => {
         addPip(-faceOffset, pipOffset, -pipOffset, color);
         addPip(-faceOffset, pipOffset, pipOffset, color);
+
         addPip(-faceOffset, 0, 0, color);
+
         addPip(-faceOffset, -pipOffset, -pipOffset, color);
         addPip(-faceOffset, -pipOffset, pipOffset, color);
     },
+
     3: (addPip, faceOffset, pipOffset, color) => {
         addPip(-pipOffset, faceOffset, -pipOffset, color);
         addPip(0, faceOffset, 0, color);
         addPip(pipOffset, faceOffset, pipOffset, color);
     },
+
     4: (addPip, faceOffset, pipOffset, color) => {
         addPip(-pipOffset, -faceOffset, -pipOffset, color);
         addPip(pipOffset, -faceOffset, -pipOffset, color);
+
         addPip(-pipOffset, -faceOffset, pipOffset, color);
         addPip(pipOffset, -faceOffset, pipOffset, color);
     },
 };
 
-const FACE_ORDER = [1, 6, 2, 5, 3, 4]; // mismo orden que tenía el archivo original
+const FACE_ORDER = [1, 6, 2, 5, 3, 4];
 
 /**
- * Genera las 6 caras de un dado d6: para cada una, o bien los pips
- * estándar (respetando pipStyle y color por cara vía facePipColors), o
- * bien, si config.faceIcons trae una entrada para esa cara, un único
- * plano con imagen/emoji que sustituye a los pips de esa cara entera.
+ * Genera las 6 caras de un dado d6:
+ *
+ * - Crea los pips estándar respetando pipStyle.
+ * - Aplica colores individuales mediante facePipColors.
+ * - Si faceIcons contiene una entrada para una cara,
+ *   crea un icono que sustituye todos sus pips.
  */
 export const createDicePips = (
     scene: Scene,
@@ -131,36 +260,68 @@ export const createDicePips = (
     const pipMeshes: Mesh[] = [];
     const overridePipMaterials: StandardMaterial[] = [];
     const pipTextures: Texture[] = [];
+
     let pipIndex = 0;
 
-    const addPip: AddPipFn = (x, y, z, colorOverride) => {
+    const addPip: AddPipFn = (
+        x,
+        y,
+        z,
+        colorOverride
+    ) => {
         const pipMaterialToUse = colorOverride
             ? (() => {
                 const specialMaterial = new StandardMaterial(
                     `${instanceName}_pipMaterial_${pipIndex}`,
                     scene
                 );
+
                 specialMaterial.diffuseColor = colorOverride;
                 specialMaterial.backFaceCulling = false;
+
                 overridePipMaterials.push(specialMaterial);
+
                 return specialMaterial;
             })()
             : pipMaterial;
 
-        const pip = createPip(scene, root, pipMaterialToUse, config, instanceName, pipIndex++, x, y, z);
+        const pip = createPip(
+            scene,
+            root,
+            pipMaterialToUse,
+            config,
+            instanceName,
+            pipIndex++,
+            x,
+            y,
+            z
+        );
+
         pipMeshes.push(pip);
     };
 
-    const { faceOffset, pipOffset, firstPipColor, facePipColors, faceIcons } = config;
+    const {
+        faceOffset,
+        pipOffset,
+        firstPipColor,
+        facePipColors,
+        faceIcons,
+    } = config;
 
-    const faceColor = (faceValue: number, fallback?: Color3) =>
-        facePipColors?.[faceValue - 1] ?? fallback;
+    const faceColor = (
+        faceValue: number,
+        fallback?: Color3
+    ) => facePipColors?.[faceValue - 1] ?? fallback;
 
     for (const faceNumber of FACE_ORDER) {
         const icon = faceIcons?.[faceNumber];
 
         if (icon) {
-            const { mesh, material, texture } = createFaceIcon(
+            const {
+                mesh,
+                material,
+                texture,
+            } = createFaceIcon(
                 scene,
                 root,
                 config,
@@ -168,15 +329,30 @@ export const createDicePips = (
                 faceNumber,
                 icon
             );
+
             pipMeshes.push(mesh);
             overridePipMaterials.push(material);
             pipTextures.push(texture as Texture);
+
             continue;
         }
 
-        const fallbackColor = faceNumber === 1 ? firstPipColor : undefined;
-        FACE_PIP_BUILDERS[faceNumber](addPip, faceOffset, pipOffset, faceColor(faceNumber, fallbackColor));
+        const fallbackColor =
+            faceNumber === 1
+                ? firstPipColor
+                : undefined;
+
+        FACE_PIP_BUILDERS[faceNumber](
+            addPip,
+            faceOffset,
+            pipOffset,
+            faceColor(faceNumber, fallbackColor)
+        );
     }
 
-    return { pipMeshes, overridePipMaterials, pipTextures };
+    return {
+        pipMeshes,
+        overridePipMaterials,
+        pipTextures,
+    };
 };
