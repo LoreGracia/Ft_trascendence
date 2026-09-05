@@ -8,15 +8,15 @@
 //     redirectTo: "/login",
 //   });
 // }
-"use client";
+// "use client";
 
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+// import { authClient } from "@/lib/auth-client";
+// import { useRouter } from "next/navigation";
 
-export function useLogout() {
-  const router = useRouter();
-  return async () => {
-    await authClient.signOut();
-    router.push("/login");
-  };
-}
+// export function useLogout() {
+//   const router = useRouter();
+//   return async () => {
+//     await authClient.signOut();
+//     router.push("/login");
+//   };
+// }
