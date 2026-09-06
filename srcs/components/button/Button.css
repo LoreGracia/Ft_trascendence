@@ -34,6 +34,11 @@
   background-color: rgb(204, 204, 204);/* dark:hover:bg-[#ccc] */
 }
 
+.button--highlight:disabled {
+  background-color: var(--light);
+}
+
+
 .button--basic {
   background-color: var(--black);/* bg-foreground */
   color: var(--white);/* text-(--light) */

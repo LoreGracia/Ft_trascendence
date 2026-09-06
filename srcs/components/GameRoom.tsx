@@ -4,30 +4,19 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
-import type { WaitingRoom } from '@/types/game';
 import { useSearchParams } from 'next/navigation';
+import { ArrowRight, Lock, LockOpen } from "lucide-react";
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
-
-  // const { room } = params;
-//   searchParams,
-// }: {
-//   searchParams?: Promise<{ roomCode?: string }>;
-// }) {
-  
   const router = useRouter();
   const {
-    // roomCodeInput,
-    // setRoomCodeInput,
     waitingRoom,
     matchRoom,
     lastRoll,
     winnerMessage,
     isMyTurn,
-    // createRoom,
-    // joinRoom,
     exitRoom,
     toggleReadyStatus,
     startGame,
@@ -52,13 +41,10 @@ useEffect(() => {
     }
   }
 }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-useEffect(() => {
-  console.log('GameRoom mounted (simple effect)', { socketConnected: socket.connected, socketId: socket.id });
-}, []);
-
+const myPlayerState =
+  waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
   return (
-    <main style={{ backgroundColor: '#121212', minHeight: '100vh', color: 'white', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>🎲 Dice Game Tester</h1>
+    <div className="w-full h-full p-20">
       <p>
         <small>
           Tu Socket ID: <code>{socket.id}</code>
@@ -66,34 +52,61 @@ useEffect(() => {
       </p>
 
       {waitingRoom && !matchRoom && (
-        <div style={{ border: '1px solid #00a8ff', padding: '15px', borderRadius: '8px' }}>
-          <h2>
-            Sala de Espera: <span style={{ color: '#00a8ff' }}>{waitingRoom.roomCode}</span>
-          </h2>
-          <h3>Jugadores ({waitingRoom.players.length}):</h3>
+        <>
+        <div className="justify-end gap-5">
+          <h1 className="row gap-5">
+            🎲  {waitingRoom.gameType} : 
+            <span className="text-(--dark)"> {waitingRoom.roomCode}
+            </span>
+            <p>
+              {waitingRoom.players.length} / 2
+              <small> (max 6)</small> 
+              <ArrowRight/>
+            </p>
+          </h1>
+
           <ul>
             {waitingRoom.players.map((p) => (
-              <li key={p.id}>
-                {p.id} {p.id === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
+              <li className="flex flex-row" key={p.id}>
+                {p.id} ➡️ <b>{p.state}</b>
+                {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+              {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
+            </button> : ''} 
               </li>
             ))}
           </ul>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
-            <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
-              Cambiar Estado (Listo / No listo)
+          <div className="box">
+            {/* <button onClick={toggleReadyStatus} className="button rounded-lg button--secondary">
+              {myPlayerState === 'LOCKED' ? <Lock/> : <LockOpen/>}
+            </button> */}
+            <button
+              onClick={() => startGame(waitingRoom.gameType)}
+              disabled={waitingRoom.players.length === 1}
+              className="button rounded-3xl button--highlight"
+              >
+              Play
             </button>
-            <button onClick={() => startGame('FREE_PLAY')} style={{ backgroundColor: '#44bd32', color: 'white', padding: '8px' }}>
+            {/* <button
+              onClick={() => startGame('FREE_PLAY')}
+              disabled={waitingRoom.players.length === 1}
+              className="button rounded-3xl button--highlight"
+              >
               Iniciar FREE_PLAY
             </button>
-            <button onClick={() => startGame('ADD42')} style={{ backgroundColor: '#8c7ae6', color: 'white', padding: '8px' }}>
+            <button
+              onClick={() => startGame('ADD42')}
+              className="button rounded-3xl button--highlight"
+              disabled={waitingRoom.players.length === 1}
+              >
               Iniciar ADD42
-            </button>
-            <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white', padding: '8px' }}>
-              Salir
-            </button>
+            </button> */}
           </div>
         </div>
+        <button onClick={exitRoom} className="absolute p-3 button--secondary rounded-3xl mb-0">
+          Exit
+        </button>
+        </>
       )}
 
       {matchRoom && (
@@ -206,6 +219,6 @@ useEffect(() => {
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }

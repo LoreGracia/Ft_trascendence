@@ -37,11 +37,6 @@ export function CreateRoomButton({ mode }: CreateRoomButtonProps) {
         <Plus/>
         {isCreating ? "Creando..." : "Crear sala"}
       </button>
-      {/* {roomCode && (
-        <p>
-          Código: {roomCode}
-        </p>
-      )} */}
     </div>
   );
 }

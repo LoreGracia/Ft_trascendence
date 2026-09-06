@@ -241,8 +241,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       data-slot="sidebar-inset"
-      className={cn(
-        "container max-w-full",
+      className={cn("min-w-full min-h-full",
         className
       )}
       {...props}

@@ -113,6 +113,7 @@ io.on("connection", (socket: Socket) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
+				closeRoom(room);
 				const factory = getGameFactory(room.gameType);
 				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);
