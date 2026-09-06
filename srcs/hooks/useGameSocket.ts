@@ -42,6 +42,18 @@ export function useGameSocket() {
     }
   }, [waitingRoom, matchRoom]);
 
+  const exitMatch = useCallback(() => {
+    const code = waitingRoom?.roomCode || matchRoom?.roomCode;
+    if (code) {
+      socket.emit('exit_match_room', code);
+      setWaitingRoom(null);
+      setMatchRoom(null);
+      setLastRoll(null);
+      setWinnerMessage('');
+      router.push(`/landing`);
+    }
+  }, [waitingRoom, matchRoom]);
+
   const toggleReadyStatus = useCallback(() => {
     if (waitingRoom) socket.emit('change_player_status', waitingRoom.roomCode);
   }, [waitingRoom]);
@@ -100,9 +112,9 @@ export function useGameSocket() {
       setMatchRoom(finalMatch);
 
       const me = finalMatch.players.find((p) => p.id === socket.id);
-      if (me?.state === 'WIN') setWinnerMessage('🎉 ¡HAS GANADO!');
-      else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡EMPATE!');
-      else setWinnerMessage('💀 HAS PERDIDO');
+      if (me?.state === 'WIN') setWinnerMessage('🎉 ¡YOU WON!');
+      else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡DRAW!');
+      else setWinnerMessage('💀 YOU LOST');
     };
 
     const handlePlayError = () => {
@@ -156,6 +168,7 @@ export function useGameSocket() {
     createRoom,
     joinRoom,
     exitRoom,
+    exitMatch,
     toggleReadyStatus,
     startGame,
     rollDice,

@@ -6,6 +6,7 @@ import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
+import { cn } from "@/lib/utils"
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
@@ -18,6 +19,7 @@ export default function GameRoom() {
     winnerMessage,
     isMyTurn,
     exitRoom,
+    exitMatch,
     toggleReadyStatus,
     startGame,
     rollDice,
@@ -42,8 +44,16 @@ useEffect(() => {
     }
   }
 }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
+  if (!socket.id)
+    router.push(`/landing`);
 const myPlayerState =
   waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+    const winnerClass =
+  winnerMessage === "🎉 ¡YOU WON!"
+    ? "bg-violet-300 text-violet-500 rounded-4xl "
+    : winnerMessage === "💀 YOU LOST"
+    ? "bg-violet-950"
+    : "bg-violet-500 rounded-2xl ";
   return (
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
@@ -87,20 +97,6 @@ const myPlayerState =
           </button>
            {playError && <p className="text-(--t-error)">{playError}</p>}
            </div>
-          {/* <button
-            onClick={() => startGame('FREE_PLAY')}
-            disabled={waitingRoom.players.length === 1}
-            className="button rounded-3xl button--highlight"
-            >
-            Iniciar FREE_PLAY
-          </button>
-          <button
-            onClick={() => startGame('ADD42')}
-            className="button rounded-3xl button--highlight"
-            disabled={waitingRoom.players.length === 1}
-            >
-            Iniciar ADD42
-          </button> */}
           <button onClick={exitRoom} className="fixed bottom-20 p-3 button--secondary rounded-3xl">
             Exit room
           </button>
@@ -108,34 +104,29 @@ const myPlayerState =
       )}
 
       {matchRoom && (
-        <div style={{ border: '1px solid #44bd32', padding: '15px', borderRadius: '8px' }}>
+        <div>
+          <div className="pb-5">
           <h2>
-            Partida: {matchRoom.roomCode} | Modo:{' '}
-            <span style={{ color: '#fbc531' }}>{matchRoom.gameType}</span>
+            Room: {matchRoom.roomCode} | Mode:{' '}
+            <span className="text-(--dark)">{matchRoom.gameType}</span>
           </h2>
-
+          </div>
           {winnerMessage && (
             <div
-              style={{
-                backgroundColor: '#27ae60',
-                color: 'white',
-                padding: '15px',
-                borderRadius: '5px',
-                fontSize: '20px',
-                marginBottom: '15px',
-              }}
-            >
+              className={cn("p-5 text-4xl", winnerClass)}>
               {winnerMessage}
             </div>
           )}
 
-          <h3>
-            Turno de:{' '}
-            <span style={{ color: isMyTurn ? '#44bd32' : '#e74c3c' }}>
-              {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
-              {isMyTurn ? '(¡TU TURNO!)' : ''}
-            </span>
-          </h3>
+          {!winnerMessage && (
+            <h3>
+              Turn of:{' '}
+              <span style={{ color: isMyTurn ? "bg-(--dark)": 'bf-(--light)' }}>
+                {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
+                {isMyTurn ? '(¡TU TURNO!)' : ''}
+              </span>
+            </h3>
+          )}
 
           <div style={{ backgroundColor: '#1e1e1e', padding: '10px', borderRadius: '6px', margin: '15px 0' }}>
             <h3>📊 SUMA TOTAL DE RESULTADOS:</h3>
@@ -170,15 +161,16 @@ const myPlayerState =
             <button
               onClick={rollDice}
               disabled={!isMyTurn || !!winnerMessage}
+              className="button button--highlight rounded-sm"
               style={{
-                padding: '12px 24px',
-                fontSize: '16px',
-                backgroundColor: isMyTurn ? '#44bd32' : '#555',
-                color: 'white',
+                // padding: '12px 24px',
+                // fontSize: '16px',
+                // backgroundColor: isMyTurn ? '#44bd32' : '#555',
+                // color: 'white',
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              🎲 Tirar Dados
+              🎲 Throw dice
             </button>
 
             {matchRoom.gameType === 'ADD42' && (
@@ -191,12 +183,13 @@ const myPlayerState =
               </button>
             )}
 
-            <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white' }}>
-              Salir de la partida
+            <button onClick={exitMatch}
+              className="button rounded-sm button--secondary">
+              Exit match
             </button>
           </div>
 
-          {lastRoll && (
+          {matchRoom.gameType === 'ADD42' && lastRoll && (
             <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
               <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
               <p className="text-(--t-content)">
