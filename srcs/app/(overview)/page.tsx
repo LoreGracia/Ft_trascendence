@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import PatternControl from "@/components/Pattern/PatternControl";
-import DiceScene from "@/components/3dDice/DiceScene";
 import IndexDice from "@/components/3dDice/IndexDice";
 import SelectDice from "@/components/3dDice/SelectDice";
 import ThrowDice from "@/components/3dDice/ThrowDice";
@@ -16,7 +15,7 @@ export default function Home() {
       <main className="container container-two">
         <section className="column">
 
-          <IndexDice />
+          <SelectDice roomCode="test-room" />
           {/*
             <IndexDice />
             <SelectDice />
@@ -49,7 +48,10 @@ export default function Home() {
 
               <Link
                 className="button button-round button--highlight"
-                href="/errorPages/404"
+                // href="/errorPages/404"
+                // href="/errorPages/500"
+                // href="/errorPages/403"
+                href="/errorPages/503"
               >
                 Test Error
               </Link>

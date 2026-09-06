@@ -13,7 +13,7 @@ import {
 import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
 import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { DEFAULT_DICE_CONFIG } from "@/components/3dDice/modelDice/modelDice";
-import styles from "./DiceScene.module.css";
+import styles from "@/components/3dDice/DiceScene.module.css";
 
 interface DiceResultProps {
     result: number;

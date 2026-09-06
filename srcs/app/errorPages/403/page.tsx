@@ -8,13 +8,13 @@ export default function Error404() {
     return (
         <ErrorLayout
             children={
-                <DiceErrorTriple result1={4} result2={1} result3={4} emoji2="❌" />
+                <DiceErrorTriple result1={4} result2={1} result3={4} emoji1="⛔" emoji2="📛" emoji3="⛔" />
             }
             textContent={
                 <ErrorText
-                    topMessage="Whoa, where are you going?"
-                    errorCode="404"
-                    bottomMessage="Page Not Found"
+                    topMessage="Sorry but you don't have acces!"
+                    errorCode="403"
+                    bottomMessage="Forbidden"
                 />
             }
         />
