@@ -23,7 +23,7 @@ interface DiceResultProps {
     preset?: string;         // "default", "warrior", "code", etc.
 }
 
-export default function DiceResult({
+export default function DiceError({
     result,
     emoji,
     startPosition = new Vector3(-4, 1.5, 0),

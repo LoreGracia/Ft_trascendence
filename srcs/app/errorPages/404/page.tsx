@@ -1,35 +1,37 @@
 "use client";
 
-import DiceResult from "@/components/3dDice/DiceResult";
+import DiceErrorTriple from "@/components/3dDice/DiceErrorTriple";
 
 export default function Error404() {
     return (
-        <div className="flex flex-col items-center justify-start min-h-screen bg-black pt-20 w-full">
-            <div className="text-center w-full">
-                <p style={{ fontSize: "64px" }} className="text-gray-500 mb-8">
-                    Whoa, where are you going?
-                </p>
-                <h1
-                    style={{ fontSize: "144px" }}
-                    className="font-bold text-white mb-4 mx-auto"
-                >
-                    404
-                </h1>
-                <p style={{ fontSize: "64px" }} className="text-gray-400 mb-20">
-                    Page Not Found
-                </p>
+        <div className="relative w-full h-screen bg-black overflow-hidden">
+            {/* Canvas full screen */}
+            <div className="absolute inset-0 w-full h-full">
+                <DiceErrorTriple result1={4} result2={1} result3={4} emoji2="❌" />
             </div>
 
-            {/* 3 Dados lado a lado */}
-            <div className="flex flex-row gap-8 justify-center w-full">
-                <div style={{ width: "200px", height: "200px" }}>
-                    <DiceResult result={4} />
-                </div>
-                <div style={{ width: "200px", height: "200px" }}>
-                    <DiceResult result={1} emoji="❌" />
-                </div>
-                <div style={{ width: "200px", height: "200px" }}>
-                    <DiceResult result={4} />
+            {/* Texto en el segundo cuarto (posicionado absoluto) */}
+            <div className="absolute top-1/6 left-0 right-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="text-center">
+                    <p style={{ fontSize: "68px" }} className="text-gray-500 mb-8">
+                        Whoa, where are you going?
+                    </p>
+
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <p style={{ fontSize: "38px" }} className="text-gray-500">
+                            Error |
+                        </p>
+                        <h1
+                            style={{ fontSize: "100px" }}
+                            className="font-bold text-white"
+                        >
+                            404
+                        </h1>
+                    </div>
+
+                    <p style={{ fontSize: "58px" }} className="text-gray-400">
+                        Page Not Found
+                    </p>
                 </div>
             </div>
         </div>
