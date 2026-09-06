@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { socket } from '@/lib/socket';
 import type { GameType, LastRoll, MatchRoom, WaitingRoom } from '@/types/game';
+import { useRouter } from 'next/navigation';
 
 const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string): number => {
   if (!sumData) return 0;
@@ -12,12 +13,14 @@ const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string)
 };
 
 export function useGameSocket() {
+  const router = useRouter();
   const [gameType, setGameType] = useState<GameType>("FREE_PLAY");;
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
+  const [playError, setPlayError] = useState<string | null>(null);
 
   const createRoom = useCallback(() => {
     socket.emit('create_room', gameType);
@@ -30,11 +33,12 @@ export function useGameSocket() {
   const exitRoom = useCallback(() => {
     const code = waitingRoom?.roomCode || matchRoom?.roomCode;
     if (code) {
-      socket.emit('exit_room', code);
+      socket.emit('exit_waiting_room', code);
       setWaitingRoom(null);
       setMatchRoom(null);
       setLastRoll(null);
       setWinnerMessage('');
+      router.push(`/landing`);
     }
   }, [waitingRoom, matchRoom]);
 
@@ -44,7 +48,11 @@ export function useGameSocket() {
 
   const startGame = useCallback(
     (gameType: GameType) => {
-      if (waitingRoom) socket.emit('start_game', gameType, waitingRoom.roomCode);
+      if (waitingRoom)
+      {
+        setGameType(gameType);
+        socket.emit('start_game', waitingRoom.roomCode);
+      }
     },
     [waitingRoom],
   );
@@ -70,6 +78,7 @@ export function useGameSocket() {
     };
 
     const handleGameStarted = (matchData: MatchRoom) => {
+      console.log("LLEGA");
       setWaitingRoom(null);
       setMatchRoom(matchData);
       setWinnerMessage('');
@@ -96,13 +105,19 @@ export function useGameSocket() {
       else setWinnerMessage('💀 HAS PERDIDO');
     };
 
+    const handlePlayError = () => {
+      setPlayError("All players must be locked");
+    };
+
+
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_status_changed', handlePlayerStatusChanged);
     socket.on('game_started', handleGameStarted);
     socket.on('dice_rolled', handleDiceRolled);
     socket.on('match_won', handleMatchWon);
-    socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    socket.on('game_not_started', handlePlayError);
     socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
 
@@ -116,6 +131,7 @@ export function useGameSocket() {
       socket.off('join_error');
       socket.off('game_not_started');
       socket.off('error_turn');
+
     };
   }, []);
 
@@ -145,5 +161,6 @@ export function useGameSocket() {
     rollDice,
     standPlayer,
     getPlayerScore,
+    playError
   };
 }

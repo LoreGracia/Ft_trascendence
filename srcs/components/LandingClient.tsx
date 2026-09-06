@@ -15,7 +15,7 @@ type Props = {
 
 export default function LandingClient({ onEnterRoom }: Props) {
   const router = useRouter();
-  const { roomCodeInput, gameType, setRoomCodeInput, setGameType, createRoom, joinRoom, waitingRoom } = useGameSocket();
+  const { gameType, setGameType, waitingRoom } = useGameSocket();
   const [mounted, setMounted] = useState(false);
   const [sid, setSid] = useState('');
 
@@ -43,7 +43,7 @@ export default function LandingClient({ onEnterRoom }: Props) {
           <CreateRoomButton mode={gameType} />
           <JoinButton/>
         </div>
-      <p >
+      <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{mounted ? sid : ''}</code>
         </small>

@@ -23,6 +23,7 @@ export default function GameRoom() {
     rollDice,
     standPlayer,
     getPlayerScore,
+    playError,
   } = useGameSocket();
   console.log(`Pasa 1  ${roomCode}`);
 useEffect(() => {
@@ -45,68 +46,65 @@ const myPlayerState =
   waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
   return (
     <div className="w-full h-full p-20">
-      <p>
+      <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{socket.id}</code>
         </small>
       </p>
 
       {waitingRoom && !matchRoom && (
-        <>
-        <div className="justify-end gap-5">
-          <h1 className="row gap-5">
-            🎲  {waitingRoom.gameType} : 
-            <span className="text-(--dark)"> {waitingRoom.roomCode}
-            </span>
-            <p>
-              {waitingRoom.players.length} / 2
-              <small> (max 6)</small> 
-              <ArrowRight/>
-            </p>
-          </h1>
-
-          <ul>
-            {waitingRoom.players.map((p) => (
-              <li className="flex flex-row" key={p.id}>
-                {p.id} ➡️ <b>{p.state}</b>
-                {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-              {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
-            </button> : ''} 
-              </li>
-            ))}
-          </ul>
-
-          <div className="box">
-            {/* <button onClick={toggleReadyStatus} className="button rounded-lg button--secondary">
-              {myPlayerState === 'LOCKED' ? <Lock/> : <LockOpen/>}
-            </button> */}
-            <button
-              onClick={() => startGame(waitingRoom.gameType)}
-              disabled={waitingRoom.players.length === 1}
-              className="button rounded-3xl button--highlight"
-              >
-              Play
-            </button>
-            {/* <button
-              onClick={() => startGame('FREE_PLAY')}
-              disabled={waitingRoom.players.length === 1}
-              className="button rounded-3xl button--highlight"
-              >
-              Iniciar FREE_PLAY
-            </button>
-            <button
-              onClick={() => startGame('ADD42')}
-              className="button rounded-3xl button--highlight"
-              disabled={waitingRoom.players.length === 1}
-              >
-              Iniciar ADD42
-            </button> */}
+        <div className="flex flex-col items-center">
+          <div className="w-full h-full flex flex-col justify-evenly">
+            <div className="flex flex-row items-center gap-5 w-full pb-5">
+            <h2>
+              🎲 {waitingRoom.gameType} : 
+            </h2>
+              <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
+              <p className="text-(--t-content)">
+                {waitingRoom.players.length} / 2
+                <small> (max 6)</small> 
+                <ArrowRight/>
+              </p>
+            </div>
+            <ul className="pb-20">
+              {waitingRoom.players.map((p) => (
+                <li className="flex flex-row" key={p.id}>
+                  {p.id} ➡️ <b>{p.state}</b>
+                  {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
+              </button> : ''} 
+                </li>
+              ))}
+            </ul>
           </div>
+          <div className="fixed bottom-60 flex flex-col gap-2 items-center">
+          <button
+            onClick={() => startGame(waitingRoom.gameType)}
+            disabled={waitingRoom.players.length === 1 }
+            className="p-10 pb-5 pt-5 rounded-3xl button--highlight"
+            >
+            Play
+          </button>
+           {playError && <p className="text-(--t-error)">{playError}</p>}
+           </div>
+          {/* <button
+            onClick={() => startGame('FREE_PLAY')}
+            disabled={waitingRoom.players.length === 1}
+            className="button rounded-3xl button--highlight"
+            >
+            Iniciar FREE_PLAY
+          </button>
+          <button
+            onClick={() => startGame('ADD42')}
+            className="button rounded-3xl button--highlight"
+            disabled={waitingRoom.players.length === 1}
+            >
+            Iniciar ADD42
+          </button> */}
+          <button onClick={exitRoom} className="fixed bottom-20 p-3 button--secondary rounded-3xl">
+            Exit room
+          </button>
         </div>
-        <button onClick={exitRoom} className="absolute p-3 button--secondary rounded-3xl mb-0">
-          Exit
-        </button>
-        </>
       )}
 
       {matchRoom && (
@@ -201,7 +199,7 @@ const myPlayerState =
           {lastRoll && (
             <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
               <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
-              <p>
+              <p className="text-(--t-content)">
                 Dados sacados:{' '}
                 {lastRoll.nums.map((d, idx) => (
                   <span
@@ -212,7 +210,7 @@ const myPlayerState =
                   </span>
                 ))}
               </p>
-              <p>
+              <p className="text-(--t-content)">
                 Suma de este turno: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
