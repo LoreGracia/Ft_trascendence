@@ -18,7 +18,7 @@ export const useJoinRoom = () => {
 
     const handleJoinError = () => {
       setIsJoining(false);
-      setError("No se pudo unir a la sala");
+      setError("Unable to join room");
     };
 
     socket.on("player_joined", handlePlayerJoined);
@@ -35,7 +35,7 @@ export const useJoinRoom = () => {
 
     if (!code) return;
     if (!socket.connected) {
-      setError("Socket no conectado");
+      setError("Socket not conected");
       return;
     }
 

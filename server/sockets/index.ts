@@ -36,7 +36,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
 		methods: ["GET", "POST"],
 	},
 });
@@ -113,6 +113,7 @@ io.on("connection", (socket: Socket) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
+				closeRoom(room);
 				const factory = getGameFactory(room.gameType);
 				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);

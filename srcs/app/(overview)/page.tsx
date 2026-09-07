@@ -27,7 +27,8 @@ export default function Home() {
           <div className="column">
 
             <h1>This is Dice</h1>
-            <p>Welcome</p>
+
+            <p className="text-(--t-content)">Welcome</p>
 
             <div className="flex flex-row gap-4 text-base font-medium">
               <Link

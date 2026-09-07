@@ -25,7 +25,7 @@ export default function GameClient() {
   return (
     <main style={{ backgroundColor: '#121212', minHeight: '100vh', color: 'white', padding: '20px', fontFamily: 'sans-serif' }}>
       <h1>🎲 Dice Game Tester</h1>
-      <p>
+      <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{socket.id}</code>
         </small>
@@ -173,7 +173,7 @@ export default function GameClient() {
           {lastRoll && (
             <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
               <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
-              <p>
+              <p className="text-(--t-content)">
                 Dados sacados:{' '}
                 {lastRoll.nums.map((d, idx) => (
                   <span
@@ -184,7 +184,7 @@ export default function GameClient() {
                   </span>
                 ))}
               </p>
-              <p>
+              <p className="text-(--t-content)">
                 Suma de este turno: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>

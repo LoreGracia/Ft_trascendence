@@ -37,11 +37,6 @@ export function CreateRoomButton({ mode }: CreateRoomButtonProps) {
         <Plus/>
         {isCreating ? "Creando..." : "Crear sala"}
       </button>
-      {/* {roomCode && (
-        <p>
-          Código: {roomCode}
-        </p>
-      )} */}
     </div>
   );
 }
@@ -85,7 +80,7 @@ export function JoinButton() {
           {isJoining ? "Uniéndose..." : "Join room"}
         </button>
       </div>
-      {error && <p>{error}</p>}
+      {error && <p className="text-(--t-error)">{error}</p>}
     </div>
   );
 }
@@ -106,7 +101,7 @@ export function ExitButton({ currentRoomCode }: { currentRoomCode?: string }) {
         {isExiting ? "Saliendo..." : "Salir de la sala"}
       </button>
 
-      {error && <p>{error}</p>}
+      {error && <p className="text-(--t-error)">{error}</p>}
     </div>
   );
 }

@@ -11,13 +11,13 @@ export interface Player {
 
 export type WaitingRoom = {
   roomCode: string;
+	gameType: GameType;
   players: Player[];
   state?: 'OPEN' | 'CLOSED';
 };
 
 export interface MatchRoom extends WaitingRoom {
   roomCode: string;
-  gameType: GameType;
   players: Player[];
   dices: number[];
   rolls: LastRoll[];
