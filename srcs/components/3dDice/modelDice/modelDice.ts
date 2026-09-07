@@ -147,7 +147,7 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
     warrior: {
         ...DEFAULT_DICE_CONFIG,
         // bodyColor: new Color3(0.7, 0.7, 0.75),
-        bodyTexture: "/textures/metalic2.jpg",
+        bodyTexture: "/textures/metalic.jpg",
         pipColor: new Color3(0.25, 0.02, 0.02),
         //   emissiveColor: new Color3(0, 0, 0),
         pipStyle: "triangle",
