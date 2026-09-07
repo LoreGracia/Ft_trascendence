@@ -1,115 +1,115 @@
-"use client";
+// "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import "@/components/Input/Input.css";
+// import { useRouter } from "next/navigation";
+// import { useEffect, useState } from "react";
+// import { Plus } from "lucide-react";
+// import "@/components/Input/Input.css";
 
-import type {
-  GameType,
-} from "@/types/game";
+// import type {
+//   GameType,
+// } from "@/types/game";
 
-type CreateRoomButtonProps = {
-  mode: GameType;
-};
+// type CreateRoomButtonProps = {
+//   mode: GameType;
+// };
 
-import { useCreateRoom } from "@/hooks/useCreateRoom";
+// import { useCreateRoom } from "@/hooks/useCreateRoom";
 
-export function CreateRoomButton({ mode }: CreateRoomButtonProps) {
-  const router = useRouter();
-  const { roomCode, isCreating, createRoom } = useCreateRoom();
+// export function CreateRoomButton({ mode }: CreateRoomButtonProps) {
+//   const router = useRouter();
+//   const { roomCode, isCreating, createRoom } = useCreateRoom();
 
-  useEffect(() => {
-    if (roomCode) {
-      router.push(`/lobby?roomCode=${encodeURIComponent(roomCode)}`);
-    }
-  }, [roomCode, router]);
+//   useEffect(() => {
+//     if (roomCode) {
+//       router.push(`/lobby?roomCode=${encodeURIComponent(roomCode)}`);
+//     }
+//   }, [roomCode, router]);
 
-  const handleCreateRoom = () => createRoom(mode);
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={handleCreateRoom}
-        disabled={isCreating}
-        className="button button-round button--highlight whitespace-nowrap"
-      >
-        <Plus/>
-        {isCreating ? "Creando..." : "Crear sala"}
-      </button>
-      {/* {roomCode && (
-        <p>
-          Código: {roomCode}
-        </p>
-      )} */}
-    </div>
-  );
-}
+//   const handleCreateRoom = () => createRoom(mode);
+//   return (
+//     <div>
+//       <button
+//         type="button"
+//         onClick={handleCreateRoom}
+//         disabled={isCreating}
+//         className="button button-round button--highlight whitespace-nowrap"
+//       >
+//         <Plus/>
+//         {isCreating ? "Creando..." : "Crear sala"}
+//       </button>
+//       {/* {roomCode && (
+//         <p>
+//           Código: {roomCode}
+//         </p>
+//       )} */}
+//     </div>
+//   );
+// }
 
-export function RoomCode({ roomCode }: { roomCode: string }) {
-  return (
-    <div>
-      Código: {roomCode ?? "—"}
-    </div>
-  );
-}
+// export function RoomCode({ roomCode }: { roomCode: string }) {
+//   return (
+//     <div>
+//       Código: {roomCode ?? "—"}
+//     </div>
+//   );
+// }
 
-import { useJoinRoom } from "@/hooks/useJoinRoom";
+// import { useJoinRoom } from "@/hooks/useJoinRoom";
 
-export function JoinButton() {
-  const router = useRouter();
-  const [roomCodeInput, setRoomCodeInput] = useState("");
-  const { joinRoom, isJoining, joinedRoomCode, error } = useJoinRoom();
-   useEffect(() => {
-    if (joinedRoomCode) {
-      router.push(`/lobby?roomCode=${encodeURIComponent(joinedRoomCode)}`);
-    }
-  }, [joinedRoomCode, router]);
+// export function JoinButton() {
+//   const router = useRouter();
+//   const [roomCodeInput, setRoomCodeInput] = useState("");
+//   const { joinRoom, isJoining, joinedRoomCode, error } = useJoinRoom();
+//    useEffect(() => {
+//     if (joinedRoomCode) {
+//       router.push(`/lobby?roomCode=${encodeURIComponent(joinedRoomCode)}`);
+//     }
+//   }, [joinedRoomCode, router]);
 
-  return (
-    <div>
-      <div className="row">
-        <input 
-        placeholder="Code" 
-        maxLength={5}
-        value={roomCodeInput} 
-        onChange={(e) => setRoomCodeInput(e.target.value)} 
-        className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30"
-        />
-        <button
-        onClick={() => joinRoom(roomCodeInput)}
-        type="submit"
-        disabled={!roomCodeInput? true: false}
-        className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
-        >
-          {isJoining ? "Uniéndose..." : "Join room"}
-        </button>
-      </div>
-      {error && <p>{error}</p>}
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <div className="row">
+//         <input 
+//         placeholder="Code" 
+//         maxLength={5}
+//         value={roomCodeInput} 
+//         onChange={(e) => setRoomCodeInput(e.target.value)} 
+//         className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30"
+//         />
+//         <button
+//         onClick={() => joinRoom(roomCodeInput)}
+//         type="submit"
+//         disabled={!roomCodeInput? true: false}
+//         className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
+//         >
+//           {isJoining ? "Uniéndose..." : "Join room"}
+//         </button>
+//       </div>
+//       {error && <p>{error}</p>}
+//     </div>
+//   );
+// }
 
-import { useExitRoom } from "@/hooks/useExitRoom";
+// import { useExitRoom } from "@/hooks/useExitRoom";
 
-export function ExitButton({ currentRoomCode }: { currentRoomCode?: string }) {
-  const { exitRoom, isExiting, error } = useExitRoom();
+// export function ExitButton({ currentRoomCode }: { currentRoomCode?: string }) {
+//   const { exitRoom, isExiting, error } = useExitRoom();
 
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => exitRoom(currentRoomCode)}
-        disabled={isExiting || !currentRoomCode}
-        className="button button-round button--secondary absolute bottom-4"
-      >
-        {isExiting ? "Saliendo..." : "Salir de la sala"}
-      </button>
+//   return (
+//     <div>
+//       <button
+//         type="button"
+//         onClick={() => exitRoom(currentRoomCode)}
+//         disabled={isExiting || !currentRoomCode}
+//         className="button button-round button--secondary absolute bottom-4"
+//       >
+//         {isExiting ? "Saliendo..." : "Salir de la sala"}
+//       </button>
 
-      {error && <p>{error}</p>}
-    </div>
-  );
-}
+//       {error && <p>{error}</p>}
+//     </div>
+//   );
+// }
 
 //
 // export function DiceGame() {

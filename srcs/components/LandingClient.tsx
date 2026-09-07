@@ -7,7 +7,9 @@ import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import type { WaitingRoom } from '@/types/game';
 import ToggleModeButton from "@/components/button/ToggleModeButton";
-import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
+// import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
+import JoinButton from "@/components/SocketComponent/JoinButton";
+import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 
 type Props = {
   onEnterRoom?: (room: WaitingRoom) => void;

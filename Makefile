@@ -6,7 +6,7 @@ up:
 	$(DOCKER_COMPOSE) up
 
 re:
-	$(DOCKER_COMPOSE) up --build
+	$(DOCKER_COMPOSE) up --build --renew-anon-volumes
 
 down:
 	$(DOCKER_COMPOSE) down
