@@ -30,6 +30,7 @@ export function MobileBottomBar({className} : {className?: string;} ) {
                 event.preventDefault();
               }
             }}
+            className={cn("p-2 rounded-3xl", pathname === item.href && "bg-(--accent)/20")}
           >
             <Icon className={isDisabled? "text-(--accent)" : ""}/>
             {/* <span className="text-[10px]">
