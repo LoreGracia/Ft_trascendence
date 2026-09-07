@@ -43,7 +43,7 @@ export default function ToggleModeButton({
 
       <div className="box bg-(--light) max-w-1">
         {selected === "FREE_PLAY" ? (
-          <p>
+          <p className="text-(--t-content)">
             Roll the dice
             <br />
             Biggest wins!
@@ -51,7 +51,7 @@ export default function ToggleModeButton({
             Equal? Retry!
           </p>
         ) : (
-          <p>
+          <p className="text-(--t-content)">
             The first one to reach 42 wins.
             <br />
             Do not get over 42
