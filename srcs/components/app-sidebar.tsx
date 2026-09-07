@@ -29,6 +29,9 @@ export function AppSidebar({className}: {
               <SidebarMenuButton
                 tooltip={item.label}
                 render={<Link href={item.href} />}
+                className={cn(
+                  pathname === item.href && "bg-(--accent)/20 hover:bg-transparent cursor-default pointer-events-none"
+                )}
               >
                 <Icon className="bg-(--accent) rounded-full" />
                 {item.label}
@@ -52,7 +55,7 @@ export function AppSidebar({className}: {
                 aria-disabled={isDisabled}
                 tabIndex={isDisabled ? -1 : 0}
                 className={cn(
-                  pathname === item.href && !isDisabled && "text-(--accent)",
+                  pathname === item.href && !isDisabled && "text-(--accent) bg-(--accent)/20 hover:bg-transparent cursor-default pointer-events-none",
                   isDisabled
                 )}
                 >
