@@ -12,37 +12,45 @@ import {
 } from "@babylonjs/core";
 import { animateDiceFlight } from "@/components/3dDice/animationDice/diceAnimation";
 import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
-import { INDEX_DICE_CONFIG } from "@/components/3dDice/modelDice/modelDice";
-import styles from "./DiceScene.module.css";
+import { DEFAULT_DICE_CONFIG } from "@/components/3dDice/modelDice/modelDice";
+import styles from "@/components/3dDice/DiceScene.module.css";
 
-export default function IndexDice() {
+interface DiceResultProps {
+    result: number;
+    emoji?: string;         // 1-6: número en el que debe parar
+    startPosition?: Vector3;
+    endPosition?: Vector3;
+    preset?: string;         // "default", "warrior", "code", etc.
+}
+
+export default function DiceError({
+    result,
+    emoji,
+    startPosition = new Vector3(-4, 1.5, 0),
+    endPosition = new Vector3(0, 0, 0),
+    preset = "default",
+}: DiceResultProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
-    const sceneRef = useRef<Scene | null>(null);
-    const rootRef = useRef<TransformNode | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas || engineRef.current || sceneRef.current) return;
+        if (!canvas || engineRef.current) return;
 
         const engine = new Engine(canvas, true, {
             preserveDrawingBuffer: true,
             stencil: true,
             alpha: true,
-            premultipliedAlpha: true,
         });
 
         const scene = new Scene(engine);
         scene.clearColor = new Color4(0, 0, 0, 0);
 
-        engineRef.current = engine;
-        sceneRef.current = scene;
-
         const camera = new ArcRotateCamera(
-            "indexDiceCamera",
+            "diceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            16,
+            6,
             Vector3.Zero(),
             scene
         );
@@ -55,55 +63,43 @@ export default function IndexDice() {
         fillLight.intensity = 0.4;
 
         const dice = createDiceInstance(scene, {
-            ...INDEX_DICE_CONFIG,
-            position: new Vector3(0, 0, 0),
+            ...DEFAULT_DICE_CONFIG,
+            position: startPosition,
             rotation: Vector3.Zero(),
             visible: true,
+            preset,
+            faceIcons: emoji ? {
+                [result || 1]: { type: "emoji", char: emoji }
+            } : undefined,
         });
-        rootRef.current = dice.root;
-
-        const randomResult = Math.floor(Math.random() * 6) + 1;
 
         animateDiceFlight(scene, dice.root, {
-            startPosition: new Vector3(1.5, 3, 0),
-            endPosition: new Vector3(0, -1, 0),
-            jumpHeight: 2.1,
-            durationInFrames: 200,
-            rotations: 8,
-            result: randomResult,
+            startPosition,
+            endPosition,
+            jumpHeight: 2,
+            durationInFrames: 120,
+            rotations: 4,
+            result,
         });
+
+        engineRef.current = engine;
 
         engine.runRenderLoop(() => {
             scene.render();
         });
 
-        const handleResize = () => {
-            engine.resize();
-        };
-
+        const handleResize = () => engine.resize();
         window.addEventListener("resize", handleResize);
 
         return () => {
             window.removeEventListener("resize", handleResize);
             engine.stopRenderLoop();
-            rootRef.current?.dispose();
-            sceneRef.current?.dispose();
-            engineRef.current?.dispose();
-            rootRef.current = null;
-            sceneRef.current = null;
+            dice.root?.dispose();
+            scene.dispose();
+            engine.dispose();
             engineRef.current = null;
         };
-    }, []);
+    }, [result, startPosition, endPosition, preset]);
 
-    //return <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="Independent dice demo" />;
-    return (
-        <div className="w-full h-screen overflow-hidden">
-            <canvas
-                ref={canvasRef}
-                className="w-full h-full"
-                aria-label="Independent dice demo"
-            />
-        </div>
-    );
+    return <canvas ref={canvasRef} className={styles.diceScene__canvas} />;
 }
-

@@ -4,36 +4,28 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
-import type { WaitingRoom } from '@/types/game';
 import { useSearchParams } from 'next/navigation';
+import { ArrowRight, Lock, LockOpen } from "lucide-react";
+import { cn } from "@/lib/utils"
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
-
-  // const { room } = params;
-//   searchParams,
-// }: {
-//   searchParams?: Promise<{ roomCode?: string }>;
-// }) {
-  
   const router = useRouter();
   const {
-    // roomCodeInput,
-    // setRoomCodeInput,
     waitingRoom,
     matchRoom,
     lastRoll,
     winnerMessage,
     isMyTurn,
-    // createRoom,
-    // joinRoom,
     exitRoom,
+    exitMatch,
     toggleReadyStatus,
     startGame,
     rollDice,
     standPlayer,
     getPlayerScore,
+    playError,
   } = useGameSocket();
   console.log(`Pasa 1  ${roomCode}`);
 useEffect(() => {
@@ -52,79 +44,89 @@ useEffect(() => {
     }
   }
 }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-useEffect(() => {
-  console.log('GameRoom mounted (simple effect)', { socketConnected: socket.connected, socketId: socket.id });
-}, []);
-
+  if (!socket.id)
+    router.push(`/landing`);
+const myPlayerState =
+  waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+    const winnerClass =
+  winnerMessage === "🎉 ¡YOU WON!"
+    ? "bg-violet-300 text-violet-500 rounded-4xl "
+    : winnerMessage === "💀 YOU LOST"
+    ? "bg-violet-950"
+    : "bg-violet-500 rounded-2xl ";
   return (
-    <main style={{ backgroundColor: '#121212', minHeight: '100vh', color: 'white', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>🎲 Dice Game Tester</h1>
-      <p>
+    <div className="w-full h-full p-20">
+      <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{socket.id}</code>
         </small>
       </p>
 
       {waitingRoom && !matchRoom && (
-        <div style={{ border: '1px solid #00a8ff', padding: '15px', borderRadius: '8px' }}>
-          <h2>
-            Sala de Espera: <span style={{ color: '#00a8ff' }}>{waitingRoom.roomCode}</span>
-          </h2>
-          <h3>Jugadores ({waitingRoom.players.length}):</h3>
-          <ul>
-            {waitingRoom.players.map((p) => (
-              <li key={p.id}>
-                {p.id} {p.id === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
-              </li>
-            ))}
-          </ul>
-
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
-            <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
-              Cambiar Estado (Listo / No listo)
-            </button>
-            <button onClick={() => startGame('FREE_PLAY')} style={{ backgroundColor: '#44bd32', color: 'white', padding: '8px' }}>
-              Iniciar FREE_PLAY
-            </button>
-            <button onClick={() => startGame('ADD42')} style={{ backgroundColor: '#8c7ae6', color: 'white', padding: '8px' }}>
-              Iniciar ADD42
-            </button>
-            <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white', padding: '8px' }}>
-              Salir
-            </button>
+        <div className="flex flex-col items-center">
+          <div className="w-full h-full flex flex-col justify-evenly">
+            <div className="flex flex-row items-center gap-5 w-full pb-5">
+            <h2>
+              🎲 {waitingRoom.gameType} : 
+            </h2>
+              <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
+              <p className="text-(--t-content)">
+                {waitingRoom.players.length} / 2
+                <small> (max 6)</small> 
+                <ArrowRight/>
+              </p>
+            </div>
+            <ul className="pb-20">
+              {waitingRoom.players.map((p) => (
+                <li className="flex flex-row" key={p.id}>
+                  {p.id} ➡️ <b>{p.state}</b>
+                  {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
+              </button> : ''} 
+                </li>
+              ))}
+            </ul>
           </div>
+          <div className="fixed bottom-60 flex flex-col gap-2 items-center">
+          <button
+            onClick={() => startGame(waitingRoom.gameType)}
+            disabled={waitingRoom.players.length === 1 }
+            className="p-10 pb-5 pt-5 rounded-3xl button--highlight"
+            >
+            Play
+          </button>
+           {playError && <p className="text-(--t-error)">{playError}</p>}
+           </div>
+          <button onClick={exitRoom} className="fixed bottom-20 p-3 button--secondary rounded-3xl">
+            Exit room
+          </button>
         </div>
       )}
 
       {matchRoom && (
-        <div style={{ border: '1px solid #44bd32', padding: '15px', borderRadius: '8px' }}>
+        <div>
+          <div className="pb-5">
           <h2>
-            Partida: {matchRoom.roomCode} | Modo:{' '}
-            <span style={{ color: '#fbc531' }}>{matchRoom.gameType}</span>
+            Room: {matchRoom.roomCode} | Mode:{' '}
+            <span className="text-(--dark)">{matchRoom.gameType}</span>
           </h2>
-
+          </div>
           {winnerMessage && (
             <div
-              style={{
-                backgroundColor: '#27ae60',
-                color: 'white',
-                padding: '15px',
-                borderRadius: '5px',
-                fontSize: '20px',
-                marginBottom: '15px',
-              }}
-            >
+              className={cn("p-5 text-4xl", winnerClass)}>
               {winnerMessage}
             </div>
           )}
 
-          <h3>
-            Turno de:{' '}
-            <span style={{ color: isMyTurn ? '#44bd32' : '#e74c3c' }}>
-              {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
-              {isMyTurn ? '(¡TU TURNO!)' : ''}
-            </span>
-          </h3>
+          {!winnerMessage && (
+            <h3>
+              Turn of:{' '}
+              <span style={{ color: isMyTurn ? "bg-(--dark)": 'bf-(--light)' }}>
+                {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
+                {isMyTurn ? '(¡TU TURNO!)' : ''}
+              </span>
+            </h3>
+          )}
 
           <div style={{ backgroundColor: '#1e1e1e', padding: '10px', borderRadius: '6px', margin: '15px 0' }}>
             <h3>📊 SUMA TOTAL DE RESULTADOS:</h3>
@@ -159,15 +161,16 @@ useEffect(() => {
             <button
               onClick={rollDice}
               disabled={!isMyTurn || !!winnerMessage}
+              className="button button--highlight rounded-sm"
               style={{
-                padding: '12px 24px',
-                fontSize: '16px',
-                backgroundColor: isMyTurn ? '#44bd32' : '#555',
-                color: 'white',
+                // padding: '12px 24px',
+                // fontSize: '16px',
+                // backgroundColor: isMyTurn ? '#44bd32' : '#555',
+                // color: 'white',
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              🎲 Tirar Dados
+              🎲 Throw dice
             </button>
 
             {matchRoom.gameType === 'ADD42' && (
@@ -180,15 +183,16 @@ useEffect(() => {
               </button>
             )}
 
-            <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white' }}>
-              Salir de la partida
+            <button onClick={exitMatch}
+              className="button rounded-sm button--secondary">
+              Exit match
             </button>
           </div>
 
-          {lastRoll && (
+          {matchRoom.gameType === 'ADD42' && lastRoll && (
             <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
               <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
-              <p>
+              <p className="text-(--t-content)">
                 Dados sacados:{' '}
                 {lastRoll.nums.map((d, idx) => (
                   <span
@@ -199,13 +203,13 @@ useEffect(() => {
                   </span>
                 ))}
               </p>
-              <p>
+              <p className="text-(--t-content)">
                 Suma de este turno: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }

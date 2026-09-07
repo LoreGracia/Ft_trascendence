@@ -8,23 +8,13 @@ import type { GameType } from "@/types/game";
 import JoinButton from "@/components/SocketComponent/JoinButton";
 import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 import LandingClient from "@/components/LandingClient";
+import SelectDice from "@/components/3dDice/SelectDice";
 
 export default function GameSelection() {
-  // const [selectedMode, setSelectedMode] =
-  //   useState<GameType>("FREE_PLAY");
-
   return (
     <div className="container container-two">
         <LandingClient/>
-
-      <div className="box items-center">
-        <Image
-          src="/dice-mockup.svg"
-          alt="dice"
-          width={180}
-          height={180}
-        />
-      </div>
+        <SelectDice roomCode="test-room" />
     </div>
   );
 }

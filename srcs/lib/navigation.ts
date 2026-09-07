@@ -6,14 +6,21 @@ import {
   User,
 } from "lucide-react";
 
-export const navigation = {
+export type NavigationItem = {
+  href: string;
+  label: string;
+  icon: typeof User;
+  disabled?: boolean;
+};
+
+export const getNavigation = (hasActiveRoom: boolean) => ({
   header: [
     {
       href: "/profile",
       label: "Profile",
       icon: User,
     },
-  ],
+  ] as NavigationItem[],
 
   content: [
     {
@@ -30,8 +37,9 @@ export const navigation = {
       href: "/lobby",
       label: "Lobby",
       icon: Dices,
+      disabled: !hasActiveRoom,
     },
-  ],
+  ] as NavigationItem[],
 
   footer: [
     {
@@ -39,5 +47,7 @@ export const navigation = {
       label: "Privacy & politics",
       icon: Cookie,
     },
-  ],
-};
+  ] as NavigationItem[],
+});
+
+export const navigation = getNavigation(false);
