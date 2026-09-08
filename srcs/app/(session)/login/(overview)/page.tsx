@@ -3,21 +3,27 @@ import Link from 'next/link';
 import PatternControl from "@/components/Pattern/PatternControl";
 import { useState } from "react";
 import Form from "@/components/Form/Form";
-import { signIn } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function LogIn() {
+const router = useRouter();
 const [paused, setPaused] = useState(false);
 async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     console.log("Formulario enviado");
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
-        email: formData.get("email"),
-        password: formData.get("password"),
-        callbackUrl: "/landing",
-    });
-    console.log(res);
+    const { error } = await authClient.signIn.email(
+      {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+      },
+      {
+        onSuccess: () => router.push("/landing"),
+        onError: (ctx) => console.error(ctx.error.message),
+      }
+    );
 }
   return (
     <>

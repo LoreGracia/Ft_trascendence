@@ -18,7 +18,6 @@ export function MobileBottomBar({className} : {className?: string;} ) {
       {navigation.content.map((item) => {
         const Icon = item.icon;
         const isDisabled = Boolean(item.disabled);
-        console.log(`IT is disabled? ${item.disabled}`);
         return (
           <Link
             key={item.href}
@@ -33,9 +32,6 @@ export function MobileBottomBar({className} : {className?: string;} ) {
             className={cn("p-2 rounded-3xl", pathname === item.href && "bg-(--accent)/20")}
           >
             <Icon className={isDisabled? "text-(--accent)" : ""}/>
-            {/* <span className="text-[10px]">
-              {item.label}
-            </span> */}
           </Link>
         );
       })}

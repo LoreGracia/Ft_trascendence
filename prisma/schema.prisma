@@ -1,6 +1,11 @@
-generator client {
+generator client_app {
   provider = "prisma-client"
-  output   = "/generated/prisma"
+  output   = "/app/generated/prisma"
+}
+
+generator client_server {
+  provider = "prisma-client"
+  output   = "/server/generated/prisma"
 }
 
 datasource db {
@@ -25,20 +30,83 @@ enum Outcome {
 }
 
 model User {
-	id			String @id @default(cuid())
-	username	String @unique
-	email		String @unique
-	avatar		String?
+	id				String @id
+	name			String
+	email			String
+	emailVerified	Boolean @default(false)
+	image			String?
+	createdAt		DateTime @default(now())
+	updatedAt		DateTime @updatedAt
+	sessions		Session[]
+	accounts		Account[]
+
+	playerGames		PlayerGame[]
+	stats			UserStats[]
+
+	@@unique([email])
+	@@map("user")
+}
+
+model Session {
+	id			String @id
+	expiresAt	DateTime
+	token		String
+	createdAt	DateTime @default(now())
+	updatedAt	DateTime @updatedAt
+	ipAddress	String?
+	userAgent	String?
+	userId 		String
+	user		User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@unique([token])
+	@@index([userId])
+	@@map("session")
+}
+
+model Account {
+	id						String @id
+	issuer					String
+	accountId				String
+	providerId				String
+	userId					String
+	user					User @relation(fields: [userId], references: [id], onDelete: Cascade)
+	accessToken				String?
+	refreshToken			String?
+	idToken					String?
+	accessTokenExpiresAt	DateTime?
+	refreshTokenExpiresAt	DateTime?
+	scope					String?
+	password				String?
+	createdAt				DateTime @default(now())
+	updatedAt				DateTime @updatedAt
+
+	@@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
+	@@index([userId])
+	@@map("account")
+}
+
+model Verification {
+	id			String @id
+	identifier	String
+	value 		String
+	expiresAt	DateTime
 	createdAt	DateTime @default(now())
 	updatedAt	DateTime @updatedAt
 
-	playerGames	PlayerGame[]
-	stats		UserStats[]
+	@@index([identifier])
+	@@map("verification")
+}
 
-	// Only needed if using next-auth Prisma adapter:
-	// accounts    Account[]
-	// sessions    Session[]
-	// emailVerified DateTime?
+model Jwks {
+  id         String    @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime
+  expiresAt  DateTime?
+  alg        String?
+  crv        String?
+
+  @@map("jwks")
 }
 
 model Game {
