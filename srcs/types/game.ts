@@ -3,6 +3,18 @@
 export type PlayerState = "UNLOCKED" | "LOCKED" | "WIN" | "TIE" | string;
 
 export type GameType = "FREE_PLAY" | "ADD42";
+export type DiceModel = "default"|
+                        "redDice" |
+                        "blueDice"|
+                        "greenDice"|
+                        "goldDice"|
+                        "blackDice"|
+                        "legendary:standard" |
+                        "legendary:universe"|
+                        "legendary:pride"|
+                        "legendary:magician"|
+                        "legendary:warrior"|
+                        "legendary:code";
 
 export interface Player {
   id: string;

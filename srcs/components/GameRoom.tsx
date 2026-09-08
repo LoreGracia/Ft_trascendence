@@ -7,11 +7,13 @@ import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
+import SelectDice from './3dDice/SelectDice';
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
   const router = useRouter();
+  const { DiceModel, setDiceModel } = useGameSocket();
   const {
     waitingRoom,
     matchRoom,
@@ -27,33 +29,38 @@ export default function GameRoom() {
     getPlayerScore,
     playError,
   } = useGameSocket();
-  console.log(`Pasa 1  ${roomCode}`);
-useEffect(() => {
-  console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
-  if (!waitingRoom && roomCode) {
-    if (socket.connected) {
-      console.log('Emitting get_room now', roomCode);
-      socket.emit('get_room', roomCode);
-    } else {
-      const onConnect = () => {
-        console.log('Socket connected — emitting get_room', roomCode);
-        socket.emit('get_room', roomCode);
-      };
-      socket.on('connect', onConnect);
-      return () => {socket.off('connect', onConnect)};
+  useEffect(() => {
+    if (!socket.id) {
+      router.push('/landing');
     }
-  }
-}, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-  if (!socket.id)
-    router.push(`/landing`);
-const myPlayerState =
-  waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
-    const winnerClass =
-  winnerMessage === "🎉 ¡YOU WON!"
-    ? "bg-violet-300 text-violet-500 rounded-4xl "
-    : winnerMessage === "💀 YOU LOST"
-    ? "bg-violet-950"
-    : "bg-violet-500 rounded-2xl ";
+  }, [socket.id, router]);
+
+  if (!socket.id) return <div>Redirecting...</div>;
+  useEffect(() => {
+    console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
+    if (!waitingRoom && roomCode) {
+      if (socket.connected) {
+        console.log('Emitting get_room now', roomCode);
+        socket.emit('get_room', roomCode);
+      } else {
+        const onConnect = () => {
+          console.log('Socket connected — emitting get_room', roomCode);
+          socket.emit('get_room', roomCode);
+        };
+        socket.on('connect', onConnect);
+        return () => {socket.off('connect', onConnect)};
+      }
+    }
+  }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
+  const myPlayerState =
+    waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+  const myMatchState = matchRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+  const winnerClass =
+    winnerMessage === "🎉 ¡YOU WON!"
+      ? "bg-violet-300 text-violet-500 rounded-4xl "
+      : winnerMessage === "💀 YOU LOST"
+      ? "bg-violet-950"
+      : "bg-violet-500 rounded-2xl ";
   return (
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
@@ -87,6 +94,12 @@ const myPlayerState =
               ))}
             </ul>
           </div>
+          <SelectDice
+            // roomCode="test-room"
+            selected={DiceModel}
+            playerState={myPlayerState}
+            onSelect={setDiceModel}
+            />
           <div className="fixed bottom-60 flex flex-col gap-2 items-center">
           <button
             onClick={() => startGame(waitingRoom.gameType)}
@@ -135,7 +148,7 @@ const myPlayerState =
               <thead>
                 <tr style={{ borderBottom: '1px solid #444' }}>
                   <th style={{ padding: '8px' }}>Player</th>
-                  <th style={{ padding: '8px' }}>Total points</th>
+                  <th style={{ padding: '8px' }}>Total score</th>
                   <th style={{ padding: '8px' }}>State</th>
                 </tr>
               </thead>
@@ -178,7 +191,9 @@ const myPlayerState =
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
-                ✋ Stay (Lock)
+              {myMatchState}
+              {myPlayerState}
+              {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
 

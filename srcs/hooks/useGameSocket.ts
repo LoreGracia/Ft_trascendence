@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { socket } from '@/lib/socket';
-import type { GameType, LastRoll, MatchRoom, WaitingRoom } from '@/types/game';
+import type { GameType, LastRoll, MatchRoom, WaitingRoom, DiceModel } from '@/types/game';
 import { useRouter } from 'next/navigation';
 
 const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string): number => {
@@ -14,7 +14,8 @@ const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string)
 
 export function useGameSocket() {
   const router = useRouter();
-  const [gameType, setGameType] = useState<GameType>("FREE_PLAY");;
+  const [gameType, setGameType] = useState<GameType>("FREE_PLAY");
+  const [DiceModel, setDiceModel] = useState<DiceModel>("default");
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
@@ -55,8 +56,9 @@ export function useGameSocket() {
   }, [waitingRoom, matchRoom]);
 
   const toggleReadyStatus = useCallback(() => {
-    if (waitingRoom) socket.emit('change_player_status', waitingRoom.roomCode);
-  }, [waitingRoom]);
+    if (waitingRoom)
+      socket.emit('change_player_status', waitingRoom.roomCode, DiceModel);
+  }, [waitingRoom, DiceModel]);
 
   const startGame = useCallback(
     (gameType: GameType) => {
@@ -74,7 +76,10 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   const standPlayer = useCallback(() => {
-    if (matchRoom) socket.emit('player_locked', matchRoom.roomCode);
+    if (matchRoom){
+      console.log(`Esto es Stand`);
+      socket.emit('player_locked', matchRoom.roomCode);
+    }
   }, [matchRoom]);
 
   useEffect(() => {
@@ -85,8 +90,14 @@ export function useGameSocket() {
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      if (data.state === 'CLOSED') setMatchRoom(data as MatchRoom);
-      else setWaitingRoom(data as WaitingRoom);
+      if (data.state === 'CLOSED') {
+        console.log("Server said this is match");
+        setMatchRoom(data as MatchRoom);
+      }
+      else {
+        console.log("Server said this is waitingroom");
+        setWaitingRoom(data as WaitingRoom);
+      }
     };
 
     const handleGameStarted = (matchData: MatchRoom) => {
@@ -160,6 +171,8 @@ export function useGameSocket() {
     setRoomCodeInput,
     gameType,
     setGameType,
+    DiceModel,
+    setDiceModel,
     waitingRoom,
     matchRoom,
     lastRoll,

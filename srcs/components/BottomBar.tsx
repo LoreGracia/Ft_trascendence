@@ -18,7 +18,6 @@ export function MobileBottomBar({className} : {className?: string;} ) {
       {navigation.content.map((item) => {
         const Icon = item.icon;
         const isDisabled = Boolean(item.disabled);
-        console.log(`IT is disabled? ${item.disabled}`);
         return (
           <Link
             key={item.href}
