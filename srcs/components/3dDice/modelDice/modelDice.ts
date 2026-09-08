@@ -62,9 +62,8 @@ export const DEFAULT_DICE_CONFIG: Required<DiceConfig> = {
 export const DICE_PRESETS: Record<string, DiceConfig> = {
     default: {
         ...DEFAULT_DICE_CONFIG,
-        faceIcons: {
-            1: { type: "emoji", char: "🃏" },
-        },
+        bodyColor: new Color3(0.918, 0.867, 1.000),
+        pipColor: new Color3(0.13, 0.03, 0.23),
     },
 
     redDice: {
@@ -99,6 +98,13 @@ export const DICE_PRESETS: Record<string, DiceConfig> = {
  * Dados "legendarios": skins curados con temática propia.
  */
 export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
+    standard: {
+        ...DEFAULT_DICE_CONFIG,
+        faceIcons: {
+            1: { type: "emoji", char: "🃏" },
+        },
+    },
+
     universe: {
         ...DEFAULT_DICE_CONFIG,
 
@@ -173,5 +179,4 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
         pipStyle: "code",
         cornerRadius: 0.16,
     },
-
 };
