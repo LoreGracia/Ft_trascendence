@@ -14,8 +14,7 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
-
-            <IndexDice />
+          <SelectDice roomCode="test-room" />
           {/*
             <IndexDice />
             <SelectDice />
@@ -26,8 +25,11 @@ export default function Home() {
         </section>
         <section className="column gap-8">
           <div className="column">
+
             <h1>This is Dice</h1>
+
             <p className="text-(--t-content)">Welcome</p>
+
             <div className="flex flex-row gap-4 text-base font-medium">
               <Link
                 className="button button-round button--secondary"
@@ -45,6 +47,18 @@ export default function Home() {
               >
                 Sign in
               </Link>
+
+              <Link
+                className="button button-round button--highlight"
+                // href="/errorPages/404"
+                // href="/errorPages/500"
+                // href="/errorPages/403"
+                href="/errorPages/503"
+              >
+                Test Error
+              </Link>
+
+
             </div>
           </div>
         </section>
