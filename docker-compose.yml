@@ -24,7 +24,6 @@ services:
       - ./srcs:/app
       - ./prisma:/prisma
       - /app/node_modules
-      - /app/.next
     restart: no
     ports:
       - 3000:3000

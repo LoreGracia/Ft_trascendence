@@ -1,10 +1,8 @@
-// import { useState } from "react";
 import Image from "next/image";
 
 import ToggleModeButton from "@/components/button/ToggleModeButton";
 import type { GameType } from "@/types/game";
 
-// import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
 import JoinButton from "@/components/SocketComponent/JoinButton";
 import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 import LandingClient from "@/components/LandingClient";

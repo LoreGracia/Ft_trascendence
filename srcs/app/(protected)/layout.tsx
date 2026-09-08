@@ -1,4 +1,3 @@
-// import { auth } from "@/app/auth";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -24,7 +23,7 @@ export default async function ProtectedLayout({
   if (!session) {
     redirect("/login");
   }
-
+  console.log("[dbg] MenuButton type:", typeof MenuButton);
   return (
     <SidebarProvider>
       <AppSidebar className="list-none hidden md:flex"/>
