@@ -52,7 +52,7 @@ io.use(async (socket: Socket, next) => {
 		return next(new Error("Authentication error: Token missing"));
 	try {
 		const payload = await validateToken(token);
-		socket.data.userId = payload.id;
+		socket.data.userId = payload.name; // repasa
 		next();
 	} catch (err) {
 		next(new Error("Authentication error: Token missing"));
