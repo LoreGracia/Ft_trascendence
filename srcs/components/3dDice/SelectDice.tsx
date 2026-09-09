@@ -13,10 +13,10 @@ import { DiceModel } from "@/types/game";
 interface SelectDiceProps {
     /** Código de la sala/partida — lo necesita useDiceSocket para roll_dice/select_dice */
     // roomCode: string;
-    selected: DiceModel;
+    selected?: DiceModel;
     playerState: string;
     /** Se dispara cada vez que el usuario elige un dado; conéctalo al backend cuando toque. */
-    onSelect: (value: DiceModel) => void;
+    onSelect?: (value: DiceModel) => void;
 }
 
 export default function SelectDice({ selected, playerState, onSelect }: SelectDiceProps) {
@@ -77,12 +77,13 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
         diceInstanceRef.current?.dispose();
         diceInstanceRef.current = createDiceInstance(scene, getDicePreset(selectedPreset));
     }, [selectedPreset]);
+    // useEffect(() => { setSelectedPreset(selected); }, [selected]);
 
-    const handlePick = (value: string) => {
+    const handlePick = (value: DiceModel) => {
         setSelectedPreset(value);
         // selectDice(value);
-        onSelect(value);
-        selected === selectedPreset;
+        selected === value;
+        onSelect?.(value);
     };
 
     return (

@@ -19,6 +19,7 @@ export type DiceModel = "default"|
 export interface Player {
   id: string;
   state: PlayerState;
+  diceModel: string;
 }
 
 export type WaitingRoom = {

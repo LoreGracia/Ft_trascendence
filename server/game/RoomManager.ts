@@ -20,7 +20,7 @@ export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ id: playerId, state: "UNLOCKED" }],
+		players: [{ id: playerId, state: "UNLOCKED", diceModel: "default" }],//LORENA WAS HERE
 		state: "OPEN",
 	};
 	return room;
@@ -28,7 +28,7 @@ export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom
 
 export function addPlayerToRoom(playerId: string, room: WaitingRoom): boolean {
 	if (room.state === "OPEN") {
-		room.players.push({ id: playerId, state: "UNLOCKED" });
+		room.players.push({ id: playerId, state: "UNLOCKED", diceModel: "default" }); //LORENA WAS HERE
 		console.log(`Room ${room.roomCode}: player ${playerId} joined.`);
 		return true
 	} else {
@@ -49,10 +49,11 @@ export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
 	room.players = room.players.filter(p => p.id !== playerId);
 }
 
-export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string): void {
+export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string, diceModel: string): void {
 	const player = room.players.find(p => p.id === playerId);
 	if (!player) return;
 	player.state = player.state === "LOCKED" ? "UNLOCKED" : "LOCKED";
+	player.diceModel = diceModel;//LORENA ADDED THIS
 }
 
 function countLockedPlayers(list: Players[]): number {

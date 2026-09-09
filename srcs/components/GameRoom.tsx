@@ -13,8 +13,9 @@ export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
   const router = useRouter();
-  const { DiceModel, setDiceModel } = useGameSocket();
   const {
+    diceModel,
+    setDiceModel,
     waitingRoom,
     matchRoom,
     lastRoll,
@@ -96,7 +97,7 @@ export default function GameRoom() {
           </div>
           <SelectDice
             // roomCode="test-room"
-            selected={DiceModel}
+            selected={diceModel}
             playerState={myPlayerState}
             onSelect={setDiceModel}
             />
@@ -144,12 +145,15 @@ export default function GameRoom() {
           <div className="bg-(--light) p-2.5 rounded-lg me-4">
             <h3>📊 Total result summary:</h3>
             <table
-            style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            className="w-full justify-evenly"
+            // style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}
+            >
               <thead>
                 <tr style={{ borderBottom: '1px solid #444' }}>
                   <th style={{ padding: '8px' }}>Player</th>
                   <th style={{ padding: '8px' }}>Total score</th>
                   <th style={{ padding: '8px' }}>State</th>
+                  <th style={{ padding: '8px' }}>dice</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,6 +169,9 @@ export default function GameRoom() {
                         <b>{totalScore} pts</b>
                       </td>
                       <td style={{ padding: '8px' }}>{p.state}</td>
+                      <td>
+                        <b>{p.diceModel}</b>
+                      </td>
                     </tr>
                   );
                 })}
@@ -174,6 +181,7 @@ export default function GameRoom() {
 
           <div style={{ display: 'flex', gap: '10px', margin: '20px 0', flexWrap: 'wrap' }}>
             <button
+              hidden={!(myMatchState === "UNLOCKED")}
               onClick={rollDice}
               disabled={!isMyTurn || !!winnerMessage}
               className="button button--highlight rounded-sm"
@@ -191,8 +199,6 @@ export default function GameRoom() {
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
-              {myMatchState}
-              {myPlayerState}
               {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}

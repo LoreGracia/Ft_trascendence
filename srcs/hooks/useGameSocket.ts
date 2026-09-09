@@ -15,7 +15,7 @@ const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string)
 export function useGameSocket() {
   const router = useRouter();
   const [gameType, setGameType] = useState<GameType>("FREE_PLAY");
-  const [DiceModel, setDiceModel] = useState<DiceModel>("default");
+  const [diceModel, setDiceModel] = useState<DiceModel>("default");
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
@@ -56,9 +56,10 @@ export function useGameSocket() {
   }, [waitingRoom, matchRoom]);
 
   const toggleReadyStatus = useCallback(() => {
+		console.log(`DICE in change player status is ${diceModel.toString()}`);
     if (waitingRoom)
-      socket.emit('change_player_status', waitingRoom.roomCode, DiceModel);
-  }, [waitingRoom, DiceModel]);
+      socket.emit('change_player_status', waitingRoom.roomCode, diceModel.toString());
+  }, [waitingRoom, diceModel]);
 
   const startGame = useCallback(
     (gameType: GameType) => {
@@ -84,19 +85,22 @@ export function useGameSocket() {
 
   useEffect(() => {
     const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED' }], gameType: gameType });
+      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      if (data.state === 'CLOSED') {
-        console.log("Server said this is match");
-        setMatchRoom(data as MatchRoom);
-      }
-      else {
+		  const player = waitingRoom?.players.find(p => p.id === socket.id);
+        console.log(`DiceModel es ${player?.diceModel}`);
+        console.log(`Data state is ${data.state}`);
+      if (data.state === 'OPEN') {
         console.log("Server said this is waitingroom");
         setWaitingRoom(data as WaitingRoom);
+      }
+      else {
+        console.log("Server said this is match");
+        setMatchRoom(data as MatchRoom);
       }
     };
 
@@ -171,7 +175,7 @@ export function useGameSocket() {
     setRoomCodeInput,
     gameType,
     setGameType,
-    DiceModel,
+    diceModel,
     setDiceModel,
     waitingRoom,
     matchRoom,

@@ -41,7 +41,7 @@ export default async function ProtectedLayout({
           })}
         <button/>
         </nav>
-        <MenuButton
+        {/* <MenuButton
           trigger={
           <button
             className="[&_svg]:size-8 pr-0 rounded-xs md:hover:bg-(--accent)"
@@ -64,7 +64,7 @@ export default async function ProtectedLayout({
             >
             Privacy
           </Link>
-        </MenuButton>
+        </MenuButton> */}
         <SidebarInset>
             {children}
         </SidebarInset>

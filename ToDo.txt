@@ -6,3 +6,7 @@
 [X] Hacer dados wapis
 [] Bug bloqueo de mouse en tiradas
 [] Bug bolqueo de custom en tirada
+
+[] Dark & light mode colors
+[] Mobile mode composition
+[] Connectar server con dados
