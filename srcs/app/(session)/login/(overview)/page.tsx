@@ -34,7 +34,7 @@ async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     <main className="container">
         <Link
         className="corner-right button button-squere button--highlight"
-        href={'/signin'}
+        href={'/signup'}
         target="_self"
         rel="noopener noreferrer"
         >

@@ -41,11 +41,11 @@ export default function Home() {
               </Link>
               <Link
                 className="button button-round button--highlight"
-                href="/signin"
+                href="/signup"
                 target="_self"
                 rel="noopener noreferrer"
               >
-                Sign in
+                Sign up
               </Link>
 
               <Link

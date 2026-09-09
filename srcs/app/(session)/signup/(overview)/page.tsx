@@ -6,7 +6,7 @@ import Form from "@/components/Form/Form";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-export default function SignIn() {
+export default function SignUp() {
 const router = useRouter();
 const [paused, setPaused] = useState(false);
 async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
@@ -18,7 +18,6 @@ async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
         email: formData.get("email") as string,
         password: formData.get("password") as string,
         name: formData.get("name") as string,
-        //username: formData.get("username") as string, // see note below
       },
       {
         onSuccess: () => router.push("/landing"),
@@ -46,7 +45,7 @@ async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
             <section className="box box--primary">
                 <Form onSubmit={handleRegister}>
                 <button type="submit" className="button button-squere button--basic mt-5">
-                    <h2>Sign in</h2>
+                    <h2>Sign up</h2>
                 </button>
                 </Form>
             </section>
