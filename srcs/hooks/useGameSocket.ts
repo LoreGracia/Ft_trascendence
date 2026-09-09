@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { socket } from '@/lib/socket';
-import type { GameType, LastRoll, MatchRoom, WaitingRoom } from '@/types/game';
+import type { GameType, LastRoll, MatchRoom, WaitingRoom, DiceModel } from '@/types/game';
+import { useRouter } from 'next/navigation';
 
 const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string): number => {
   if (!sumData) return 0;
@@ -12,12 +13,15 @@ const getPlayerScore = (sumData: MatchRoom['sum'] | undefined, playerId: string)
 };
 
 export function useGameSocket() {
-  const [gameType, setGameType] = useState<GameType>("FREE_PLAY");;
+  const router = useRouter();
+  const [gameType, setGameType] = useState<GameType>("FREE_PLAY");
+  const [diceModel, setDiceModel] = useState<DiceModel>("default");
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
+  const [playError, setPlayError] = useState<string | null>(null);
 
   const createRoom = useCallback(() => {
     socket.emit('create_room', gameType);
@@ -30,21 +34,40 @@ export function useGameSocket() {
   const exitRoom = useCallback(() => {
     const code = waitingRoom?.roomCode || matchRoom?.roomCode;
     if (code) {
-      socket.emit('exit_room', code);
+      socket.emit('exit_waiting_room', code);
       setWaitingRoom(null);
       setMatchRoom(null);
       setLastRoll(null);
       setWinnerMessage('');
+      router.push(`/landing`);
+    }
+  }, [waitingRoom, matchRoom]);
+
+  const exitMatch = useCallback(() => {
+    const code = waitingRoom?.roomCode || matchRoom?.roomCode;
+    if (code) {
+      socket.emit('exit_match_room', code);
+      setWaitingRoom(null);
+      setMatchRoom(null);
+      setLastRoll(null);
+      setWinnerMessage('');
+      router.push(`/landing`);
     }
   }, [waitingRoom, matchRoom]);
 
   const toggleReadyStatus = useCallback(() => {
-    if (waitingRoom) socket.emit('change_player_status', waitingRoom.roomCode);
-  }, [waitingRoom]);
+		console.log(`DICE in change player status is ${diceModel.toString()}`);
+    if (waitingRoom)
+      socket.emit('change_player_status', waitingRoom.roomCode, diceModel.toString());
+  }, [waitingRoom, diceModel]);
 
   const startGame = useCallback(
     (gameType: GameType) => {
-      if (waitingRoom) socket.emit('start_game', gameType, waitingRoom.roomCode);
+      if (waitingRoom)
+      {
+        setGameType(gameType);
+        socket.emit('start_game', waitingRoom.roomCode);
+      }
     },
     [waitingRoom],
   );
@@ -54,22 +77,35 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   const standPlayer = useCallback(() => {
-    if (matchRoom) socket.emit('player_locked', matchRoom.roomCode);
+    if (matchRoom){
+      console.log(`Esto es Stand`);
+      socket.emit('player_locked', matchRoom.roomCode);
+    }
   }, [matchRoom]);
 
   useEffect(() => {
     const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED' }] });
+      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      if ('gameType' in data) setMatchRoom(data as MatchRoom);
-      else setWaitingRoom(data as WaitingRoom);
+		  const player = waitingRoom?.players.find(p => p.id === socket.id);
+        console.log(`DiceModel es ${player?.diceModel}`);
+        console.log(`Data state is ${data.state}`);
+      if (data.state === 'OPEN') {
+        console.log("Server said this is waitingroom");
+        setWaitingRoom(data as WaitingRoom);
+      }
+      else {
+        console.log("Server said this is match");
+        setMatchRoom(data as MatchRoom);
+      }
     };
 
     const handleGameStarted = (matchData: MatchRoom) => {
+      console.log("LLEGA");
       setWaitingRoom(null);
       setMatchRoom(matchData);
       setWinnerMessage('');
@@ -91,10 +127,15 @@ export function useGameSocket() {
       setMatchRoom(finalMatch);
 
       const me = finalMatch.players.find((p) => p.id === socket.id);
-      if (me?.state === 'WIN') setWinnerMessage('🎉 ¡HAS GANADO!');
-      else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡EMPATE!');
-      else setWinnerMessage('💀 HAS PERDIDO');
+      if (me?.state === 'WIN') setWinnerMessage('🎉 ¡YOU WON!');
+      else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡DRAW!');
+      else setWinnerMessage('💀 YOU LOST');
     };
+
+    const handlePlayError = () => {
+      setPlayError("All players must be locked");
+    };
+
 
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
@@ -102,7 +143,8 @@ export function useGameSocket() {
     socket.on('game_started', handleGameStarted);
     socket.on('dice_rolled', handleDiceRolled);
     socket.on('match_won', handleMatchWon);
-    socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    socket.on('game_not_started', handlePlayError);
     socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
 
@@ -116,6 +158,7 @@ export function useGameSocket() {
       socket.off('join_error');
       socket.off('game_not_started');
       socket.off('error_turn');
+
     };
   }, []);
 
@@ -132,6 +175,8 @@ export function useGameSocket() {
     setRoomCodeInput,
     gameType,
     setGameType,
+    diceModel,
+    setDiceModel,
     waitingRoom,
     matchRoom,
     lastRoll,
@@ -140,10 +185,12 @@ export function useGameSocket() {
     createRoom,
     joinRoom,
     exitRoom,
+    exitMatch,
     toggleReadyStatus,
     startGame,
     rollDice,
     standPlayer,
     getPlayerScore,
+    playError
   };
 }

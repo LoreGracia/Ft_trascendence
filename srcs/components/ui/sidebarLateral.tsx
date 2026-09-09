@@ -241,8 +241,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       data-slot="sidebar-inset"
-      className={cn(
-        "container max-w-full",
+      className={cn("min-w-full min-h-full",
         className
       )}
       {...props}
@@ -306,8 +305,8 @@ const sidebarMenuButtonVariants = cva(
   group-data-[collapsible=icon]:p-1! \
   focus-visible:ring-2 active:bg-(--accent) \
   disabled:pointer-events-none \
-  disabled:opacity-50 aria-disabled:pointer-events-none \
-  aria-disabled:opacity-50 data-open:bg-(--accent) \
+  disabled:opacity-10 aria-disabled:pointer-events-none \
+  aria-disabled:opacity-10 data-open:bg-(--accent) \
   data-active:bg-(--accent) data-active:font-medium \
   [&_svg]:size-8 [&_svg]:shrink-0 [&>span:last-child]:truncate",
   {

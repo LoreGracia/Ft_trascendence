@@ -15,6 +15,7 @@ export function createMatchRoom(room: WaitingRoom, rules: GameRules): MatchRoom 
 	shuffledPlayers.forEach(p => (initialSum[p.playerId] = 0));
 
 	return {
+		state: "CLOSED",
 		roomCode: room.roomCode,
 		gameType: room.gameType,
 		players: shuffledPlayers,

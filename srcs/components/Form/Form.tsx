@@ -12,6 +12,14 @@ return (
 	<form onSubmit={onSubmit}>
 		<div className="flex flex-col gap-2">
 			<div>
+				<h2>Username</h2>
+				<TextInput
+				type="text"
+				name="name"
+				placeholder="dicelover666"
+				/>
+			</div>
+			<div>
 				<h2>Email</h2>
 				<TextInput
 				type="email"

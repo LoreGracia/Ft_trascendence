@@ -42,7 +42,7 @@ export default function IndexDice() {
             "indexDiceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            9,
+            16,
             Vector3.Zero(),
             scene
         );
@@ -65,11 +65,11 @@ export default function IndexDice() {
         const randomResult = Math.floor(Math.random() * 6) + 1;
 
         animateDiceFlight(scene, dice.root, {
-            startPosition: new Vector3(-8, 1.5, 0),
-            endPosition: new Vector3(0, 0, 0),
+            startPosition: new Vector3(1.5, 3, 0),
+            endPosition: new Vector3(0, -1, 0),
             jumpHeight: 2.1,
-            durationInFrames: 150,
-            rotations: 4,
+            durationInFrames: 200,
+            rotations: 8,
             result: randomResult,
         });
 
@@ -95,6 +95,15 @@ export default function IndexDice() {
         };
     }, []);
 
-    return <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="Independent dice demo" />;
+    //return <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="Independent dice demo" />;
+    return (
+        <div className="w-full h-screen overflow-hidden">
+            <canvas
+                ref={canvasRef}
+                className="w-full h-full"
+                aria-label="Independent dice demo"
+            />
+        </div>
+    );
 }
 

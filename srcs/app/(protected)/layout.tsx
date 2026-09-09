@@ -1,4 +1,5 @@
-import { auth } from "@/app/auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebarLateral"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -15,12 +16,14 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!session) {
     redirect("/login");
   }
-
+  console.log("[dbg] MenuButton type:", typeof MenuButton);
   return (
     <SidebarProvider>
       <AppSidebar className="list-none hidden md:flex"/>
@@ -41,7 +44,7 @@ export default async function ProtectedLayout({
           })}
         <button/>
         </nav>
-        <MenuButton
+        {/* <MenuButton
           trigger={
           <button
             className="[&_svg]:size-8 pr-0 rounded-xs md:hover:bg-(--accent)"
@@ -64,7 +67,7 @@ export default async function ProtectedLayout({
             >
             Privacy
           </Link>
-        </MenuButton>
+        </MenuButton> */}
         <SidebarInset>
             {children}
         </SidebarInset>

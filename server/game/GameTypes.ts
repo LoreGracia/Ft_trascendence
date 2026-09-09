@@ -9,6 +9,7 @@ export interface Players {
 	playerId: string;
 	socketId: string;
 	state: PLAYER_STATE | PLAYER_ENDGAME;
+	diceModel: string;//LORENA ADDED THIS
 }
 
 export enum Dices {
@@ -36,7 +37,7 @@ export interface WaitingRoom extends BaseRoom {
 	state: WaitingRoomStatus;
 }
 
-export interface MatchRoom extends BaseRoom {
+export interface MatchRoom extends WaitingRoom {
 	rules: GameRules;
 	dices: Dices[];
 	rolls: RollResult[];

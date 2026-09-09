@@ -41,7 +41,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
 		methods: ["GET", "POST"],
 	},
 });
@@ -119,10 +119,11 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	// Per passar de locked a unlocked.
-	socket.on("change_player_status", (roomCode: string) => {
+	//LORENA IM TOUCHING THIS
+	socket.on("change_player_status", (roomCode: string, diceModel: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
-			changePlayerStatus(room, socket.data.userId);
+			changePlayerStatus(room, socket.data.userid, diceModel);//LORENA ADDED IN THIS
 			io.to(roomCode).emit("player_status_changed", room);
 			console.log(`Room ${room.roomCode}: player ${socket.data.userId} with socket ${socket.id} locked.`);
 		}
@@ -152,8 +153,9 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("player_locked", (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
+		const player = match?.players.find(p => p.id === socket.id);
 		if (match) {
-			changePlayerStatus(match, socket.data.userId);
+			changePlayerStatus(match, socket.data.userId, player?.diceModel ?? 'default');
 			io.to(roomCode).emit("player_status_changed", match);
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
