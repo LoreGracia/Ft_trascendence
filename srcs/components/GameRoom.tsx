@@ -7,12 +7,15 @@ import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
+import SelectDice from './3dDice/SelectDice';
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
   const router = useRouter();
   const {
+    diceModel,
+    setDiceModel,
     waitingRoom,
     matchRoom,
     lastRoll,
@@ -27,33 +30,38 @@ export default function GameRoom() {
     getPlayerScore,
     playError,
   } = useGameSocket();
-  console.log(`Pasa 1  ${roomCode}`);
-useEffect(() => {
-  console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
-  if (!waitingRoom && roomCode) {
-    if (socket.connected) {
-      console.log('Emitting get_room now', roomCode);
-      socket.emit('get_room', roomCode);
-    } else {
-      const onConnect = () => {
-        console.log('Socket connected — emitting get_room', roomCode);
-        socket.emit('get_room', roomCode);
-      };
-      socket.on('connect', onConnect);
-      return () => {socket.off('connect', onConnect)};
+  useEffect(() => {
+    if (!socket.id) {
+      router.push('/landing');
     }
-  }
-}, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
-  if (!socket.id)
-    router.push(`/landing`);
-const myPlayerState =
-  waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
-    const winnerClass =
-  winnerMessage === "🎉 ¡YOU WON!"
-    ? "bg-violet-300 text-violet-500 rounded-4xl "
-    : winnerMessage === "💀 YOU LOST"
-    ? "bg-violet-950"
-    : "bg-violet-500 rounded-2xl ";
+  }, [socket.id, router]);
+
+  if (!socket.id) return <div>Redirecting...</div>;
+  useEffect(() => {
+    console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
+    if (!waitingRoom && roomCode) {
+      if (socket.connected) {
+        console.log('Emitting get_room now', roomCode);
+        socket.emit('get_room', roomCode);
+      } else {
+        const onConnect = () => {
+          console.log('Socket connected — emitting get_room', roomCode);
+          socket.emit('get_room', roomCode);
+        };
+        socket.on('connect', onConnect);
+        return () => {socket.off('connect', onConnect)};
+      }
+    }
+  }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
+  const myPlayerState =
+    waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+  const myMatchState = matchRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+  const winnerClass =
+    winnerMessage === "🎉 ¡YOU WON!"
+      ? "bg-violet-300 text-violet-500 rounded-4xl "
+      : winnerMessage === "💀 YOU LOST"
+      ? "bg-violet-950"
+      : "bg-violet-500 rounded-2xl ";
   return (
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
@@ -87,6 +95,12 @@ const myPlayerState =
               ))}
             </ul>
           </div>
+          <SelectDice
+            // roomCode="test-room"
+            selected={diceModel}
+            playerState={myPlayerState}
+            onSelect={setDiceModel}
+            />
           <div className="fixed bottom-60 flex flex-col gap-2 items-center">
           <button
             onClick={() => startGame(waitingRoom.gameType)}
@@ -128,14 +142,18 @@ const myPlayerState =
             </h3>
           )}
 
-          <div style={{ backgroundColor: '#1e1e1e', padding: '10px', borderRadius: '6px', margin: '15px 0' }}>
-            <h3>📊 SUMA TOTAL DE RESULTADOS:</h3>
-            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <div className="bg-(--light) p-2.5 rounded-lg me-4">
+            <h3>📊 Total result summary:</h3>
+            <table
+            className="w-full justify-evenly"
+            // style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}
+            >
               <thead>
                 <tr style={{ borderBottom: '1px solid #444' }}>
-                  <th style={{ padding: '8px' }}>Jugador</th>
-                  <th style={{ padding: '8px' }}>Suma Total Acumulada</th>
-                  <th style={{ padding: '8px' }}>Estado</th>
+                  <th style={{ padding: '8px' }}>Player</th>
+                  <th style={{ padding: '8px' }}>Total score</th>
+                  <th style={{ padding: '8px' }}>State</th>
+                  <th style={{ padding: '8px' }}>dice</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,12 +162,16 @@ const myPlayerState =
                   return (
                     <tr key={p.id} style={{ borderBottom: '1px solid #333' }}>
                       <td style={{ padding: '8px' }}>
-                        {p.id} {p.id === socket.id ? ' (Tú)' : ''}
+                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
+                        {p.id} {p.id === socket.id ? ' (You)' : ''}
                       </td>
-                      <td style={{ padding: '8px', fontSize: '18px', color: '#00ffcc' }}>
+                      <td className="p-2 text-lg text-(--dark)">
                         <b>{totalScore} pts</b>
                       </td>
                       <td style={{ padding: '8px' }}>{p.state}</td>
+                      <td>
+                        <b>{p.diceModel}</b>
+                      </td>
                     </tr>
                   );
                 })}
@@ -159,14 +181,11 @@ const myPlayerState =
 
           <div style={{ display: 'flex', gap: '10px', margin: '20px 0', flexWrap: 'wrap' }}>
             <button
+              hidden={!(myMatchState === "UNLOCKED")}
               onClick={rollDice}
               disabled={!isMyTurn || !!winnerMessage}
               className="button button--highlight rounded-sm"
               style={{
-                // padding: '12px 24px',
-                // fontSize: '16px',
-                // backgroundColor: isMyTurn ? '#44bd32' : '#555',
-                // color: 'white',
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
@@ -177,9 +196,12 @@ const myPlayerState =
               <button
                 onClick={standPlayer}
                 disabled={!isMyTurn || !!winnerMessage}
-                style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
+                className="button button--highlight rounded-sm"
+                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
+                className="button button--highlight rounded-sm"
+                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
-                ✋ Plantarse (Lock)
+              {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
 
@@ -190,8 +212,9 @@ const myPlayerState =
           </div>
 
           {matchRoom.gameType === 'ADD42' && lastRoll && (
-            <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
-              <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
+            
+            <div className="bg-(--light) p-3 rounded-lg border-l-4 border-l-(--accent) me-4">
+              <h4>Last move ({lastRoll.idPlayer}):</h4>
               <p className="text-(--t-content)">
                 Dados sacados:{' '}
                 {lastRoll.nums.map((d, idx) => (
@@ -204,7 +227,8 @@ const myPlayerState =
                 ))}
               </p>
               <p className="text-(--t-content)">
-                Suma de este turno: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
+                Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
+                Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
           )}
