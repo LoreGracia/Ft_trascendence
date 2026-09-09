@@ -164,7 +164,10 @@ export default function GameRoom() {
                       <td style={{ padding: '8px' }}>
                         {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
                         {p.id} {p.id === socket.id ? ' (You)' : ''}
+                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
+                        {p.id} {p.id === socket.id ? ' (You)' : ''}
                       </td>
+                      <td className="p-2 text-lg text-(--dark)">
                       <td className="p-2 text-lg text-(--dark)">
                         <b>{totalScore} pts</b>
                       </td>
@@ -198,6 +201,8 @@ export default function GameRoom() {
                 disabled={!isMyTurn || !!winnerMessage}
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
+                className="button button--highlight rounded-sm"
+                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
               {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
@@ -225,6 +230,7 @@ export default function GameRoom() {
                 ))}
               </p>
               <p className="text-(--t-content)">
+                Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
                 Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
