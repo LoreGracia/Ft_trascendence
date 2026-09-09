@@ -11,7 +11,7 @@ return (
 	<div>
 	<form onSubmit={onSubmit}>
 		<div className="flex flex-col gap-2">
-			<div>
+			{/* <div>
 				<h2>Username</h2>
 				<TextInput
 				type="text"
@@ -34,7 +34,7 @@ return (
 				name="password"
 				placeholder="Insert password"
 				/>
-			</div>
+			</div> */}
 			{children}
 		</div>
     </form>

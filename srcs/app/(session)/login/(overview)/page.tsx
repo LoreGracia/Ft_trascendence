@@ -5,6 +5,7 @@ import { useState } from "react";
 import Form from "@/components/Form/Form";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import TextInput from '@/components/Input/Input';
 
 export default function LogIn() {
 const router = useRouter();
@@ -43,9 +44,11 @@ async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         <div className="container">
             <section className="box box--primary">
                 <Form onSubmit={handleLogin}>
-                <button type="submit" className="button button-squere button--basic mt-5">
-                    Login
-                </button>
+                  <TextInput type="email" name="email" label="Email" placeholder="dicelover666@mail.com" />
+                  <TextInput type="password" name="password" label="Password" placeholder="Insert password..." />
+                  <button type="submit" className="button button-squere button--basic mt-5">
+                      Login
+                  </button>
                 </Form>
                 <h2 className="underline">Forgot password</h2>
             </section>
