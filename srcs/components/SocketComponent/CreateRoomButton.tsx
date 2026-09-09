@@ -11,7 +11,6 @@ type CreateRoomButtonProps = {
 };
 
 export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
-    console.log("wenas");
   const router = useRouter();
   const { roomCode, isCreating, createRoom } = useCreateRoom();
 
