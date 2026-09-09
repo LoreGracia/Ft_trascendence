@@ -164,10 +164,7 @@ export default function GameRoom() {
                       <td style={{ padding: '8px' }}>
                         {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
                         {p.id} {p.id === socket.id ? ' (You)' : ''}
-                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
-                        {p.id} {p.id === socket.id ? ' (You)' : ''}
                       </td>
-                      <td className="p-2 text-lg text-(--dark)">
                       <td className="p-2 text-lg text-(--dark)">
                         <b>{totalScore} pts</b>
                       </td>
