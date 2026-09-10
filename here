@@ -1,0 +1,167 @@
+srcs
+├── app
+│   ├── api
+│   │   └── auth
+│   │       └── [...all]
+│   │           └── route.ts
+│   ├── errorPages
+│   │   ├── 403
+│   │   │   └── page.tsx
+│   │   ├── 404
+│   │   │   └── page.tsx
+│   │   ├── 500
+│   │   │   └── page.tsx
+│   │   └── 503
+│   │       └── page.tsx
+│   ├── error.tsx
+│   ├── forbidden
+│   │   └── page.tsx
+│   ├── global-error.tsx
+│   ├── globals.css
+│   ├── icon.png
+│   ├── layout.tsx
+│   ├── loading.tsx
+│   ├── not-found.tsx
+│   ├── (overview)
+│   │   └── page.tsx
+│   ├── (protected)
+│   │   ├── landing
+│   │   │   └── (overview)
+│   │   │       └── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── leaderboard
+│   │   │   └── (overview)
+│   │   │       └── page.tsx
+│   │   ├── lobby
+│   │   │   └── (overview)
+│   │   │       └── page.tsx
+│   │   ├── other-user
+│   │   │   └── (overview)
+│   │   │       └── page.tsx
+│   │   ├── privacy-politics
+│   │   │   └── (overview)
+│   │   │       └── page.tsx
+│   │   └── profile
+│   │       └── (overview)
+│   │           └── page.tsx
+│   └── (session)
+│       ├── layout.tsx
+│       ├── login
+│       │   └── (overview)
+│       │       └── page.tsx
+│       └── signup
+│           └── (overview)
+│               └── page.tsx
+├── components
+│   ├── 3dDice
+│   │   ├── animationDice
+│   │   │   └── diceAnimation.ts
+│   │   ├── bodyDice
+│   │   │   ├── diceFactory.ts
+│   │   │   ├── faceIconFactory.ts
+│   │   │   ├── pipFactory.ts
+│   │   │   └── roundedBox.ts
+│   │   ├── connect
+│   │   │   └── useDiceSocket.ts
+│   │   ├── DiceScene.module.css
+│   │   ├── exampleDice
+│   │   │   └── diceExamples.ts
+│   │   ├── IndexDice.tsx
+│   │   ├── modelDice
+│   │   │   ├── diceConfig.ts
+│   │   │   └── modelDice.ts
+│   │   ├── select
+│   │   │   ├── diceCarouselItem.tsx
+│   │   │   └── diceOptions.ts
+│   │   ├── SelectDice.tsx
+│   │   ├── startThrow
+│   │   │   └── diceRoll.ts
+│   │   ├── ThrowDice.tsx
+│   │   └── utils
+│   │       └── diceCamera.ts
+│   ├── app-sidebar.tsx
+│   ├── AuthProvider.tsx
+│   ├── BottomBar.tsx
+│   ├── button
+│   │   ├── Button.css
+│   │   ├── Button.tsx
+│   │   ├── LogoutButton.tsx
+│   │   └── ToggleModeButton.tsx
+│   ├── Error
+│   │   ├── DiceErrorContinuous.tsx
+│   │   ├── DiceErrorTriple.tsx
+│   │   ├── DiceError.tsx
+│   │   ├── ErrorLayout.tsx
+│   │   └── ErrorText.tsx
+│   ├── Form
+│   │   └── Form.tsx
+│   ├── GameComponent.tsx
+│   ├── GameRoom.tsx
+│   ├── Input
+│   │   ├── Input.css
+│   │   └── Input.tsx
+│   ├── LandingClient.tsx
+│   ├── Menu
+│   │   └── Menu.tsx
+│   ├── Pattern
+│   │   ├── PatternControl.tsx
+│   │   └── Pattern.css
+│   ├── SocketComponent
+│   │   ├── CreateRoomButton.tsx
+│   │   ├── ExitButton.tsx
+│   │   ├── JoinButton.tsx
+│   │   └── RoomCode.tsx
+│   └── ui
+│       ├── sidebarLateral.tsx
+│       └── tooltip.tsx
+├── components.json
+├── Dockerfile
+├── eslint.config.mjs
+├── generated
+│   └── prisma
+│       ...
+├── hooks
+│   ├── useCreateRoom.ts
+│   ├── useExitRoom.ts
+│   ├── useGameSocket.ts
+│   └── useJoinRoom.ts
+├── lib
+│   ├── auth-client.ts
+│   ├── auth.ts
+│   ├── game-modes.ts
+│   ├── game.utils.ts
+│   ├── navigation.ts
+│   ├── prisma.ts
+│   ├── socket.ts
+│   ├── utils.ts
+│   └── validation.ts
+├── next.config.ts
+├── next-env.d.ts
+├── node_modules
+├── ...
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── prisma.config.ts
+├── public
+│   ├── dice-icon-mockup.svg
+│   ├── dice-mockup.svg
+│   ├── favicon.svg
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── icons.svg
+│   ├── loading.svg
+│   ├── pattern.png
+│   ├── textures
+│   │   ├── metalic2.jpg
+│   │   ├── metalic.jpg
+│   │   └── universe.jpg
+│   ├── vercel.svg
+│   └── window.svg
+├── services
+│   └── room.ts
+├── tsconfig.json
+└── types
+    └── game.ts
+
+4762 directories, 58493 files

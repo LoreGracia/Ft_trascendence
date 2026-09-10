@@ -9,12 +9,23 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-    emailAndPassword: { 
+
+  emailAndPassword: {
     enabled: true, 
-  }, 
+  },
+
+  baseURL: process.env.BETTER_AUTH_URL,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID! as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET! as string,
+    },
+  },
+
   plugins: [
-        jwt(), 
+        jwt(),
   ],
+
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email") {

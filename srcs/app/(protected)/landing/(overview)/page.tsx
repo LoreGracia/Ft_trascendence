@@ -12,7 +12,7 @@ export default function GameSelection() {
   return (
     <div className="container container-two">
         <LandingClient/>
-        <SelectDice roomCode="test-room" />
+        {/* <SelectDice roomCode="test-room" /> */}
     </div>
   );
 }
