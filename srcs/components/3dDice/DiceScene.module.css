@@ -1,3 +1,5 @@
+/* @import "../../app/globals.css"; */
+
 .diceScene {
   position: relative;
   display: flex;
@@ -87,7 +89,7 @@
   padding: 0 1rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #f4f4f5;
+  color: var(--dark);
   text-align: center;
 }
 
@@ -108,9 +110,9 @@
   gap: 0.35rem;
   width: 5.5rem;
   padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  background: #2b2b2e;
+  background: rgba(117, 117, 117, 0.3);
   cursor: pointer;
   scroll-snap-align: start;
   transition: border-color 0.2s ease, transform 0.2s ease;

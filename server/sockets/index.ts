@@ -98,10 +98,11 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	// Per passar de locked a unlocked.
-	socket.on("change_player_status", (roomCode: string) => {
+	//LORENA IM TOUCHING THIS
+	socket.on("change_player_status", (roomCode: string, diceModel: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
-			changePlayerStatus(room, socket.id);
+			changePlayerStatus(room, socket.id, diceModel);//LORENA ADDED IN THIS
 			io.to(roomCode).emit("player_status_changed", room);
 			console.log(`Room ${room.roomCode}: player ${socket.id} locked.`);
 		}
@@ -131,8 +132,9 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("player_locked", (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
+		const player = match?.players.find(p => p.id === socket.id);
 		if (match) {
-			changePlayerStatus(match, socket.id);
+			changePlayerStatus(match, socket.id, player?.diceModel?? 'default');
 			io.to(roomCode).emit("player_status_changed", match);
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
