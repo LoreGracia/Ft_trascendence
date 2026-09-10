@@ -3,12 +3,12 @@ import Link from 'next/link';
 import PatternControl from "@/components/Pattern/PatternControl";
 import { useState } from "react";
 import Form from "@/components/Form/Form";
-import { loginSchema } from "@/lib/validation";
+import { signupSchema } from "@/lib/validation";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import TextInput from '@/components/Input/Input';
 
-export default function LogIn() {
+export default function SignUp() {
   const router = useRouter();
   const [paused, setPaused] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -21,16 +21,18 @@ export default function LogIn() {
     });
   }
 
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const rawData = {
+      name: formData.get("name"),
       email: formData.get("email"),
       password: formData.get("password"),
     };
 
-    const result = loginSchema.safeParse(rawData);
+    const result = signupSchema.safeParse(rawData);
+    console.log(result);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of result.error.issues) {
@@ -39,13 +41,13 @@ export default function LogIn() {
       setErrors(fieldErrors);
       return;
     }
-    console.log(result);
 
     setErrors({});
-    const { error } = await authClient.signIn.email(result.data, {
-      onSuccess: () => router.push("/landing"),
-      onError: (ctx) => console.error(ctx.error.message),
-    });
+    const { error } = await authClient.signUp.email(result.data, {
+        onSuccess: () => router.push("/landing"),
+        onError: (ctx) => console.error(ctx.error.message),
+      }
+    );
   }
     return (
       <>
@@ -56,15 +58,23 @@ export default function LogIn() {
       <main className="container">
           <Link
           className="corner-right button button-squere button--highlight"
-          href={'/signup'}
+          href={'/login'}
           target="_self"
           rel="noopener noreferrer"
           >
-              Sign in
+              Log in
           </Link>
           <div className="container">
               <section className="box box--primary">
-                  <Form onSubmit={handleLogin}>
+                  <Form onSubmit={handleRegister}>
+                    <TextInput
+                      type="text"
+                      name="name"
+                      label="Username"
+                      placeholder="dicelover666"
+                      error={errors.name}
+                      onChange={() => clearError("name")}
+                    />
                     <TextInput
                       type="email"
                       name="email"
@@ -82,10 +92,9 @@ export default function LogIn() {
                       onChange={() => clearError("password")}
                     />
                     <button type="submit" className="button button-squere button--basic mt-5">
-                        Login
+                        <h2>Sign up</h2>
                     </button>
                   </Form>
-                  <h2 className="underline">Forgot password</h2>
               </section>
           </div>
       </main>
