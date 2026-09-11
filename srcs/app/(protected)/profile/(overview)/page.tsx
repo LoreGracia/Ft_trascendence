@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { getCurrentUserProfile, updateUserProfile } from '@/app/actions/user'
+import { getCurrentUserProfile, updateUserProfile, changePassword } from '@/app/actions/user'
 import {
 	User,
 	Mail,
@@ -13,6 +13,9 @@ import {
 	Save,
 	X,
 	Camera,
+	Lock,
+	Eye,
+	EyeOff,
 } from 'lucide-react'
 
 interface GameStat {
@@ -35,7 +38,6 @@ interface UserProfileData {
 }
 
 export default function ProfilePage() {
-	// TODO: Conectar con la base de datos para obtener los datos reales del usuario
 	const [userData, setUserData] = useState<UserProfileData>({
 		id: '',
 		name: null,
@@ -65,12 +67,19 @@ export default function ProfilePage() {
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [loading, setLoading] = useState(true)
+	const [passwordError, setPasswordError] = useState<string | null>(null)
+	const [successMessage, setSuccessMessage] = useState<string | null>(null)
+	const [showNewPassword, setShowNewPassword] = useState(false)
+	const [showRepeatPassword, setShowRepeatPassword] = useState(false)
 	const [editForm, setEditForm] = useState({
 		name: userData.name || '',
 		email: userData.email || '',
 		image: userData.image || '',
+		newPassword: '',
+		repeatPassword: '',
 	})
 
+	// TODO: Cargar datos reales del usuario autenticado desde la BD
 	useEffect(() => {
 		const loadUserProfile = async () => {
 			try {
@@ -83,11 +92,11 @@ export default function ProfilePage() {
 						emailVerified: dbUser.emailVerified,
 						image: dbUser.image,
 						createdAt: dbUser.createdAt,
-						stats: dbUser.stats || []
+						stats: dbUser.stats || [],
 					})
 				}
 			} catch (error) {
-				console.error("Error loading profile:", error)
+				console.error('Error loading profile:', error)
 			} finally {
 				setLoading(false)
 			}
@@ -123,27 +132,57 @@ export default function ProfilePage() {
 	}
 
 	const startEditing = () => {
+		setPasswordError(null)
+		setSuccessMessage(null)
 		setEditForm({
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
+			newPassword: '',
+			repeatPassword: '',
 		})
 		setIsEditing(true)
 	}
 
 	const cancelEditing = () => {
 		setIsEditing(false)
+		setPasswordError(null)
+		setSuccessMessage(null)
 		setEditForm({
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
+			newPassword: '',
+			repeatPassword: '',
 		})
 	}
 
 	const handleSave = async (e: React.FormEvent) => {
 		e.preventDefault()
+		setPasswordError(null)
+		setSuccessMessage(null)
+
 		try {
-			const updated = await updateUserProfile(editForm.name, editForm.email, editForm.image)
+			// TODO: Validar que las contraseñas coincidan si se proporcionan
+			if (editForm.newPassword || editForm.repeatPassword) {
+				if (editForm.newPassword !== editForm.repeatPassword) {
+					setPasswordError('Passwords do not match')
+					return
+				}
+
+				if (editForm.newPassword.length < 8) {
+					setPasswordError('Password must be at least 8 characters')
+					return
+				}
+			}
+
+			// TODO: Actualizar datos de perfil en la BD
+			const updated = await updateUserProfile({
+				name: editForm.name,
+				email: editForm.email,
+				image: editForm.image,
+			})
+
 			if (updated) {
 				setUserData({
 					...userData,
@@ -151,10 +190,25 @@ export default function ProfilePage() {
 					email: updated.email,
 					image: updated.image,
 				})
+
+				// TODO: Cambiar contraseña si se proporcionó una nueva
+				if (editForm.newPassword) {
+					await changePassword({
+						newPassword: editForm.newPassword,
+						repeatPassword: editForm.repeatPassword,
+					})
+				}
+
+				setSuccessMessage('Profile updated successfully!')
 				setIsEditing(false)
+
+				// Limpiar mensaje de éxito después de 3 segundos
+				setTimeout(() => setSuccessMessage(null), 3000)
 			}
 		} catch (error) {
-			console.error("Error updating profile:", error)
+			const errorMessage = error instanceof Error ? error.message : 'Error updating profile'
+			setPasswordError(errorMessage)
+			console.error('Error updating profile:', error)
 		}
 	}
 
@@ -324,16 +378,20 @@ export default function ProfilePage() {
 								<h2 className="text-xl font-bold text-white">
 									Personal Information
 								</h2>
-								{!isEditing && (
-									<button
-										onClick={startEditing}
-										className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-indigo-600/20 px-4 py-2 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-600/30"
-									>
-										<Edit2 className="h-4 w-4" />
-										Edit
-									</button>
-								)}
 							</div>
+
+							{/* Mensajes de éxito/error */}
+							{successMessage && (
+								<div className="mb-4 rounded-lg bg-green-500/20 border border-green-500/30 p-4 text-green-400">
+									✓ {successMessage}
+								</div>
+							)}
+
+							{passwordError && (
+								<div className="mb-4 rounded-lg bg-red-500/20 border border-red-500/30 p-4 text-red-400">
+									✗ {passwordError}
+								</div>
+							)}
 
 							{isEditing ? (
 								<form
@@ -383,6 +441,63 @@ export default function ProfilePage() {
 										<p className="mt-1 text-xs text-neutral-400">
 											Provide the complete URL of your image
 										</p>
+									</div>
+
+									{/* Separador - Sección de contraseña */}
+									<div className="border-t border-neutral-700 pt-4">
+										<h3 className="text-sm font-semibold text-neutral-300 mb-4 flex items-center gap-2">
+											<Lock className="h-4 w-4" />
+											Change Password (Optional)
+										</h3>
+
+										{/* New Password */}
+										<div className="mb-3">
+											<label className="block text-sm font-medium text-neutral-300 mb-2">
+												New Password
+											</label>
+											<div className="relative">
+												<input
+													type={showNewPassword ? 'text' : 'password'}
+													value={editForm.newPassword}
+													onChange={(e) => handleInputChange('newPassword', e.target.value)}
+													className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2 pr-10 text-white placeholder-neutral-500 focus:border-indigo-500 focus:outline-none"
+													placeholder="Enter new password (min 8 characters)"
+												/>
+												<button
+													type="button"
+													onClick={() => setShowNewPassword(!showNewPassword)}
+													className="absolute right-3 top-2 text-neutral-400 hover:text-indigo-400 cursor-pointer transition-colors"
+												>
+													{showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+												</button>
+											</div>
+										</div>
+
+										{/* Repeat Password */}
+										<div>
+											<label className="block text-sm font-medium text-neutral-300 mb-2">
+												Repeat Password
+											</label>
+											<div className="relative">
+												<input
+													type={showRepeatPassword ? 'text' : 'password'}
+													value={editForm.repeatPassword}
+													onChange={(e) => handleInputChange('repeatPassword', e.target.value)}
+													className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2 pr-10 text-white placeholder-neutral-500 focus:border-indigo-500 focus:outline-none"
+													placeholder="Repeat new password"
+												/>
+												<button
+													type="button"
+													onClick={() => setShowRepeatPassword(!showRepeatPassword)}
+													className="absolute right-3 top-2 text-neutral-400 hover:text-indigo-400 cursor-pointer transition-colors"
+												>
+													{showRepeatPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+												</button>
+											</div>
+											<p className="mt-1 text-xs text-neutral-400">
+												Passwords must match and be at least 8 characters long
+											</p>
+										</div>
 									</div>
 
 									{/* Botones */}
