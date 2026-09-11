@@ -8,8 +8,9 @@ export type PLAYER_ENDGAME = "WIN" | "LOSE" | "TIE";
 export interface Players {
 	playerId: string;
 	socketId: string;
+	name: string;
 	state: PLAYER_STATE | PLAYER_ENDGAME;
-	diceModel: string;//LORENA ADDED THIS
+	diceModel: string;
 }
 
 export enum Dices {

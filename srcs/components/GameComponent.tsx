@@ -58,8 +58,8 @@ export default function GameClient() {
           <h3>Jugadores ({waitingRoom.players.length}):</h3>
           <ul>
             {waitingRoom.players.map((p) => (
-              <li key={p.id}>
-                {p.id} {p.id === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
+              <li key={p.playerId}>
+                {p.playerId} {p.socketId === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
               </li>
             ))}
           </ul>
@@ -106,7 +106,7 @@ export default function GameClient() {
           <h3>
             Turno de:{' '}
             <span style={{ color: isMyTurn ? '#44bd32' : '#e74c3c' }}>
-              {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
+              {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.playerId}{' '}
               {isMyTurn ? '(¡TU TURNO!)' : ''}
             </span>
           </h3>
@@ -123,11 +123,11 @@ export default function GameClient() {
               </thead>
               <tbody>
                 {matchRoom.players.map((p) => {
-                  const totalScore = getPlayerScore(matchRoom.sum, p.id);
+                  const totalScore = getPlayerScore(matchRoom.sum, p.playerId);
                   return (
-                    <tr key={p.id} style={{ borderBottom: '1px solid #333' }}>
+                    <tr key={p.playerId} style={{ borderBottom: '1px solid #333' }}>
                       <td style={{ padding: '8px' }}>
-                        {p.id} {p.id === socket.id ? ' (Tú)' : ''}
+                        {p.playerId} {p.socketId === socket.id ? ' (Tú)' : ''}
                       </td>
                       <td style={{ padding: '8px', fontSize: '18px', color: '#00ffcc' }}>
                         <b>{totalScore} pts</b>

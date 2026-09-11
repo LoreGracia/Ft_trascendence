@@ -56,15 +56,14 @@ export function useGameSocket() {
   }, [waitingRoom, matchRoom]);
 
   const toggleReadyStatus = useCallback(() => {
-		console.log(`DICE in change player status is ${diceModel.toString()}`);
+    console.log(`DICE in change player status is ${diceModel.toString()}`);
     if (waitingRoom)
       socket.emit('change_player_status', waitingRoom.roomCode, diceModel.toString());
   }, [waitingRoom, diceModel]);
 
   const startGame = useCallback(
     (gameType: GameType) => {
-      if (waitingRoom)
-      {
+      if (waitingRoom) {
         setGameType(gameType);
         socket.emit('start_game', waitingRoom.roomCode);
       }
@@ -77,7 +76,7 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   const standPlayer = useCallback(() => {
-    if (matchRoom){
+    if (matchRoom) {
       console.log(`Esto es Stand`);
       socket.emit('player_locked', matchRoom.roomCode);
     }
@@ -85,15 +84,15 @@ export function useGameSocket() {
 
   useEffect(() => {
     const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
+      setWaitingRoom({ roomCode: code, players: [{ playerId: '', socketId: socket.id ?? '', name: '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-		  const player = waitingRoom?.players.find(p => p.id === socket.id);
-        console.log(`DiceModel es ${player?.diceModel}`);
-        console.log(`Data state is ${data.state}`);
+      const player = waitingRoom?.players.find(p => p.socketId === socket.id);
+      console.log(`DiceModel es ${player?.diceModel}`);
+      console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
         console.log("Server said this is waitingroom");
         setWaitingRoom(data as WaitingRoom);
@@ -126,7 +125,7 @@ export function useGameSocket() {
 
       setMatchRoom(finalMatch);
 
-      const me = finalMatch.players.find((p) => p.id === socket.id);
+      const me = finalMatch.players.find((p) => p.socketId === socket.id);
       if (me?.state === 'WIN') setWinnerMessage('🎉 ¡YOU WON!');
       else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡DRAW!');
       else setWinnerMessage('💀 YOU LOST');
@@ -165,7 +164,7 @@ export function useGameSocket() {
   const isMyTurn = useMemo(
     () =>
       matchRoom
-        ? matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === socket.id
+        ? matchRoom.players[matchRoom.turn % matchRoom.players.length]?.socketId === socket.id
         : false,
     [matchRoom],
   );

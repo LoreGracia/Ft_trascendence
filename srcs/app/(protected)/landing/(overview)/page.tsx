@@ -11,8 +11,8 @@ import SelectDice from "@/components/3dDice/SelectDice";
 export default function GameSelection() {
   return (
     <div className="container container-two">
-        <LandingClient/>
-        <SelectDice roomCode="test-room" />
+      <LandingClient />
+      <SelectDice roomCode="test-room" />
     </div>
   );
 }

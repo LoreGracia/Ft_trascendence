@@ -14,13 +14,13 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
-            <IndexDice />
-          {/*
-            <IndexDice />
-            <SelectDice />
-            <ThrowDice /> 
-            <SelectDice roomCode="test-room" />
-            <ThrowDice presetValue="default" roomCode="test-room" />*/}
+          <IndexDice />
+
+          {/* <IndexDice />
+          <SelectDice />
+          <ThrowDice />
+          <SelectDice roomCode="test-room" />
+          <ThrowDice presetValue="default" roomCode="test-room" /> */}
 
         </section>
         <section className="column gap-8">

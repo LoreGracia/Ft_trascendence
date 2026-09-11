@@ -5,15 +5,6 @@ import { matchRooms, turnTimeouts, waitingRooms } from "../sockets/index";
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
 
-// export function reconnectPlayer(playerIdent: string, socket: Socket) {
-// 	for (const room of waitingRooms.values()) {
-// 		room.players.forEach((player, index) => {
-// 			if (player.playerId === playerIdent)
-// 				socket.
-// 		})
-// 	}
-// }
-
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
 	crypto.getRandomValues(bytes);
@@ -24,23 +15,23 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string, socketId: string, game: GameType): WaitingRoom {
+export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ id: playerId, state: "UNLOCKED", diceModel: "default" }],//LORENA WAS HERE
+		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default" }],
 		state: "OPEN",
 	};
 	return room;
 }
 
-export function addPlayerToRoom(playerId: string, socketId: string, room: WaitingRoom): boolean {
+export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom): boolean {
 	if (room.state === "OPEN") {
-		room.players.push({ id: playerId, state: "UNLOCKED", diceModel: "default" }); //LORENA WAS HERE
+		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default" });
 		console.log(`Room ${room.roomCode}: player ${playerId} joined.`);
 		return true
 	} else {
-		console.log("Room Closed."); // Esto se transformara a algun aviso a lore.
+		console.log("Room Closed.");
 		return false;
 	}
 }
@@ -58,10 +49,10 @@ export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
 }
 
 export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string, diceModel: string): void {
-	const player = room.players.find(p => p.id === playerId);
+	const player = room.players.find(p => p.playerId === playerId);
 	if (!player) return;
 	player.state = player.state === "LOCKED" ? "UNLOCKED" : "LOCKED";
-	player.diceModel = diceModel;//LORENA ADDED THIS
+	player.diceModel = diceModel;
 }
 
 function countLockedPlayers(list: Players[]): number {

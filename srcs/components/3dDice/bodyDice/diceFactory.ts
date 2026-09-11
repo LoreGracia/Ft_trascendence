@@ -80,7 +80,7 @@ export const createDiceInstance = (
     // DEBUG CONFIG
     // ----------------------------------------
 
-    console.log("🌌 CONFIG DADO", resolvedConfig);
+    // console.log("🌌 CONFIG DADO", resolvedConfig);
 
     // ----------------------------------------
     // MATERIAL SYNC
@@ -88,11 +88,11 @@ export const createDiceInstance = (
 
     const syncMaterials = () => {
 
-        console.log("🎲 DICE MATERIAL", {
-            bodyTexture: resolvedConfig.bodyTexture,
-            bodyColor: resolvedConfig.bodyColor,
-            pipStyle: resolvedConfig.pipStyle,
-        });
+        // console.log("🎲 DICE MATERIAL", {
+        //     bodyTexture: resolvedConfig.bodyTexture,
+        //     bodyColor: resolvedConfig.bodyColor,
+        //     pipStyle: resolvedConfig.pipStyle,
+        // });
 
         // ----------------------------------------
         // BODY TEXTURE
@@ -105,10 +105,10 @@ export const createDiceInstance = (
 
         if (resolvedConfig.bodyTexture) {
 
-            console.log(
-                "🌌 CARGANDO TEXTURA:",
-                resolvedConfig.bodyTexture
-            );
+            // console.log(
+            //     "🌌 CARGANDO TEXTURA:",
+            //     resolvedConfig.bodyTexture
+            // );
 
             bodyTexture = new Texture(
                 resolvedConfig.bodyTexture,
@@ -117,17 +117,17 @@ export const createDiceInstance = (
                 false,
                 Texture.TRILINEAR_SAMPLINGMODE,
                 () => {
-                    console.log(
-                        "✅ TEXTURA CARGADA:",
-                        resolvedConfig.bodyTexture
-                    );
+                    // console.log(
+                    //     "✅ TEXTURA CARGADA:",
+                    //     resolvedConfig.bodyTexture
+                    // );
                 },
                 (message) => {
-                    console.error(
-                        "❌ ERROR CARGANDO TEXTURA:",
-                        resolvedConfig.bodyTexture,
-                        message
-                    );
+                    // console.error(
+                    //     "❌ ERROR CARGANDO TEXTURA:",
+                    //     resolvedConfig.bodyTexture,
+                    //     message
+                    // );
                 }
             );
 
@@ -138,10 +138,10 @@ export const createDiceInstance = (
 
         } else {
 
-            console.log(
-                "🎨 DADO SIN TEXTURA, USANDO COLOR:",
-                resolvedConfig.bodyColor
-            );
+            // console.log(
+            //     "🎨 DADO SIN TEXTURA, USANDO COLOR:",
+            //     resolvedConfig.bodyColor
+            // );
 
             bodyMaterial.diffuseTexture = null;
             bodyMaterial.diffuseColor = resolvedConfig.bodyColor;
@@ -276,7 +276,7 @@ export const createDiceInstance = (
         updateConfig(next: Partial<DiceConfig>) {
             userConfig = { ...userConfig, ...next };
             resolvedConfig = mergeDiceConfig(userConfig);
-            console.log("🔄 CONFIG ACTUALIZADA", resolvedConfig);
+            // console.log("🔄 CONFIG ACTUALIZADA", resolvedConfig);
             syncInstance();
         },
 
