@@ -83,8 +83,8 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   useEffect(() => {
-    const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ playerId: '', socketId: socket.id ?? '', name: '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
+    const handleRoomCreated = (code: WaitingRoom) => {
+      setWaitingRoom(code);
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);

@@ -95,7 +95,7 @@ io.on("connection", (socket: Socket) => {
 		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
-		socket.emit("room_created", newRoom.roomCode);
+		socket.emit("room_created", newRoom);
 		console.log(`Room ${newRoom.roomCode}: created by player ${socket.data.userId}`);
 	});
 

@@ -10,10 +10,10 @@ export const useCreateRoom = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    const handleRoomCreated = (code: string) => {
+    const handleRoomCreated = (code: WaitingRoom) => {
       console.log("[room] room_created:", code);
 
-      setRoomCode(code);
+      setRoomCode(code.roomCode);
       setIsCreating(false);
     };
 
