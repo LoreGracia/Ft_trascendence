@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { getCurrentUserProfile, updateUserProfile } from '@/app/actions/user'
 import {
 	User,
 	Mail,
@@ -63,11 +64,36 @@ export default function ProfilePage() {
 	})
 
 	const [isEditing, setIsEditing] = useState(false)
+	const [loading, setLoading] = useState(true)
 	const [editForm, setEditForm] = useState({
 		name: userData.name || '',
 		email: userData.email || '',
 		image: userData.image || '',
 	})
+
+	useEffect(() => {
+		const loadUserProfile = async () => {
+			try {
+				const dbUser = await getCurrentUserProfile()
+				if (dbUser) {
+					setUserData({
+						id: dbUser.id,
+						name: dbUser.name,
+						email: dbUser.email,
+						emailVerified: dbUser.emailVerified,
+						image: dbUser.image,
+						createdAt: dbUser.createdAt,
+						stats: dbUser.stats || []
+					})
+				}
+			} catch (error) {
+				console.error("Error loading profile:", error)
+			} finally {
+				setLoading(false)
+			}
+		}
+		loadUserProfile()
+	}, [])
 
 	const displayValue = (value: string | number | null) => {
 		return value && value !== '' ? value : '—'
@@ -116,14 +142,20 @@ export default function ProfilePage() {
 
 	const handleSave = async (e: React.FormEvent) => {
 		e.preventDefault()
-		// TODO: Conectar con backend para actualizar userData
-		setUserData({
-			...userData,
-			name: editForm.name || null,
-			email: editForm.email || null,
-			image: editForm.image || null,
-		})
-		setIsEditing(false)
+		try {
+			const updated = await updateUserProfile(editForm.name, editForm.email, editForm.image)
+			if (updated) {
+				setUserData({
+					...userData,
+					name: updated.name,
+					email: updated.email,
+					image: updated.image,
+				})
+				setIsEditing(false)
+			}
+		} catch (error) {
+			console.error("Error updating profile:", error)
+		}
 	}
 
 	const handleInputChange = (field: string, value: string) => {
@@ -135,6 +167,14 @@ export default function ProfilePage() {
 
 	const freePlayStat = getStat('FREE_PLAY')
 	const add42Stat = getStat('ADD42')
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen bg-neutral-950">
+				<div className="text-white text-xl font-semibold">Loading your profile...</div>
+			</div>
+		)
+	}
 
 	return (
 		<main className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -189,87 +229,85 @@ export default function ProfilePage() {
 						</div>
 
 						{/* Stats de juegos */}
-						<div className="space-y-4">
+						<div className="space-y-3">
 							<h3 className="text-sm font-semibold text-neutral-300">
 								Game Statistics
 							</h3>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								{/* FREE_PLAY Stats */}
-								<div className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-4 backdrop-blur">
-									<div className="text-xs font-bold text-indigo-400 mb-3 uppercase">
-										Free Play
-									</div>
-									<div className="grid grid-cols-2 gap-2 text-xs">
-										<div>
-											<div className="text-neutral-400">Games</div>
-											<div className="text-lg font-bold text-white">
-												{freePlayStat.gamesPlayed}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Wins</div>
-											<div className="text-lg font-bold text-green-400">
-												{freePlayStat.wins}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Losses</div>
-											<div className="text-lg font-bold text-red-400">
-												{freePlayStat.losses}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Ties</div>
-											<div className="text-lg font-bold text-yellow-400">
-												{freePlayStat.ties}
-											</div>
+							{/* FREE_PLAY Stats */}
+							<div className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-4 backdrop-blur">
+								<div className="text-xs font-bold text-indigo-400 mb-3 uppercase">
+									Free Play
+								</div>
+								<div className="grid grid-cols-2 gap-2 text-xs">
+									<div>
+										<div className="text-neutral-400">Games</div>
+										<div className="text-lg font-bold text-white">
+											{freePlayStat.gamesPlayed}
 										</div>
 									</div>
-									<div className="mt-3 pt-3 border-t border-neutral-700">
-										<div className="text-xs text-neutral-400">Total Points</div>
-										<div className="text-xl font-bold text-indigo-400">
-											{freePlayStat.totalPoints}
+									<div>
+										<div className="text-neutral-400">Wins</div>
+										<div className="text-lg font-bold text-green-400">
+											{freePlayStat.wins}
+										</div>
+									</div>
+									<div>
+										<div className="text-neutral-400">Losses</div>
+										<div className="text-lg font-bold text-red-400">
+											{freePlayStat.losses}
+										</div>
+									</div>
+									<div>
+										<div className="text-neutral-400">Ties</div>
+										<div className="text-lg font-bold text-yellow-400">
+											{freePlayStat.ties}
 										</div>
 									</div>
 								</div>
+								<div className="mt-3 pt-3 border-t border-neutral-700">
+									<div className="text-xs text-neutral-400">Total Points</div>
+									<div className="text-xl font-bold text-indigo-400">
+										{freePlayStat.totalPoints}
+									</div>
+								</div>
+							</div>
 
-								{/* ADD42 Stats */}
-								<div className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-4 backdrop-blur">
-									<div className="text-xs font-bold text-purple-400 mb-3 uppercase">
-										Add42
-									</div>
-									<div className="grid grid-cols-2 gap-2 text-xs">
-										<div>
-											<div className="text-neutral-400">Games</div>
-											<div className="text-lg font-bold text-white">
-												{add42Stat.gamesPlayed}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Wins</div>
-											<div className="text-lg font-bold text-green-400">
-												{add42Stat.wins}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Losses</div>
-											<div className="text-lg font-bold text-red-400">
-												{add42Stat.losses}
-											</div>
-										</div>
-										<div>
-											<div className="text-neutral-400">Ties</div>
-											<div className="text-lg font-bold text-yellow-400">
-												{add42Stat.ties}
-											</div>
+							{/* ADD42 Stats */}
+							<div className="rounded-lg border border-neutral-800 bg-neutral-950/50 p-4 backdrop-blur">
+								<div className="text-xs font-bold text-purple-400 mb-3 uppercase">
+									Add42
+								</div>
+								<div className="grid grid-cols-2 gap-2 text-xs">
+									<div>
+										<div className="text-neutral-400">Games</div>
+										<div className="text-lg font-bold text-white">
+											{add42Stat.gamesPlayed}
 										</div>
 									</div>
-									<div className="mt-3 pt-3 border-t border-neutral-700">
-										<div className="text-xs text-neutral-400">Total Points</div>
-										<div className="text-xl font-bold text-purple-400">
-											{add42Stat.totalPoints}
+									<div>
+										<div className="text-neutral-400">Wins</div>
+										<div className="text-lg font-bold text-green-400">
+											{add42Stat.wins}
 										</div>
+									</div>
+									<div>
+										<div className="text-neutral-400">Losses</div>
+										<div className="text-lg font-bold text-red-400">
+											{add42Stat.losses}
+										</div>
+									</div>
+									<div>
+										<div className="text-neutral-400">Ties</div>
+										<div className="text-lg font-bold text-yellow-400">
+											{add42Stat.ties}
+										</div>
+									</div>
+								</div>
+								<div className="mt-3 pt-3 border-t border-neutral-700">
+									<div className="text-xs text-neutral-400">Total Points</div>
+									<div className="text-xl font-bold text-purple-400">
+										{add42Stat.totalPoints}
 									</div>
 								</div>
 							</div>
@@ -286,6 +324,15 @@ export default function ProfilePage() {
 								<h2 className="text-xl font-bold text-white">
 									Personal Information
 								</h2>
+								{!isEditing && (
+									<button
+										onClick={startEditing}
+										className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-indigo-600/20 px-4 py-2 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-600/30"
+									>
+										<Edit2 className="h-4 w-4" />
+										Edit
+									</button>
+								)}
 							</div>
 
 							{isEditing ? (
