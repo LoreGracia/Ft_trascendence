@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { getCurrentUserProfile, updateUserProfile, changePassword } from '@/app/actions/user'
+import { getAvatarUrl, getAvailableAvatars } from '@/components/3dDice/diceAvatarUtils'
 import {
 	User,
 	Mail,
@@ -75,6 +76,7 @@ export default function ProfilePage() {
 		name: userData.name || '',
 		email: userData.email || '',
 		image: userData.image || '',
+		selectedAvatarSeed: 'avatar-1',
 		newPassword: '',
 		repeatPassword: '',
 	})
@@ -138,6 +140,7 @@ export default function ProfilePage() {
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
+			selectedAvatarSeed: 'avatar-1',
 			newPassword: '',
 			repeatPassword: '',
 		})
@@ -152,6 +155,7 @@ export default function ProfilePage() {
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
+			selectedAvatarSeed: 'avatar-1',
 			newPassword: '',
 			repeatPassword: '',
 		})
@@ -176,11 +180,14 @@ export default function ProfilePage() {
 				}
 			}
 
+			// Generar URL del avatar seleccionado
+			const avatarUrl = getAvatarUrl(editForm.selectedAvatarSeed)
+
 			// TODO: Actualizar datos de perfil en la BD
 			const updated = await updateUserProfile({
 				name: editForm.name,
 				email: editForm.email,
-				image: editForm.image,
+				image: avatarUrl,
 			})
 
 			if (updated) {
@@ -396,8 +403,36 @@ export default function ProfilePage() {
 							{isEditing ? (
 								<form
 									onSubmit={handleSave}
-									className="space-y-4 rounded-xl border border-neutral-800 bg-neutral-950/50 p-6 backdrop-blur"
+									className="space-y-6 rounded-xl border border-neutral-800 bg-neutral-950/50 p-6 backdrop-blur"
 								>
+									{/* Preview en vivo del Avatar */}
+									<div className="flex flex-col sm:flex-row items-center gap-4 rounded-xl border border-neutral-800 bg-neutral-900/60 p-4">
+										<div className="relative">
+											{editForm.image ? (
+												<img
+													src={editForm.image}
+													alt="Avatar preview"
+													className="h-24 w-24 rounded-full object-cover ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/20 bg-neutral-950"
+												/>
+											) : (
+												<img
+													src={getAvatarUrl(editForm.selectedAvatarSeed)}
+													alt="Avatar preview"
+													className="h-24 w-24 rounded-full object-cover ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/20 bg-neutral-950"
+												/>
+											)}
+											<span className="absolute -bottom-1 -right-1 rounded-full bg-indigo-600 p-1.5 text-white shadow">
+												<Camera className="h-3.5 w-3.5" />
+											</span>
+										</div>
+										<div className="text-center sm:text-left">
+											<div className="text-sm font-semibold text-white">Avatar Preview</div>
+											<p className="text-xs text-neutral-400 mt-1">
+												Select an avatar from the grid below
+											</p>
+										</div>
+									</div>
+
 									{/* Nombre */}
 									<div>
 										<label className="block text-sm font-medium text-neutral-300 mb-2">
@@ -426,21 +461,45 @@ export default function ProfilePage() {
 										/>
 									</div>
 
-									{/* Avatar URL */}
+									{/* Selector de Avatares */}
 									<div>
-										<label className="block text-sm font-medium text-neutral-300 mb-2">
-											Avatar URL
+										<label className="text-sm font-medium text-neutral-300 mb-3 block">
+											Choose Your Avatar
 										</label>
-										<input
-											type="url"
-											value={editForm.image}
-											onChange={(e) => handleInputChange('image', e.target.value)}
-											className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2 text-white placeholder-neutral-500 focus:border-indigo-500 focus:outline-none"
-											placeholder="https://example.com/avatar.jpg"
-										/>
-										<p className="mt-1 text-xs text-neutral-400">
-											Provide the complete URL of your image
-										</p>
+										<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+											{getAvailableAvatars().map((avatar) => {
+												const isSelected = editForm.selectedAvatarSeed === avatar.seed
+												return (
+													<button
+														type="button"
+														key={avatar.seed}
+														onClick={() => {
+															setEditForm((prev) => ({
+																...prev,
+																selectedAvatarSeed: avatar.seed,
+																image: avatar.url,
+															}))
+														}}
+														className={`group relative rounded-xl overflow-hidden transition-all duration-200 ${isSelected
+															? 'ring-2 ring-indigo-500 scale-105 shadow-lg shadow-indigo-500/30'
+															: 'ring-1 ring-neutral-700 hover:ring-neutral-600 hover:scale-102'
+															}`}
+													>
+														<img
+															src={avatar.url}
+															alt={avatar.seed}
+															className="w-full h-auto aspect-square object-cover bg-neutral-900"
+															loading="lazy"
+														/>
+														{isSelected && (
+															<div className="absolute inset-0 flex items-center justify-center bg-black/30">
+																<CheckCircle className="h-6 w-6 text-indigo-400" />
+															</div>
+														)}
+													</button>
+												)
+											})}
+										</div>
 									</div>
 
 									{/* Separador - Sección de contraseña */}
