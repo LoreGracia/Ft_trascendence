@@ -76,12 +76,9 @@ export default function ProfilePage() {
 		name: userData.name || '',
 		email: userData.email || '',
 		image: userData.image || '',
-		selectedAvatarSeed: 'avatar-1',
 		newPassword: '',
 		repeatPassword: '',
 	})
-
-	// TODO: Cargar datos reales del usuario autenticado desde la BD
 	useEffect(() => {
 		const loadUserProfile = async () => {
 			try {
@@ -136,11 +133,18 @@ export default function ProfilePage() {
 	const startEditing = () => {
 		setPasswordError(null)
 		setSuccessMessage(null)
+		let currentSeed = 'avatar-1'
+		if (userData.image && userData.image.includes('dicebear')) {
+			const seedMatch = userData.image.match(/seed=([^&]+)/)
+			if (seedMatch) {
+				currentSeed = decodeURIComponent(seedMatch[1])
+			}
+		}
 		setEditForm({
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
-			selectedAvatarSeed: 'avatar-1',
+			selectedAvatarSeed: currentSeed,
 			newPassword: '',
 			repeatPassword: '',
 		})
@@ -151,11 +155,18 @@ export default function ProfilePage() {
 		setIsEditing(false)
 		setPasswordError(null)
 		setSuccessMessage(null)
+		let currentSeed = 'avatar-1'
+		if (userData.image && userData.image.includes('dicebear')) {
+			const seedMatch = userData.image.match(/seed=([^&]+)/)
+			if (seedMatch) {
+				currentSeed = decodeURIComponent(seedMatch[1])
+			}
+		}
 		setEditForm({
 			name: userData.name || '',
 			email: userData.email || '',
 			image: userData.image || '',
-			selectedAvatarSeed: 'avatar-1',
+			selectedAvatarSeed: currentSeed,
 			newPassword: '',
 			repeatPassword: '',
 		})
