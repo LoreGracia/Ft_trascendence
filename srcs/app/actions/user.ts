@@ -142,3 +142,131 @@ export async function changePassword(data: {
             : new Error('Error desconocido al cambiar la contraseña')
     }
 }
+
+export async function getLeaderboardStats() {
+    try {
+        // Obtener TODOS los usuarios con sus stats (sin where inválido)
+        const users = await prisma.user.findMany({
+            include: {
+                stats: true,
+            },
+        })
+
+        console.log('=== LEADERBOARD DEBUG ===')
+        console.log('Total users:', users.length)
+
+        if (users.length > 0) {
+            console.log('Sample user:', {
+                id: users[0].id,
+                name: users[0].name,
+                statsCount: users[0].stats.length,
+                stats: users[0].stats,
+            })
+        }
+
+        // Separar por tipo de juego
+        const freePlayPlayers = users
+            .map((user) => {
+                const stat = user.stats?.find((s) => s.gameType === 'FREE_PLAY')
+
+                // Solo incluir si tiene stats y ha jugado al menos 1 partida
+                if (!stat || stat.gamesPlayed === 0) return null
+
+                return {
+                    id: user.id,
+                    name: user.name || 'Unknown',
+                    avatarSeed: user.name || 'default',
+                    avatarUrl: user.image || undefined,
+                    wins: stat.wins || 0,
+                    ties: stat.ties || 0,
+                    losses: stat.losses || 0,
+                    totalGames: stat.gamesPlayed,
+                    winRate: stat.gamesPlayed > 0 ? (stat.wins / stat.gamesPlayed) * 100 : 0,
+                }
+            })
+            .filter((p): p is LeaderboardUserStats => p !== null)
+
+        const add42Players = users
+            .map((user) => {
+                const stat = user.stats?.find((s) => s.gameType === 'ADD42')
+
+                if (!stat || stat.gamesPlayed === 0) return null
+
+                return {
+                    id: user.id,
+                    name: user.name || 'Unknown',
+                    avatarSeed: user.name || 'default',
+                    avatarUrl: user.image || undefined,
+                    wins: stat.wins || 0,
+                    ties: stat.ties || 0,
+                    losses: stat.losses || 0,
+                    totalGames: stat.gamesPlayed,
+                    winRate: stat.gamesPlayed > 0 ? (stat.wins / stat.gamesPlayed) * 100 : 0,
+                }
+            })
+            .filter((p): p is LeaderboardUserStats => p !== null)
+
+        console.log('FREE_PLAY players found:', freePlayPlayers.length)
+        console.log('ADD42 players found:', add42Players.length)
+
+        if (freePlayPlayers.length > 0) {
+            console.log('Sample FREE_PLAY player:', freePlayPlayers[0])
+        }
+        if (add42Players.length > 0) {
+            console.log('Sample ADD42 player:', add42Players[0])
+        }
+
+        return {
+            freePlay: freePlayPlayers,
+            add42: add42Players,
+        }
+    } catch (error) {
+        console.error('ERROR fetching leaderboard:', error)
+        return {
+            freePlay: [],
+            add42: [],
+        }
+    }
+}
+
+// Tipos para leaderboard
+export interface LeaderboardUserStats {
+    id: string
+    name: string
+    avatarSeed: string
+    avatarUrl?: string
+    wins: number
+    ties: number
+    losses: number
+    totalGames: number
+    winRate: number
+}
+
+
+/**
+ * TEMPORAL: DEBUG  PARA LEADERBARD- Obtener TODOS los usuarios registrados (sin filtrar por stats)
+ * ELIMINAR UNA VEZ LA CONEXIÓN BACKEND→DB FUNCIONE
+ */
+export async function getAllUsersDebug() {
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                stats: true,
+            },
+        })
+
+        return {
+            total: users.length,
+            users: users.map((user) => ({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                statsCount: user.stats.length,
+                stats: user.stats,
+            })),
+        }
+    } catch (error) {
+        console.error('Error fetching all users:', error)
+        return { total: 0, users: [] }
+    }
+}
