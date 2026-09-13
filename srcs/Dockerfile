@@ -1,14 +1,31 @@
-FROM node:24-alpine
+# syntax=docker/dockerfile:1.7
 
+# ---------- base ----------
+FROM node:24-slim AS base
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN npm ci
+ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY . .
+# ---------- deps ----------
+FROM base AS deps
+COPY srcs/package.json srcs/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
-# fck vercel
-ENV NEXT_TELEMETRY_DISABLED 1
+# ---------- prisma ----------
+FROM base AS prisma
+COPY --from=deps /app/node_modules ./node_modules
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY srcs/prisma.config.ts ./prisma.config.ts
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+RUN npx prisma generate --generator client_app
 
-CMD npx prisma generate --generator client_app && npm run dev
+# ---------- dev ----------
+FROM base AS dev
+COPY --from=deps   /app/node_modules ./node_modules
+COPY --from=prisma /app/generated    ./generated
+COPY srcs/ .
+CMD ["npm", "run", "dev"]
