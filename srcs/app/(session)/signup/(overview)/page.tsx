@@ -7,6 +7,7 @@ import { signupSchema } from "@/lib/validation";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import TextInput from '@/components/Input/Input';
+import { GoogleButton } from "@/components/button/GoogleButton";
 
 export default function SignUp() {
   const router = useRouter();
@@ -95,6 +96,7 @@ export default function SignUp() {
                         <h2>Sign up</h2>
                     </button>
                   </Form>
+                  <GoogleButton />
               </section>
           </div>
       </main>

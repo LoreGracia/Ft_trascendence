@@ -44,6 +44,8 @@ services:
           size: 2g
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       # NODE_OPTIONS: --max-old-space-size=2048
     ports:
       - "3000:3000"

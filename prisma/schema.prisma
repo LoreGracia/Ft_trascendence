@@ -100,15 +100,15 @@ model Verification {
 }
 
 model Jwks {
-  id         String    @id
-  publicKey  String
-  privateKey String
-  createdAt  DateTime
-  expiresAt  DateTime?
-  alg        String?
-  crv        String?
+	id			String @id
+	publicKey	String
+	privateKey	String
+	createdAt	DateTime
+	expiresAt	DateTime?
+	alg			String?
+	crv			String?
 
-  @@map("jwks")
+	@@map("jwks")
 }
 
 model Game {

@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { genericOAuth } from "better-auth/plugins"
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { jwt } from "better-auth/plugins";
@@ -17,15 +18,24 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID! as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET! as string,
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
 
   plugins: [
         jwt(),
+        // genericOAuth({ 
+        //     config: [ 
+        //         { 
+        //             providerId: "provider-id", 
+        //             clientId: "test-client-id", 
+        //             clientSecret: "test-client-secret", 
+        //             discoveryUrl: "https://auth.example.com/.well-known/openid-configuration", 
+        //             // ... other config options
+        //         }, 
+        //     ]}),
   ],
-
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email") {
@@ -46,13 +56,18 @@ export const auth = betterAuth({
         }
       }
     })
-  }
-});
-
-
-  // socialProviders: { 
-  //   github: { 
-  //     clientId: process.env.GITHUB_CLIENT_ID as string, 
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
-  //   }, 
-  // }, 
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user, ctx) => {
+          console.log("[auth] user.create.before ctx.path:", ctx?.path);
+          if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
+            return { data: { ...user, name: null } };
+          }
+          return { data: user };
+        },
+      },
+    },
+  },
+})
