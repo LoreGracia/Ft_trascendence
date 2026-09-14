@@ -187,7 +187,7 @@ export default function GameRoom() {
           <div style={{ display: 'flex', gap: '10px', margin: '20px 0', flexWrap: 'wrap' }}>
             <button
               hidden={!(myMatchState === "UNLOCKED")}
-              onClick={rollDice}
+              onClick={handleRoomRoll}
               disabled={!isMyTurn || !!winnerMessage}
               className="button button--highlight rounded-sm"
               style={{
@@ -199,7 +199,7 @@ export default function GameRoom() {
 
             {matchRoom.gameType === 'ADD42' && (
               <button
-                onClick={handleRoomRoll}
+                onClick={standPlayer}
                 disabled={!isMyTurn || !!winnerMessage}
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
