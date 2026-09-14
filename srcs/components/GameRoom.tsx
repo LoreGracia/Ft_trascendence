@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
+import ThrowDice from "@/components/3dDice/ThrowDice";
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
@@ -36,7 +37,11 @@ export default function GameRoom() {
     }
   }, [socket.id, router]);
 
-  if (!socket.id) return <div>Redirecting...</div>;
+  const [diceTrigger, setDiceTrigger] = useState(0);
+  const handleRoomRoll = () => {
+    rollDice();// acción del socket
+    setDiceTrigger((v) => v + 1); // dispara la animación del dado
+  };
   useEffect(() => {
     console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
     if (!waitingRoom && roomCode) {
@@ -66,7 +71,7 @@ export default function GameRoom() {
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
         <small>
-          Tu Socket ID: <code>{socket.id}</code>
+          Tu Socket ID: {socket.id}
         </small>
       </p>
 
@@ -194,13 +199,11 @@ export default function GameRoom() {
 
             {matchRoom.gameType === 'ADD42' && (
               <button
-                onClick={standPlayer}
+                onClick={handleRoomRoll}
                 disabled={!isMyTurn || !!winnerMessage}
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
-                className="button button--highlight rounded-sm"
-                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
-              >
+                >
               {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
@@ -209,6 +212,11 @@ export default function GameRoom() {
               className="button rounded-sm button--secondary">
               Exit match
             </button>
+            <ThrowDice
+              presetValue={matchRoom?.players.find((p) => p.id === socket.id)?.diceModel ?? 'default'}
+              lastResult={lastRoll}
+              triggerRoll={diceTrigger}
+            />
           </div>
 
           {matchRoom.gameType === 'ADD42' && lastRoll && (
@@ -227,7 +235,6 @@ export default function GameRoom() {
                 ))}
               </p>
               <p className="text-(--t-content)">
-                Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
                 Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>

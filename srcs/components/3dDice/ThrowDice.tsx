@@ -15,13 +15,15 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { getDicePreset } from "@/components/3dDice/select/diceOptions";
 import { useDiceSocket } from "@/components/3dDice/connect/useDiceSocket";
 import styles from "./DiceScene.module.css";
+import { DiceModel, LastRoll } from "@/types/game";
 
 interface ThrowDiceProps {
-    presetValue: string;
-    roomCode: string;
+    presetValue: DiceModel;
+    lastResult: LastRoll | null;
+    triggerRoll: number;
 }
 
-export default function ThrowDice({ presetValue, roomCode }: ThrowDiceProps) {
+export default function ThrowDice({ presetValue, lastResult, triggerRoll }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -29,8 +31,11 @@ export default function ThrowDice({ presetValue, roomCode }: ThrowDiceProps) {
     const isFirstPresetRun = useRef(true);
     const [resultText, setResultText] = useState("Resultado: -");
     const [isRolling, setIsRolling] = useState(false);
-
-    const { rollDice, lastResult } = useDiceSocket(roomCode);
+    useEffect(() => {
+        if (triggerRoll === 0) return;
+        handleRollClick();
+        }, [triggerRoll]);
+    // const { rollDice, lastResult } = useDiceSocket(roomCode);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -128,7 +133,7 @@ export default function ThrowDice({ presetValue, roomCode }: ThrowDiceProps) {
     const handleRollClick = () => {
         if (isRolling || !diceInstanceRef.current || !sceneRef.current) return;
 
-        rollDice();
+        // rollDice();
 
         setIsRolling(true);
         setResultText("Resultado: tirando...");
