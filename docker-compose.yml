@@ -25,7 +25,7 @@ services:
     container_name: transcendence-app
     restart: no
     command: sh -c "for i in 1 2 3 4 5; do npx prisma migrate deploy && break; echo 'retry migrate...'; sleep 3; done; npm run dev"
-    stop_grace_period: 30s
+    stop_grace_period: 5s
     volumes:
       # surgical bind mounts for hot-reload
       - ./srcs/app:/app/app
@@ -81,7 +81,6 @@ volumes:
   db-data:
   next-modules:
   server-modules:
-  #next-cache:
   prisma-client-app:
   prisma-client-server:
 

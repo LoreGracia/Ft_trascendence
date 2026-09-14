@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import TextInput from "@/components/Input/Input";
-import { Button } from "@/components/button/Button";
 import { setUsername } from "./actions";
 import Form from "@/components/Form/Form";
 

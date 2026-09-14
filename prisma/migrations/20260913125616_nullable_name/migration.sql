@@ -6,3 +6,6 @@
 */
 -- AlterTable
 ALTER TABLE "user" ALTER COLUMN "name" DROP NOT NULL;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_name_key" ON "user"("name");

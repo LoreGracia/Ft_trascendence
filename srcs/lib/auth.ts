@@ -25,16 +25,6 @@ export const auth = betterAuth({
 
   plugins: [
         jwt(),
-        // genericOAuth({ 
-        //     config: [ 
-        //         { 
-        //             providerId: "provider-id", 
-        //             clientId: "test-client-id", 
-        //             clientSecret: "test-client-secret", 
-        //             discoveryUrl: "https://auth.example.com/.well-known/openid-configuration", 
-        //             // ... other config options
-        //         }, 
-        //     ]}),
   ],
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
@@ -43,9 +33,29 @@ export const auth = betterAuth({
         if (!result.success) {
           throw new APIError("BAD_REQUEST", {
             message: result.error.issues[0].message,
-          })
+          });
         }
-      } 
+
+        const { name, email } = result.data;
+
+        const [nameTaken, emailTaken] = await Promise.all([
+          prisma.user.findUnique({ where: { name }, select: { id: true } }),
+          prisma.user.findUnique({ where: { email }, select: { id: true } }),
+        ]);
+
+        if (nameTaken) {
+          throw new APIError("CONFLICT", {
+            message: "Username already taken",
+            code: "USERNAME_TAKEN",
+          });
+        }
+        if (emailTaken) {
+          throw new APIError("CONFLICT", {
+            message: "Email already registered",
+            code: "EMAIL_TAKEN",
+          });
+        }
+      }
 
       if (ctx.path === "/sign-in/email") {
         const result = loginSchema.safeParse(ctx.body);

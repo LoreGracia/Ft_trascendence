@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { GoogleIcon } from "./GoogleIcon";
 
 export function GoogleButton() {
   const [loading, setLoading] = useState(false);
@@ -20,13 +21,14 @@ export function GoogleButton() {
   }
 
   return (
-	<button
-		type="button"
-		onClick={handleGoogle}
-		disabled={loading}
-		className="button button-squere button--basic mt-5"
-	>
-		{loading ? "Redirecting…" : "Continue with Google"}
-	</button>
+    <button
+      type="button"
+      onClick={handleGoogle}
+      disabled={loading}
+      className="button button-squere button--basic"
+    >
+      <GoogleIcon size={18} />
+      <span>{loading ? "Redirecting…" : "Continue with Google"}</span>
+    </button>
   );
 }
