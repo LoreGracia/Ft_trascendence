@@ -23,9 +23,10 @@ interface ThrowDiceProps {
     triggerRoll: number;
     isRolling: boolean;
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
+    handleTurn?: () => void;
 }
 
-export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsRolling, isRolling }: ThrowDiceProps) {
+export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsRolling, isRolling, handleTurn }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -38,7 +39,7 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
         handleRollClick();
         }, [triggerRoll]);
     // const { rollDice, lastResult } = useDiceSocket(roomCode);
-
+    
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -128,9 +129,10 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
             onFinish: () => {
                 setResultText(`Resultado: ${value}`);
                 setIsRolling(false);
+                handleTurn?.();
             },
         });
-    }, [lastResult]);
+    }, [lastResult, handleTurn]);
 
     const handleRollClick = () => {
         if (isRolling || !diceInstanceRef.current || !sceneRef.current) return;
@@ -145,6 +147,7 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
             onFinish: () => {
                 setResultText(`Resultado: ${fallbackValue}`);
                 setIsRolling(false);
+                handleTurn?.();
             },
         });
     };

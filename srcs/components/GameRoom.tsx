@@ -11,10 +11,17 @@ import SelectDice from './3dDice/SelectDice';
 import ThrowDice from "@/components/3dDice/ThrowDice";
 
 export default function GameRoom() {
+  const [turn, setTurn] = useState('');
   const [isRolling, setIsRolling] = useState(false);
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [socketId, setSocketId] = useState('');
+  useEffect(() => {
+    setMounted(true);
+    setSocketId(socket.id ?? '');
+  }, []);
   const {
     diceModel,
     setDiceModel,
@@ -43,6 +50,10 @@ export default function GameRoom() {
     rollDice();// acción del socket
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
+  const handleTurn = () => {
+    if (!matchRoom || !isRolling) return;
+      setTurn(matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id ?? "");
+  };
   useEffect(() => {
     console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
     if (!waitingRoom && roomCode) {
@@ -57,6 +68,8 @@ export default function GameRoom() {
         socket.on('connect', onConnect);
         return () => {socket.off('connect', onConnect)};
       }
+      if (matchRoom && !isRolling)
+        setTurn(matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id);
     }
   }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
   const myPlayerState =
@@ -72,7 +85,8 @@ export default function GameRoom() {
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
         <small>
-          Tu Socket ID: {socket.id}
+          {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
+          {/* Tu Socket ID: {socket.id} */}
         </small>
       </p>
 
@@ -214,11 +228,12 @@ export default function GameRoom() {
               Exit match
             </button>
             <ThrowDice
-              presetValue={matchRoom?.players.find((p) => p.id === socket.id)?.diceModel ?? 'default'}
+              presetValue={matchRoom.players.find((p) => p.id === turn)?.diceModel ?? 'default'}
               lastResult={lastRoll}
               triggerRoll={diceTrigger}
               setIsRolling={setIsRolling}
               isRolling={isRolling}
+              handleTurn={handleTurn}
             />
           </div>
 
