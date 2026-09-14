@@ -6,6 +6,7 @@ import ThrowDice from "@/components/3dDice/ThrowDice";
 import { useGameSocket } from '@/hooks/useGameSocket';
 
 export default function GameSelection() {
+  const [isRolling, setIsRolling] = useState(false);
   const {
     lastRoll,
     rollDice,
@@ -18,18 +19,22 @@ export default function GameSelection() {
   return (
     <div className="container container-two">
         <LandingClient/>
-        <button
-          onClick={handleRoomRoll}
-          className="button button--highlight rounded-sm"
-        >
-          🎲 Throw dice
-          {/* {isRolling ? "Tirando..." : "🎲 Throw dice"} */}
-        </button>
-        <ThrowDice
-          presetValue='default'
-          lastResult={lastRoll}
-          triggerRoll={diceTrigger}
-        />
+        <div className="flex flex-col items-center">
+          <ThrowDice
+            presetValue='default'
+            lastResult={lastRoll}
+            triggerRoll={diceTrigger}
+            setIsRolling={setIsRolling}
+            isRolling={isRolling}
+          />
+          <button
+            onClick={handleRoomRoll}
+            disabled={isRolling}
+            className="button button--highlight rounded-sm"
+          >
+            {isRolling ? "Tirando..." : "🎲 Throw dice"}
+          </button>
+        </div>
     </div>
   );
 }

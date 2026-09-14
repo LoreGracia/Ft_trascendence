@@ -21,16 +21,18 @@ interface ThrowDiceProps {
     presetValue: DiceModel;
     lastResult: LastRoll | null;
     triggerRoll: number;
+    isRolling: boolean;
+    setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ThrowDice({ presetValue, lastResult, triggerRoll }: ThrowDiceProps) {
+export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsRolling, isRolling }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
     const diceInstanceRef = useRef<ReturnType<typeof createDiceInstance> | null>(null);
     const isFirstPresetRun = useRef(true);
     const [resultText, setResultText] = useState("Resultado: -");
-    const [isRolling, setIsRolling] = useState(false);
+    // const [isRolling, setIsRolling] = useState(false);
     useEffect(() => {
         if (triggerRoll === 0) return;
         handleRollClick();
@@ -150,17 +152,17 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll }: Thro
     return (
         <div className={styles.diceScene}>
             <div className={styles.diceScene__controls}>
-                <button
+                {/* <button
                     type="button"
                     className={styles.diceScene__button}
                     onClick={handleRollClick}
                     disabled={isRolling}
                 >
                     {isRolling ? "Tirando..." : "Lanzar dado"}
-                </button>
+                </button> */}
             </div>
             <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
-            <div className={styles.diceScene__status}>{resultText}</div>
+            {/* <div className={styles.diceScene__status}>{resultText}</div> */}
         </div>
     );
 }

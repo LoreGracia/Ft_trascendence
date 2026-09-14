@@ -11,6 +11,7 @@ import SelectDice from './3dDice/SelectDice';
 import ThrowDice from "@/components/3dDice/ThrowDice";
 
 export default function GameRoom() {
+  const [isRolling, setIsRolling] = useState(false);
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
   const router = useRouter();
@@ -188,13 +189,13 @@ export default function GameRoom() {
             <button
               hidden={!(myMatchState === "UNLOCKED")}
               onClick={handleRoomRoll}
-              disabled={!isMyTurn || !!winnerMessage}
+              disabled={!isMyTurn || !!winnerMessage || isRolling}
               className="button button--highlight rounded-sm"
               style={{
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              🎲 Throw dice
+              {isRolling ? "Tirando..." : "🎲 Throw dice"}
             </button>
 
             {matchRoom.gameType === 'ADD42' && (
@@ -216,6 +217,8 @@ export default function GameRoom() {
               presetValue={matchRoom?.players.find((p) => p.id === socket.id)?.diceModel ?? 'default'}
               lastResult={lastRoll}
               triggerRoll={diceTrigger}
+              setIsRolling={setIsRolling}
+              isRolling={isRolling}
             />
           </div>
 
