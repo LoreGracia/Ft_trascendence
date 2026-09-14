@@ -22,6 +22,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [playError, setPlayError] = useState<string | null>(null);
+  const [isTurn, setTurn] = useState('');
 
   const createRoom = useCallback(() => {
     socket.emit('create_room', gameType);
@@ -91,9 +92,7 @@ export function useGameSocket() {
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-		  const player = waitingRoom?.players.find(p => p.id === socket.id);
-        console.log(`DiceModel es ${player?.diceModel}`);
-        console.log(`Data state is ${data.state}`);
+      console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
         console.log("Server said this is waitingroom");
         setWaitingRoom(data as WaitingRoom);
@@ -101,6 +100,7 @@ export function useGameSocket() {
       else {
         console.log("Server said this is match");
         setMatchRoom(data as MatchRoom);
+        setTurn(data.players[data.turn % data.players.length]?.id ?? "");
       }
     };
 
@@ -114,6 +114,7 @@ export function useGameSocket() {
     const handleDiceRolled = ({ match, roll }: { match: MatchRoom; roll: LastRoll }) => {
       setMatchRoom(match);
       setLastRoll(roll);
+      setTurn(match.players[match.turn % match.players.length]?.id ?? "");
     };
 
     const handleMatchWon = (data: { match?: MatchRoom; lastRoll?: LastRoll } | MatchRoom) => {
@@ -135,7 +136,6 @@ export function useGameSocket() {
     const handlePlayError = () => {
       setPlayError("All players must be locked");
     };
-
 
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
@@ -181,6 +181,7 @@ export function useGameSocket() {
     matchRoom,
     lastRoll,
     winnerMessage,
+    isTurn,
     isMyTurn,
     createRoom,
     joinRoom,

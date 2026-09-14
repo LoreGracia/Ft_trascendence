@@ -23,22 +23,18 @@ interface ThrowDiceProps {
     triggerRoll: number;
     isRolling: boolean;
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
-    handleTurn?: () => void;
 }
 
-export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsRolling, isRolling, handleTurn }: ThrowDiceProps) {
+export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsRolling, isRolling}: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
     const diceInstanceRef = useRef<ReturnType<typeof createDiceInstance> | null>(null);
     const isFirstPresetRun = useRef(true);
-    const [resultText, setResultText] = useState("Resultado: -");
-    // const [isRolling, setIsRolling] = useState(false);
     useEffect(() => {
         if (triggerRoll === 0) return;
         handleRollClick();
         }, [triggerRoll]);
-    // const { rollDice, lastResult } = useDiceSocket(roomCode);
     
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -129,15 +125,12 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
             onFinish: () => {
                 setResultText(`Resultado: ${value}`);
                 setIsRolling(false);
-                handleTurn?.();
             },
         });
-    }, [lastResult, handleTurn]);
+    }, [lastResult]);
 
     const handleRollClick = () => {
         if (isRolling || !diceInstanceRef.current || !sceneRef.current) return;
-
-        // rollDice();
 
         setIsRolling(true);
         setResultText("Resultado: tirando...");
@@ -147,25 +140,13 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
             onFinish: () => {
                 setResultText(`Resultado: ${fallbackValue}`);
                 setIsRolling(false);
-                handleTurn?.();
             },
         });
     };
 
     return (
         <div className={styles.diceScene}>
-            <div className={styles.diceScene__controls}>
-                {/* <button
-                    type="button"
-                    className={styles.diceScene__button}
-                    onClick={handleRollClick}
-                    disabled={isRolling}
-                >
-                    {isRolling ? "Tirando..." : "Lanzar dado"}
-                </button> */}
-            </div>
             <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
-            {/* <div className={styles.diceScene__status}>{resultText}</div> */}
         </div>
     );
 }

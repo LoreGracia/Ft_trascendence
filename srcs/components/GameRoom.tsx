@@ -11,7 +11,6 @@ import SelectDice from './3dDice/SelectDice';
 import ThrowDice from "@/components/3dDice/ThrowDice";
 
 export default function GameRoom() {
-  const [turn, setTurn] = useState('');
   const [isRolling, setIsRolling] = useState(false);
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
@@ -29,6 +28,7 @@ export default function GameRoom() {
     matchRoom,
     lastRoll,
     winnerMessage,
+    isTurn,
     isMyTurn,
     exitRoom,
     exitMatch,
@@ -50,10 +50,7 @@ export default function GameRoom() {
     rollDice();// acción del socket
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
-  const handleTurn = () => {
-    if (!matchRoom || !isRolling) return;
-      setTurn(matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id ?? "");
-  };
+
   useEffect(() => {
     console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
     if (!waitingRoom && roomCode) {
@@ -68,8 +65,6 @@ export default function GameRoom() {
         socket.on('connect', onConnect);
         return () => {socket.off('connect', onConnect)};
       }
-      if (matchRoom && !isRolling)
-        setTurn(matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id);
     }
   }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
   const myPlayerState =
@@ -217,8 +212,7 @@ export default function GameRoom() {
                 onClick={standPlayer}
                 disabled={!isMyTurn || !!winnerMessage}
                 className="button button--highlight rounded-sm"
-                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
-                >
+              >
               {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
@@ -227,14 +221,15 @@ export default function GameRoom() {
               className="button rounded-sm button--secondary">
               Exit match
             </button>
-            <ThrowDice
-              presetValue={matchRoom.players.find((p) => p.id === turn)?.diceModel ?? 'default'}
-              lastResult={lastRoll}
-              triggerRoll={diceTrigger}
-              setIsRolling={setIsRolling}
-              isRolling={isRolling}
-              handleTurn={handleTurn}
-            />
+            { isTurn &&
+              <ThrowDice
+                presetValue={matchRoom.players.find((p) => p.id === isTurn)?.diceModel ?? 'default'}
+                lastResult={lastRoll}
+                triggerRoll={diceTrigger}
+                setIsRolling={setIsRolling}
+                isRolling={isRolling}
+              />
+            }
           </div>
 
           {matchRoom.gameType === 'ADD42' && lastRoll && (
