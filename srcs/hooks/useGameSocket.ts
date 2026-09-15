@@ -56,7 +56,6 @@ export function useGameSocket() {
   }, [waitingRoom, matchRoom]);
 
   const toggleReadyStatus = useCallback(() => {
-		console.log(`DICE in change player status is ${diceModel.toString()}`);
     if (waitingRoom)
       socket.emit('change_player_status', waitingRoom.roomCode, diceModel.toString());
   }, [waitingRoom, diceModel]);
@@ -77,10 +76,8 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   const standPlayer = useCallback(() => {
-    if (matchRoom){
-      console.log(`Esto es Stand`);
+    if (matchRoom)
       socket.emit('player_locked', matchRoom.roomCode);
-    }
   }, [matchRoom]);
 
   useEffect(() => {
@@ -92,20 +89,14 @@ export function useGameSocket() {
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
 		  const player = waitingRoom?.players.find(p => p.id === socket.id);
-        console.log(`DiceModel es ${player?.diceModel}`);
-        console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
-        console.log("Server said this is waitingroom");
         setWaitingRoom(data as WaitingRoom);
       }
-      else {
-        console.log("Server said this is match");
+      else
         setMatchRoom(data as MatchRoom);
-      }
     };
 
     const handleGameStarted = (matchData: MatchRoom) => {
-      console.log("LLEGA");
       setWaitingRoom(null);
       setMatchRoom(matchData);
       setWinnerMessage('');

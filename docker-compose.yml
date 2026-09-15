@@ -38,7 +38,6 @@ services:
       # named volumes for generated/build content (fast + persistent)
       - next-modules:/app/node_modules
       - prisma-client-app:/app/generated/prisma
-      - next-cache:/app/.next
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
@@ -80,7 +79,6 @@ volumes:
   server-modules:
   prisma-client-app:
   prisma-client-server:
-  next-cache:
 
 networks:
   transcendence-net:

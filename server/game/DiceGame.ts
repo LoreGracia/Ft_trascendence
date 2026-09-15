@@ -56,11 +56,9 @@ function updateSum(room: MatchRoom, playerId: string, toAdd: number) {
 export function isPlayerTurn(match: MatchRoom, playerId: string): boolean {
 	const currentPlayer = match.players[match.turn % match.players.length];
 	if (currentPlayer.id !== playerId) {
-		console.log(`Room ${match.roomCode}: player ${playerId} not your turn.`);
 		return false;
 	}
 	if (match.gameType != "FREE_PLAY" && currentPlayer.state === "LOCKED") {
-		console.log(`Room ${match.roomCode}: player ${playerId} passed.`);
 		return false;
 	}
 	return true;
@@ -72,24 +70,3 @@ export function isPlayerBusted(match: MatchRoom, playerId: string) {
 	if (playerSum > 42)
 		player.state = "LOCKED";
 }
-
-// function allDicesToZero(match: MatchRoom): RoundRoll[] {
-// 	const allTurnRolls: RoundRoll[] = [];
-// 	for (let i = 0; i < match.dices.length; i++) {
-// 		const singleRoll: RoundRoll = {
-// 			diceType: match.dices[i],
-// 			value: 0
-// 		}
-// 		allTurnRolls.push(singleRoll);
-// 	}
-// 	return allTurnRolls;
-// }
-
-// export function generateEmptyRoll(match: MatchRoom): RollResult {
-// 	const roll: RollResult = {
-// 		idPlayer: match.players[match.turn % match.players.length].id,
-// 		gameType: match.gameType,
-// 		nums: allDicesToZero(match),
-// 	}
-// 	return roll;
-// }

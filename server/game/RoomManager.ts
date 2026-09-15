@@ -20,21 +20,16 @@ export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ id: playerId, state: "UNLOCKED", diceModel: "default" }],//LORENA WAS HERE
 		state: "OPEN",
 	};
 	return room;
 }
 
 export function addPlayerToRoom(playerId: string, room: WaitingRoom): boolean {
-	if (room.state === "OPEN") {
-		room.players.push({ id: playerId, state: "UNLOCKED", diceModel: "default" }); //LORENA WAS HERE
-		console.log(`Room ${room.roomCode}: player ${playerId} joined.`);
-		return true
-	} else {
-		console.log("Room Closed."); // Esto se transformara a algun aviso a lore.
+	if (room.state === "OPEN") 
+		return true;
+	else 
 		return false;
-	}
 }
 
 export function closeRoom(room: WaitingRoom): void {
@@ -51,9 +46,10 @@ export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
 
 export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string, diceModel: string): void {
 	const player = room.players.find(p => p.id === playerId);
-	if (!player) return;
+	if (!player)
+		return;
 	player.state = player.state === "LOCKED" ? "UNLOCKED" : "LOCKED";
-	player.diceModel = diceModel;//LORENA ADDED THIS
+	player.diceModel = diceModel;
 }
 
 function countLockedPlayers(list: Players[]): number {
@@ -90,11 +86,9 @@ export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 		const currentPlayer = match.players[match.turn % match.players.length].id;
 		exitRoom(socket.id, match);
 		socket.leave(roomCode);
-		console.log(`Room ${roomCode}: player ${socket.id} left.`);
 		if (match.players.length === 0) {
 			matchRooms.delete(roomCode);
 			clearTurnTimeout(roomCode);
-			console.log(`Room ${roomCode}: room deleted.`);
 		} else if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
 			matchRooms.delete(roomCode);
