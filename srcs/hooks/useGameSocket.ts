@@ -100,7 +100,6 @@ export function useGameSocket() {
       else {
         console.log("Server said this is match");
         setMatchRoom(data as MatchRoom);
-        setTurn(data.players[data.turn % data.players.length]?.id ?? "");
       }
     };
 
@@ -112,9 +111,11 @@ export function useGameSocket() {
     };
 
     const handleDiceRolled = ({ match, roll }: { match: MatchRoom; roll: LastRoll }) => {
+      const turnNum = (match.turn === 0 ? match.players.length : (match.turn - 1) % match.players.length);
       setMatchRoom(match);
       setLastRoll(roll);
-      setTurn(match.players[match.turn % match.players.length]?.id ?? "");
+      setTurn(
+        match.players[turnNum]?.id ?? "");
     };
 
     const handleMatchWon = (data: { match?: MatchRoom; lastRoll?: LastRoll } | MatchRoom) => {
