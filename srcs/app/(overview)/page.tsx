@@ -15,12 +15,12 @@ export default function Home() {
       <main className="container container-two">
         <section className="column">
           <IndexDice />
-
-          {/* <IndexDice />
-          <SelectDice />
-          <ThrowDice />
-          <SelectDice roomCode="test-room" />
-          <ThrowDice presetValue="default" roomCode="test-room" /> */}
+          {/*
+            <IndexDice />
+            <SelectDice />
+            <ThrowDice /> 
+            <SelectDice roomCode="test-room" />
+            <ThrowDice presetValue="default" roomCode="test-room" />*/}
 
         </section>
         <section className="column gap-8">
@@ -41,11 +41,11 @@ export default function Home() {
               </Link>
               <Link
                 className="button button-round button--highlight"
-                href="/signin"
+                href="/signup"
                 target="_self"
                 rel="noopener noreferrer"
               >
-                Sign in
+                Sign up
               </Link>
 
               <Link
