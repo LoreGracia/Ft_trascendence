@@ -108,7 +108,6 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
 
         diceInstanceRef.current?.dispose();
         diceInstanceRef.current = createDiceInstance(scene, getDicePreset(presetValue));
-        setResultText("Resultado: -");
     }, [presetValue]);
 
     useEffect(() => {
@@ -118,12 +117,10 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
         if (value === undefined) return;
 
         setIsRolling(true);
-        setResultText("Resultado: tirando...");
 
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
             result: value,
             onFinish: () => {
-                setResultText(`Resultado: ${value}`);
                 setIsRolling(false);
             },
         });
@@ -133,12 +130,10 @@ export default function ThrowDice({ presetValue, lastResult, triggerRoll, setIsR
         if (isRolling || !diceInstanceRef.current || !sceneRef.current) return;
 
         setIsRolling(true);
-        setResultText("Resultado: tirando...");
         const fallbackValue = mockRollDice(6);
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
             result: fallbackValue,
             onFinish: () => {
-                setResultText(`Resultado: ${fallbackValue}`);
                 setIsRolling(false);
             },
         });
