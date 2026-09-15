@@ -92,10 +92,7 @@ export function useGameSocket() {
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
 		  const player = waitingRoom?.players.find(p => p.id === socket.id);
-        console.log(`DiceModel es ${player?.diceModel}`);
-        console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
-        console.log("Server said this is waitingroom");
         setWaitingRoom(data as WaitingRoom);
       }
       else {
@@ -105,7 +102,6 @@ export function useGameSocket() {
     };
 
     const handleGameStarted = (matchData: MatchRoom) => {
-      console.log("LLEGA");
       setWaitingRoom(null);
       setMatchRoom(matchData);
       setWinnerMessage('');

@@ -8,8 +8,6 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("En algun momento esto hara seed");
-
   // Example: create a test user
   // await prisma.user.create({
   //   data: {
