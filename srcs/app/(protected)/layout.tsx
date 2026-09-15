@@ -20,10 +20,9 @@ export default async function ProtectedLayout({
     headers: await headers(),
   });
 
-  if (!session) {
-    redirect("/login");
-  }
-  console.log("[dbg] MenuButton type:", typeof MenuButton);
+  if (!session) redirect("/login");
+  if (!session.user.name) redirect("/complete-profile");
+
   return (
     <SidebarProvider>
       <AppSidebar className="list-none hidden md:flex" />

@@ -25,7 +25,7 @@ services:
     container_name: transcendence-app
     restart: no
     command: sh -c "for i in 1 2 3 4 5; do npx prisma migrate deploy && break; echo 'retry migrate...'; sleep 3; done; npm run dev"
-    stop_grace_period: 30s
+    stop_grace_period: 5s
     volumes:
       # surgical bind mounts for hot-reload
       - ./srcs/app:/app/app
@@ -38,12 +38,11 @@ services:
       # named volumes for generated/build content (fast + persistent)
       - next-modules:/app/node_modules
       - prisma-client-app:/app/generated/prisma
-      - type: tmpfs
-        target: /app/.next
-        tmpfs:
-          size: 2g
+      - next-cache:/app/.next
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       # NODE_OPTIONS: --max-old-space-size=2048
     ports:
       - "3000:3000"
@@ -79,9 +78,9 @@ volumes:
   db-data:
   next-modules:
   server-modules:
-  #next-cache:
   prisma-client-app:
   prisma-client-server:
+  next-cache:
 
 networks:
   transcendence-net:
