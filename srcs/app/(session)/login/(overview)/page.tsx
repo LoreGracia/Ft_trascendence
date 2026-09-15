@@ -94,7 +94,7 @@ export default function LogIn() {
                 <div className="auth-actions">
                   <button
                     type="submit"
-                    className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) mt-5 disable:hover-none disabled:bg-(--light)"
+                    className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
                     disabled={isPending}
                   >
                     {isPending ? "Logging in…" : "Login"}

@@ -41,7 +41,7 @@ export default function CompleteProfileForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="button button-squere button--basic mt-5"
+        className="button button-squere bg-(--black) text-(--white) mt-5 hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
       >
         {isPending ? "Saving…" : "Continue"}
       </button>
