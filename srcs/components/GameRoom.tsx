@@ -40,11 +40,9 @@ export default function GameRoom() {
   useEffect(() => {
     if (!waitingRoom && roomCode) {
       if (socket.connected) {
-        console.log('Emitting get_room now', roomCode);
         socket.emit('get_room', roomCode);
       } else {
         const onConnect = () => {
-          console.log('Socket connected — emitting get_room', roomCode);
           socket.emit('get_room', roomCode);
         };
         socket.on('connect', onConnect);

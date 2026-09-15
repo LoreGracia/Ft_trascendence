@@ -71,7 +71,6 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user, ctx) => {
-          console.log("[auth] user.create.before ctx.path:", ctx?.path);
           if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
             return { data: { ...user, name: null } };
           }
