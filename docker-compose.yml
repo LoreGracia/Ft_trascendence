@@ -66,6 +66,8 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      AUTH_INTERNAL_URL: ${AUTH_INTERNAL_URL}
     ports:
       - "3001:3001"
     depends_on:
