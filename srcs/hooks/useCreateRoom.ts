@@ -10,10 +10,8 @@ export const useCreateRoom = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    const handleRoomCreated = (code: WaitingRoom) => {
-      console.log("[room] room_created:", code);
-
-      setRoomCode(code.roomCode);
+    const handleRoomCreated = (code: string) => {
+      setRoomCode(code);
       setIsCreating(false);
     };
 
@@ -25,12 +23,7 @@ export const useCreateRoom = () => {
   }, []);
 
   const handleCreateRoom = (mode?: GameType) => {
-    console.log("[room] createRoom()");
-    console.log("[room] socket.connected:", socket.connected);
-    console.log("[room] socket.id:", socket.id);
-
     if (!socket.connected) {
-      console.error("[room] Socket no conectado");
       return;
     }
 

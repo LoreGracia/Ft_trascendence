@@ -17,10 +17,12 @@ export default function Home() {
           <IndexDice />
           {/*
             <IndexDice />
+          
+            {/* <IndexDice />
             <SelectDice />
             <ThrowDice /> 
             <SelectDice roomCode="test-room" />
-            <ThrowDice presetValue="default" roomCode="test-room" />*/}
+            <ThrowDice presetValue="default" roomCode="test-room" /> */}
 
         </section>
         <section className="column gap-8">
@@ -47,18 +49,6 @@ export default function Home() {
               >
                 Sign up
               </Link>
-
-              <Link
-                className="button button-round button--highlight"
-                // href="/errorPages/404"
-                // href="/errorPages/500"
-                // href="/errorPages/403"
-                href="/errorPages/503"
-              >
-                Test Error
-              </Link>
-
-
             </div>
           </div>
         </section>

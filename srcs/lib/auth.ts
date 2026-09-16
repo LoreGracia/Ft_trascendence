@@ -15,7 +15,7 @@ export const auth = betterAuth({
     enabled: true, 
   },
 
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: process.env.NEXT_PUBLIC_URL,
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -71,7 +71,6 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user, ctx) => {
-          console.log("[auth] user.create.before ctx.path:", ctx?.path);
           if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
             return { data: { ...user, name: null } };
           }

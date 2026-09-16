@@ -77,22 +77,10 @@ export const createDiceInstance = (
     let resolvedConfig = mergeDiceConfig(userConfig);
 
     // ----------------------------------------
-    // DEBUG CONFIG
-    // ----------------------------------------
-
-    // console.log("🌌 CONFIG DADO", resolvedConfig);
-
-    // ----------------------------------------
     // MATERIAL SYNC
     // ----------------------------------------
 
     const syncMaterials = () => {
-
-        // console.log("🎲 DICE MATERIAL", {
-        //     bodyTexture: resolvedConfig.bodyTexture,
-        //     bodyColor: resolvedConfig.bodyColor,
-        //     pipStyle: resolvedConfig.pipStyle,
-        // });
 
         // ----------------------------------------
         // BODY TEXTURE
@@ -104,11 +92,6 @@ export const createDiceInstance = (
         }
 
         if (resolvedConfig.bodyTexture) {
-
-            // console.log(
-            //     "🌌 CARGANDO TEXTURA:",
-            //     resolvedConfig.bodyTexture
-            // );
 
             bodyTexture = new Texture(
                 resolvedConfig.bodyTexture,
@@ -137,12 +120,6 @@ export const createDiceInstance = (
             bodyMaterial.emissiveColor = new Color3(0, 0, 0);
 
         } else {
-
-            // console.log(
-            //     "🎨 DADO SIN TEXTURA, USANDO COLOR:",
-            //     resolvedConfig.bodyColor
-            // );
-
             bodyMaterial.diffuseTexture = null;
             bodyMaterial.diffuseColor = resolvedConfig.bodyColor;
             bodyMaterial.emissiveColor = resolvedConfig.emissiveColor;
@@ -276,7 +253,6 @@ export const createDiceInstance = (
         updateConfig(next: Partial<DiceConfig>) {
             userConfig = { ...userConfig, ...next };
             resolvedConfig = mergeDiceConfig(userConfig);
-            // console.log("🔄 CONFIG ACTUALIZADA", resolvedConfig);
             syncInstance();
         },
 

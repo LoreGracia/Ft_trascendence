@@ -75,7 +75,6 @@ io.use(async (socket: Socket, next) => {
 });
 
 io.on("connection", (socket: Socket) => {
-	console.log(`${socket.id} has accessed the server.`);
 
 	if (disconnectionTimeouts.has(socket.data.userId)) {
 		clearTimeout(disconnectionTimeouts.get(socket.data.userId));
@@ -120,10 +119,8 @@ io.on("connection", (socket: Socket) => {
 				if (room.players.length === 6)
 					closeRoom(room);
 			}
-		} else {
-			console.log("Invalid Room.");
+		} else
 			socket.emit("join_error");
-		}
 	});
 
 	socket.on('get_room', (roomCode: string) => {
@@ -143,7 +140,6 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	// Per passar de locked a unlocked.
-	//LORENA IM TOUCHING THIS
 	socket.on("change_player_status", (roomCode: string, diceModel: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
@@ -168,10 +164,8 @@ io.on("connection", (socket: Socket) => {
 				// send initial game data to db.
 				resetTurnTimeout(io, newMatch.roomCode);
 			}
-			else {
+			else
 				io.to(roomCode).emit("game_not_started", room);
-				console.log(`Room ${roomCode}: not all players are locked.`);
-			}
 		}
 	});
 
@@ -196,63 +190,62 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("roll_dice", (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
-		if (!match) {
-			console.log("Incorrect Match.")
+		if (!match)
 			return;
-		}
+	}
 		if (!isPlayerTurn(match, socket.data.userId)) {
-			socket.emit("error_turn", "Not your turn.");
-			return;
-		}
-		const roll: RollResult = generateRoll(match, socket.data.userId);
-		match.rolls.push(roll);
+		socket.emit("error_turn", "Not your turn.");
+		return;
+	}
+	const roll: RollResult = generateRoll(match, socket.data.userId);
+	match.rolls.push(roll);
 
-		match.rules.evaluateRoll(match, socket.data.userId);
+	match.rules.evaluateRoll(match, socket.data.userId);
 
-		if (match.rules.isGameWon(match)) {
-			clearTurnTimeout(roomCode);
-			// matchRooms.delete(roomCode);
-			io.to(roomCode).emit("dice_rolled", { match, roll });
-			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
-			return;
-		}
-		advanceToUnlocked(match);
+	if (match.rules.isGameWon(match)) {
+		clearTurnTimeout(roomCode);
+		// matchRooms.delete(roomCode);
 		io.to(roomCode).emit("dice_rolled", { match, roll });
-		resetTurnTimeout(io, match.roomCode);
-	});
+		io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+		return;
+	}
+	advanceToUnlocked(match);
+	io.to(roomCode).emit("dice_rolled", { match, roll });
+	resetTurnTimeout(io, match.roomCode);
+});
 
-	socket.on("disconnect", (reason: string) => {
-		const userId = socket.data.userId;
-		console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
+socket.on("disconnect", (reason: string) => {
+	const userId = socket.data.userId;
+	console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
 
-		if (!userId) return;
+	if (!userId) return;
 
-		if (disconnectionTimeouts.has(userId)) {
-			clearTimeout(disconnectionTimeouts.get(userId));
-			disconnectionTimeouts.delete(userId);
-		}
+	if (disconnectionTimeouts.has(userId)) {
+		clearTimeout(disconnectionTimeouts.get(userId));
+		disconnectionTimeouts.delete(userId);
+	}
 
-		const roomTargets = [
-			{ map: waitingRooms, exitFn: exitWaitingRoom },
-			{ map: matchRooms, exitFn: exitMatchRoom }
-		];
+	const roomTargets = [
+		{ map: waitingRooms, exitFn: exitWaitingRoom },
+		{ map: matchRooms, exitFn: exitMatchRoom }
+	];
 
-		for (const { map, exitFn } of roomTargets) {
-			for (const [roomCode, room] of map.entries()) {
-				if (room.players.some(p => p.playerId === userId)) {
-					const timeout = setTimeout(() => {
-						const player = map.get(roomCode)?.players.find(p => p.playerId === userId);
-						if (player?.socketId === socket.id) {
-							exitFn(io, socket, roomCode);
-						}
-						disconnectionTimeouts.delete(userId);
-					}, TIME_TO_DISCONNECT);
-					disconnectionTimeouts.set(userId, timeout);
-					return;
-				}
+	for (const { map, exitFn } of roomTargets) {
+		for (const [roomCode, room] of map.entries()) {
+			if (room.players.some(p => p.playerId === userId)) {
+				const timeout = setTimeout(() => {
+					const player = map.get(roomCode)?.players.find(p => p.playerId === userId);
+					if (player?.socketId === socket.id) {
+						exitFn(io, socket, roomCode);
+					}
+					disconnectionTimeouts.delete(userId);
+				}, TIME_TO_DISCONNECT);
+				disconnectionTimeouts.set(userId, timeout);
+				return;
 			}
 		}
-	});
+	}
+});
 });
 
 server.listen(3001, () => {

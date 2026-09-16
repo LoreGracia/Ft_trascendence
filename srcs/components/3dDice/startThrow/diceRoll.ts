@@ -11,6 +11,5 @@ export function rollDice(sides: number = 6): number {
 
 export function rollDiceWithMessage(sides: number = 6): number {
     const result = rollDice(sides);
-    console.log(`Tirada del dado: ${result}`);
     return result;
 }
