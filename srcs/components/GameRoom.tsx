@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
+import { useSocket } from './SocketProvider';
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
-  const router = useRouter();
+  const { isConnected } = useSocket();
   const {
     diceModel,
     setDiceModel,
@@ -30,29 +30,13 @@ export default function GameRoom() {
     getPlayerScore,
     playError,
   } = useGameSocket();
-  useEffect(() => {
-    if (!socket.id) {
-      router.push('/landing');
-    }
-  }, [socket.id, router]);
-  useEffect(() => {
-    console.log('Effect run — roomCode:', roomCode, 'waitingRoom:', waitingRoom);
-    if (!waitingRoom && roomCode) {
-      if (socket.connected) {
-        console.log('Emitting get_room now', roomCode);
-        socket.emit('get_room', roomCode);
-      } else {
-        const onConnect = () => {
-          console.log('Socket connected — emitting get_room', roomCode);
-          socket.emit('get_room', roomCode);
-        };
-        socket.on('connect', onConnect);
-        return () => { socket.off('connect', onConnect) };
-      }
-    }
-  }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
 
-  if (!socket.id) return <div>Redirecting...</div>;
+  useEffect(() => {
+    if (isConnected && !waitingRoom && roomCode)
+      socket.emit('get_room', roomCode);
+  }, [isConnected, waitingRoom, roomCode]);
+
+  if (!isConnected || !socket.id) return <div>Connecting...</div>;
   const myPlayerState =
     waitingRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
   const myMatchState = matchRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';

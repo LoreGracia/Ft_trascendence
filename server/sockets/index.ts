@@ -24,6 +24,7 @@ import {
 	exitMatchRoom,
 	clearTurnTimeout,
 	resetTurnTimeout,
+	isEndgameState,
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
@@ -87,6 +88,15 @@ io.on("connection", (socket: Socket) => {
 			player.socketId = socket.id;
 			socket.join(roomCode);
 			io.to(roomCode).emit("player_status_changed", match);
+			break;
+		}
+	}
+	for (const [roomCode, room] of waitingRooms) {
+		const player = room.players.find(p => p.playerId === socket.data.userId);
+		if (player) {
+			player.socketId = socket.id;
+			socket.join(roomCode);
+			io.to(roomCode).emit("player_joined", room);
 			break;
 		}
 	}
@@ -173,7 +183,7 @@ io.on("connection", (socket: Socket) => {
 			io.to(roomCode).emit("player_status_changed", match);
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
-				matchRooms.delete(roomCode);
+				// matchRooms.delete(roomCode);
 				io.to(roomCode).emit("match_won", { match });
 				return;
 			}
@@ -201,7 +211,7 @@ io.on("connection", (socket: Socket) => {
 
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
-			matchRooms.delete(roomCode);
+			// matchRooms.delete(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match, roll });
 			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
 			return;
@@ -212,26 +222,35 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	socket.on("disconnect", (reason: string) => {
-		console.log(`Player ${socket.data.userId} with socket ${socket.id} desconected. Reason: ${reason}`);
-		for (const [roomCode, room] of waitingRooms.entries()) {
-			if (room.players.some(p => p.playerId === socket.data.userId)) {
-				exitWaitingRoom(io, socket, roomCode);
-				return;
-			}
+		const userId = socket.data.userId;
+		console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
+
+		if (!userId) return;
+
+		if (disconnectionTimeouts.has(userId)) {
+			clearTimeout(disconnectionTimeouts.get(userId));
+			disconnectionTimeouts.delete(userId);
 		}
-		let roomLeft: string | undefined;
-		for (const [roomCode, match] of matchRooms.entries()) {
-			if (match.players.some(p => p.playerId === socket.data.userId)) {
-				roomLeft = roomCode;
-				break;
+
+		const roomTargets = [
+			{ map: waitingRooms, exitFn: exitWaitingRoom },
+			{ map: matchRooms, exitFn: exitMatchRoom }
+		];
+
+		for (const { map, exitFn } of roomTargets) {
+			for (const [roomCode, room] of map.entries()) {
+				if (room.players.some(p => p.playerId === userId)) {
+					const timeout = setTimeout(() => {
+						const player = map.get(roomCode)?.players.find(p => p.playerId === userId);
+						if (player?.socketId === socket.id) {
+							exitFn(io, socket, roomCode);
+						}
+						disconnectionTimeouts.delete(userId);
+					}, TIME_TO_DISCONNECT);
+					disconnectionTimeouts.set(userId, timeout);
+					return;
+				}
 			}
-		}
-		if (roomLeft) {
-			const timeout = setTimeout(() => {
-				exitMatchRoom(io, socket, roomLeft);
-				disconnectionTimeouts.delete(socket.data.userId)
-			}, TIME_TO_DISCONNECT);
-			disconnectionTimeouts.set(socket.data.userId, timeout);
 		}
 	});
 });

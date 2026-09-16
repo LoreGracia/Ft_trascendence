@@ -1,9 +1,10 @@
-import { WaitingRoom, Players, MatchRoom, GameType, BaseRoom } from "./GameTypes";
+import { WaitingRoom, Players, MatchRoom, GameType, PLAYER_STATE, PLAYER_ENDGAME } from "./GameTypes";
 import { Socket, Server } from "socket.io";
 import { matchRooms, turnTimeouts, waitingRooms } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
+const ENDGAME_STATES: PLAYER_ENDGAME[] = ["WIN", "LOSE", "TIE"]
 
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
