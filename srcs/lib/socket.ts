@@ -6,4 +6,5 @@ const SOCKET_URL =
 console.log("[socket] URL:", SOCKET_URL);
 export const socket = io(SOCKET_URL, {
   autoConnect: false,
+  transports: ["websocket", "polling"],
 });

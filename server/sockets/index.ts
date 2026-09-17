@@ -48,6 +48,7 @@ const server = http.createServer(app);
 const io = new Server<any, any, any, SocketData>(server, {
 	cors: {
 		origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
+		// origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
 		methods: ["GET", "POST"],
 	},
 });
@@ -190,62 +191,62 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("roll_dice", (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
-		if (!match)
+		if (!match) {
 			return;
-	}
+		}
 		if (!isPlayerTurn(match, socket.data.userId)) {
-		socket.emit("error_turn", "Not your turn.");
-		return;
-	}
-	const roll: RollResult = generateRoll(match, socket.data.userId);
-	match.rolls.push(roll);
+			socket.emit("error_turn", "Not your turn.");
+			return;
+		}
+		const roll: RollResult = generateRoll(match, socket.data.userId);
+		match.rolls.push(roll);
 
-	match.rules.evaluateRoll(match, socket.data.userId);
+		match.rules.evaluateRoll(match, socket.data.userId);
 
-	if (match.rules.isGameWon(match)) {
-		clearTurnTimeout(roomCode);
-		// matchRooms.delete(roomCode);
+		if (match.rules.isGameWon(match)) {
+			clearTurnTimeout(roomCode);
+			// matchRooms.delete(roomCode);
+			io.to(roomCode).emit("dice_rolled", { match, roll });
+			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+			return;
+		}
+		advanceToUnlocked(match);
 		io.to(roomCode).emit("dice_rolled", { match, roll });
-		io.to(roomCode).emit("match_won", { match, lastRoll: roll });
-		return;
-	}
-	advanceToUnlocked(match);
-	io.to(roomCode).emit("dice_rolled", { match, roll });
-	resetTurnTimeout(io, match.roomCode);
-});
+		resetTurnTimeout(io, match.roomCode);
+	});
 
-socket.on("disconnect", (reason: string) => {
-	const userId = socket.data.userId;
-	console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
+	socket.on("disconnect", (reason: string) => {
+		const userId = socket.data.userId;
+		console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
 
-	if (!userId) return;
+		if (!userId) return;
 
-	if (disconnectionTimeouts.has(userId)) {
-		clearTimeout(disconnectionTimeouts.get(userId));
-		disconnectionTimeouts.delete(userId);
-	}
+		if (disconnectionTimeouts.has(userId)) {
+			clearTimeout(disconnectionTimeouts.get(userId));
+			disconnectionTimeouts.delete(userId);
+		}
 
-	const roomTargets = [
-		{ map: waitingRooms, exitFn: exitWaitingRoom },
-		{ map: matchRooms, exitFn: exitMatchRoom }
-	];
+		const roomTargets = [
+			{ map: waitingRooms, exitFn: exitWaitingRoom },
+			{ map: matchRooms, exitFn: exitMatchRoom }
+		];
 
-	for (const { map, exitFn } of roomTargets) {
-		for (const [roomCode, room] of map.entries()) {
-			if (room.players.some(p => p.playerId === userId)) {
-				const timeout = setTimeout(() => {
-					const player = map.get(roomCode)?.players.find(p => p.playerId === userId);
-					if (player?.socketId === socket.id) {
-						exitFn(io, socket, roomCode);
-					}
-					disconnectionTimeouts.delete(userId);
-				}, TIME_TO_DISCONNECT);
-				disconnectionTimeouts.set(userId, timeout);
-				return;
+		for (const { map, exitFn } of roomTargets) {
+			for (const [roomCode, room] of map.entries()) {
+				if (room.players.some(p => p.playerId === userId)) {
+					const timeout = setTimeout(() => {
+						const player = map.get(roomCode)?.players.find(p => p.playerId === userId);
+						if (player?.socketId === socket.id) {
+							exitFn(io, socket, roomCode);
+						}
+						disconnectionTimeouts.delete(userId);
+					}, TIME_TO_DISCONNECT);
+					disconnectionTimeouts.set(userId, timeout);
+					return;
+				}
 			}
 		}
-	}
-});
+	});
 });
 
 server.listen(3001, () => {

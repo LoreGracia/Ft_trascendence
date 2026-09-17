@@ -1,8 +1,8 @@
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 
 function getBaseUrl(): string {
-	const url = process.env.BETTER_AUTH_URL;
-	console.log(`URL: ${process.env.BETTER_AUTH_URL}, url2: ${url}`);
+	const url = process.env.NEXT_PUBLIC_URL;
+	console.log(`URL: ${process.env.NEXT_PUBLIC_URL}, url2: ${url}`);
 	if (!url || url === "")
 		throw new Error("Missing Auth Url");
 	return url;
