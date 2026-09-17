@@ -1,17 +1,19 @@
 "use client";
 import Link from 'next/link';
 import PatternControl from "@/components/Pattern/PatternControl";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Form from "@/components/Form/Form";
 import { loginSchema } from "@/lib/validation";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import TextInput from '@/components/Input/Input';
+import { GoogleButton } from "@/components/button/GoogleButton";
 
 export default function LogIn() {
   const router = useRouter();
   const [paused, setPaused] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isPending, startTransition] = useTransition();
 
   function clearError(field: string) {
     setErrors((prev) => {
@@ -39,56 +41,75 @@ export default function LogIn() {
       setErrors(fieldErrors);
       return;
     }
-    console.log(result);
 
     setErrors({});
-    const { error } = await authClient.signIn.email(result.data, {
-      onSuccess: () => router.push("/landing"),
-      onError: (ctx) => console.error(ctx.error.message),
+
+    startTransition(async () => {
+      const { error } = await authClient.signIn.email(result.data, {
+        onSuccess: () => router.push("/landing"),
+      });
+
+      if (error) {
+        setErrors({ password: error.message ?? "Invalid email or password" });
+      }
     });
   }
     return (
       <>
-      <PatternControl
-          paused={paused}
-          onToggle={() => setPaused(!paused)}
-      />
-      <main className="container">
+        <PatternControl
+            paused={paused}
+            onToggle={() => setPaused(!paused)}
+        />
+        <main className="container">
           <Link
-          className="corner-right button button-squere button--highlight"
-          href={'/signup'}
-          target="_self"
-          rel="noopener noreferrer"
+            className="corner-right button button-squere button--highlight"
+            href={'/signup'}
+            target="_self"
+            rel="noopener noreferrer"
           >
-              Sign in
+              Sign up
           </Link>
           <div className="container">
-              <section className="box box--primary">
-                  <Form onSubmit={handleLogin}>
-                    <TextInput
-                      type="email"
-                      name="email"
-                      label="Email"
-                      placeholder="dicelover666@mail.com"
-                      error={errors.email}
-                      onChange={() => clearError("email")}
-                    />
-                    <TextInput
-                      type="password"
-                      name="password"
-                      label="Password"
-                      placeholder="Insert password..."
-                      error={errors.password}
-                      onChange={() => clearError("password")}
-                    />
-                    <button type="submit" className="button button-squere button--basic mt-5">
-                        Login
-                    </button>
-                  </Form>
-                  <h2 className="underline">Forgot password</h2>
-              </section>
+            <section className="box box--primary">
+              <Form onSubmit={handleLogin}>
+                <TextInput
+                  type="email"
+                  name="email"
+                  label="Email"
+                  placeholder="dicelover666@mail.com"
+                  error={errors.email}
+                  onChange={() => clearError("email")}
+                  disabled={isPending}
+                />
+                <TextInput
+                  type="password"
+                  name="password"
+                  label="Password"
+                  placeholder="Insert password..."
+                  error={errors.password}
+                  onChange={() => clearError("password")}
+                  disabled={isPending}
+                />
+
+                <div className="auth-actions">
+                  <button
+                    type="submit"
+                    className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+                    disabled={isPending}
+                  >
+                    {isPending ? "Logging in…" : "Login"}
+                  </button>
+
+                  <div className="auth-divider" role="separator">
+                    <span>or</span>
+                  </div>
+                  <GoogleButton />
+                </div>
+              </Form>
+
+            </section>
           </div>
-      </main>
+        </main>
       </>
     )
 }

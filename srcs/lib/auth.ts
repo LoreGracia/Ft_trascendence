@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { genericOAuth } from "better-auth/plugins"
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { jwt } from "better-auth/plugins";
@@ -9,11 +10,21 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-    emailAndPassword: { 
+
+  emailAndPassword: {
     enabled: true, 
-  }, 
+  },
+
+  baseURL: process.env.NEXT_PUBLIC_URL,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
+
   plugins: [
-        jwt(), 
+        jwt(),
   ],
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
@@ -22,9 +33,29 @@ export const auth = betterAuth({
         if (!result.success) {
           throw new APIError("BAD_REQUEST", {
             message: result.error.issues[0].message,
-          })
+          });
         }
-      } 
+
+        const { name, email } = result.data;
+
+        const [nameTaken, emailTaken] = await Promise.all([
+          prisma.user.findUnique({ where: { name }, select: { id: true } }),
+          prisma.user.findUnique({ where: { email }, select: { id: true } }),
+        ]);
+
+        if (nameTaken) {
+          throw new APIError("CONFLICT", {
+            message: "Username already taken",
+            code: "USERNAME_TAKEN",
+          });
+        }
+        if (emailTaken) {
+          throw new APIError("CONFLICT", {
+            message: "Email already registered",
+            code: "EMAIL_TAKEN",
+          });
+        }
+      }
 
       if (ctx.path === "/sign-in/email") {
         const result = loginSchema.safeParse(ctx.body);
@@ -35,13 +66,17 @@ export const auth = betterAuth({
         }
       }
     })
-  }
-});
-
-
-  // socialProviders: { 
-  //   github: { 
-  //     clientId: process.env.GITHUB_CLIENT_ID as string, 
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
-  //   }, 
-  // }, 
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user, ctx) => {
+          if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
+            return { data: { ...user, name: null } };
+          }
+          return { data: user };
+        },
+      },
+    },
+  },
+})

@@ -9,8 +9,6 @@ import type { GameType } from "@/types/game";
 // import type { GameType } from "@/components/button/ToggleModeButton";
 
 export const createRoom = (mode: GameType) => {
-  console.log("[room] emit create_room", mode);
-
   socket.emit("create_room", mode);
 };
 
