@@ -86,36 +86,38 @@ export default function GameRoom() {
       </p>
 
       {waitingRoom && !matchRoom && (
-        <div className="flex flex-col items-center">
-          <div className="w-full h-full flex flex-col justify-evenly">
-            <div className="flex flex-row items-center gap-5 w-full pb-5">
-            <h2>
-              🎲 {waitingRoom.gameType} : 
-            </h2>
-              <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
-              <p className="text-(--t-content)">
-                {waitingRoom.players.length} / 2
-                <small> (max 6)</small> 
-                <ArrowRight/>
-              </p>
+        <div className="column flex-wrap">
+          <div className="w-full h-full flex flex-col justify-evenly md:flex-row">
+            <div className="w-full h-full flex flex-col justify-evenly">
+              <div className="flex flex-row items-center gap-5 w-full pb-5">
+              <h2>
+                🎲 {waitingRoom.gameType} : 
+              </h2>
+                <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
+                <p className="text-(--t-content)">
+                  {waitingRoom.players.length} / 2
+                  <small> (max 6)</small> 
+                  <ArrowRight/>
+                </p>
+              </div>
+              <ul className="pb-20">
+                {waitingRoom.players.map((p) => (
+                  <li className="flex flex-row" key={p.id}>
+                    {p.id} ➡️ <b>{p.state}</b>
+                    {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                  {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
+                </button> : ''} 
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="pb-20">
-              {waitingRoom.players.map((p) => (
-                <li className="flex flex-row" key={p.id}>
-                  {p.id} ➡️ <b>{p.state}</b>
-                  {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-                {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
-              </button> : ''} 
-                </li>
-              ))}
-            </ul>
-          </div>
-          <SelectDice
-            // roomCode="test-room"
-            selected={diceModel}
-            playerState={myPlayerState}
-            onSelect={setDiceModel}
+
+            <SelectDice
+              selected={diceModel}
+              playerState={myPlayerState}
+              onSelect={setDiceModel}
             />
+          </div>
           <div className="fixed bottom-60 flex flex-col gap-2 items-center">
           <button
             onClick={() => startGame(waitingRoom.gameType)}
@@ -223,6 +225,7 @@ export default function GameRoom() {
             </button>
             { isTurn &&
               <ThrowDice
+                onClick={handleRoomRoll}
                 presetValue={matchRoom.players.find((p) => p.id === isTurn)?.diceModel ?? 'default'}
                 lastResult={lastRoll}
                 triggerRoll={diceTrigger}

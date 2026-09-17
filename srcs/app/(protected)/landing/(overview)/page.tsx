@@ -17,24 +17,16 @@ export default function GameSelection() {
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
   return (
-    <div className="container container-two">
+    <div className="container pt-30">
         <LandingClient/>
-        <div className="flex flex-col items-center">
           <ThrowDice
+            onClick={handleRoomRoll}
             presetValue='default'
             lastResult={lastRoll}
             triggerRoll={diceTrigger}
             setIsRolling={setIsRolling}
             isRolling={isRolling}
           />
-          <button
-            onClick={handleRoomRoll}
-            disabled={isRolling}
-            className="button button--highlight rounded-sm"
-          >
-            {isRolling ? "Tirando..." : "🎲 Throw dice"}
-          </button>
-        </div>
     </div>
   );
 }

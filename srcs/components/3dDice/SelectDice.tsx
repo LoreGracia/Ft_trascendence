@@ -6,13 +6,11 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { PRESET_OPTIONS, getDicePreset } from "@/components/3dDice/select/diceOptions";
 import DiceCarouselItem from "@/components/3dDice/select/diceCarouselItem";
 import { createOrbitCamera } from "@/components/3dDice/utils/diceCamera";
-import { useDiceSocket } from "@/components/3dDice/connect/useDiceSocket";
 import styles from "./DiceScene.module.css";
 import { DiceModel } from "@/types/game";
 
 interface SelectDiceProps {
     /** Código de la sala/partida — lo necesita useDiceSocket para roll_dice/select_dice */
-    // roomCode: string;
     selected?: DiceModel;
     playerState: string;
     /** Se dispara cada vez que el usuario elige un dado; conéctalo al backend cuando toque. */
@@ -25,8 +23,6 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
     const sceneRef = useRef<Scene | null>(null);
     const diceInstanceRef = useRef<ReturnType<typeof createDiceInstance> | null>(null);
     const [selectedPreset, setSelectedPreset] = useState("default");
-    // selected === selectedPreset;
-    // const { selectDice } = useDiceSocket(playerState);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -43,7 +39,9 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
         engineRef.current = engine;
         sceneRef.current = scene;
 
-        createOrbitCamera(scene, canvas);
+        // createOrbitCamera(scene, canvas);
+        const camera = createOrbitCamera(scene, canvas, undefined, { radius: 6, beta: Math.PI / 2.3 });
+        console.log("camera radius", camera.radius);
 
         const light = new HemisphericLight("mainLight", new Vector3(0, 1, 0), scene);
         light.intensity = 0.9;
@@ -77,11 +75,9 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
         diceInstanceRef.current?.dispose();
         diceInstanceRef.current = createDiceInstance(scene, getDicePreset(selectedPreset));
     }, [selectedPreset]);
-    // useEffect(() => { setSelectedPreset(selected); }, [selected]);
 
     const handlePick = (value: DiceModel) => {
         setSelectedPreset(value);
-        // selectDice(value);
         selected === value;
         onSelect?.(value);
     };
@@ -89,9 +85,7 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
     return (
         <div className={styles.diceScene}>
             <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
-
             <h2 className={styles.diceScene__title}>Selecciona tu dado</h2>
-
             <div className={styles.diceScene__carousel}>
                 {PRESET_OPTIONS.map((option) => (
                     <DiceCarouselItem
