@@ -25,7 +25,7 @@ export function GoogleButton() {
       type="button"
       onClick={handleGoogle}
       disabled={loading}
-      className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) disable:hover-none disabled:bg-(--light)"
+      className="button button-squere button--secondary hover:bg-(--light) disable:hover-none disabled:bg-(--light)"
     >
       <GoogleIcon size={18} />
       <span>{loading ? "Redirecting…" : "Continue with Google"}</span>
