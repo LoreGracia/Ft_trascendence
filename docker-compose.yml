@@ -10,7 +10,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -49,12 +53,6 @@ services:
         condition: service_healthy
     networks:
       - transcendence-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.next.rule=Host(`dice.localhost`)"
-      - "traefik.http.routers.next.entrypoints=websecure"
-      - "traefik.http.routers.next.tls=true"
-      - "traefik.http.services.next.loadbalancer.server.port=3000"
 
   socket:
     build:
@@ -75,13 +73,6 @@ services:
         condition: service_healthy
     networks:
       - transcendence-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.socket.rule=Host(`socket.localhost`)"
-      - "traefik.http.routers.socket.entrypoints=websecure"
-      - "traefik.http.routers.socket.tls=true"
-      - "traefik.http.services.socket.loadbalancer.server.port=3001"
-
 
   traefik:
     image: traefik:v3.7
@@ -111,29 +102,11 @@ services:
       - "--entrypoints.websecure.address=:8443"
       - "--entrypoints.websecure.http.tls=true"
 
-      # Attach the static configuration tls.yaml file that contains the tls configuration settings
-      - "--providers.file.filename=/dynamic/tls.yaml"
+      - "--providers.file.filename=/dynamic/config.yaml"
 
-      # Providers 
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=transcendence-net"
-
-      # API & Dashboard 
+      # API & Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=false"
-      
-  # Traefik Dynamic configuration via Docker labels
-    labels:
-      # Enable self‑routing
-      - "traefik.enable=true"
-
-      # Dashboard router
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.tls=true"
-
 
 volumes:
   db-data:

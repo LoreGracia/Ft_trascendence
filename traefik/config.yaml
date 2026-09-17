@@ -1,0 +1,32 @@
+http:
+  routers:
+    next:
+      rule: Host(`dice.localhost`)
+      entryPoints:
+        - websecure
+      service: next-app
+    socket:
+      rule: Host(`socket.localhost`)
+      entryPoints:
+        - websecure
+      service: socket
+    dashboard:
+      rule: Host(`traefik.localhost`)
+      entryPoints:
+        - websecure
+      service: api@internal
+
+  services:
+    next-app:
+      loadBalancer:
+        servers:
+          - url: http://next-app:3000
+    socket:
+      loadBalancer:
+        servers:
+          - url: http://socket:3001
+
+tls:
+  certificates:
+    - certFile: /certs/local.crt
+      keyFile: /certs/local.key
