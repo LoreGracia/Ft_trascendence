@@ -4,7 +4,6 @@ import { matchRooms, turnTimeouts, waitingRooms } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
-const ENDGAME_STATES: PLAYER_ENDGAME[] = ["WIN", "LOSE", "TIE"]
 
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
@@ -29,12 +28,9 @@ export function createWaitingRoom(playerId: string, socketId: string, userName: 
 export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom): boolean {
 	if (room.state === "OPEN") {
 		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default" });
-		console.log(`Room ${room.roomCode}: player ${playerId} joined.`);
 		return true
-	} else {
-		console.log("Room Closed.");
+	} else
 		return false;
-	}
 }
 
 export function closeRoom(room: WaitingRoom): void {
@@ -86,19 +82,14 @@ export function advanceToUnlocked(match: MatchRoom): void {
 
 export function exitWaitingRoom(io: Server, socket: Socket, roomCode: string) {
 	const room = waitingRooms.get(roomCode);
-	if (!room) {
-		console.log(`Room ${roomCode} no longer exists.`);
+	if (!room)
 		return;
-	}
 	exitRoom(socket.data.userId, room);
 	socket.leave(roomCode);
-	console.log(`Room ${roomCode}: player ${socket.data.userId} left.`);
-	if (room.players.length === 0) {
+	if (room.players.length === 0)
 		waitingRooms.delete(roomCode);
-		console.log(`Room ${roomCode}: room deleted.`);
-	} else {
+	else
 		io.to(roomCode).emit("player_joined", room);
-	}
 }
 
 export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {

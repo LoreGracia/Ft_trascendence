@@ -55,14 +55,10 @@ function updateSum(room: MatchRoom, playerId: string, toAdd: number) {
 
 export function isPlayerTurn(match: MatchRoom, playerIdent: string): boolean {
 	const currentPlayer = match.players[match.turn % match.players.length];
-	if (currentPlayer.playerId !== playerIdent) {
-		console.log(`Room ${match.roomCode}: player ${playerIdent} not your turn.`);
+	if (currentPlayer.playerId !== playerIdent)
 		return false;
-	}
-	if (match.gameType != "FREE_PLAY" && currentPlayer.state === "LOCKED") {
-		console.log(`Room ${match.roomCode}: player ${playerIdent} passed.`);
+	if (match.gameType != "FREE_PLAY" && currentPlayer.state === "LOCKED")
 		return false;
-	}
 	return true;
 }
 

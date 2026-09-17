@@ -20,17 +20,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 		let isCancelled = false;
 
 		const onConnect = () => {
-			console.log("[socket] ✅ Conectado con éxito con ID:", socket.id);
 			setIsConnected(true);
 		};
 
 		const onDisconnect = (reason: string) => {
-			console.log("[socket] ❌ Desconectado:", reason);
 			setIsConnected(false);
 		};
 
 		const onConnectError = (error: Error) => {
-			console.error("[socket] 🚨 Error en Handshake:", error.message);
 			setIsConnected(false);
 		};
 
@@ -42,14 +39,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 			try {
 				const { data, error } = await authClient.token();
 				if (error) {
-					console.warn("[socket] Error obteniendo JWT:", error.message);
+					console.warn("[socket] Error obtaining JWT:", error.message);
 				}
 				const token = data?.token ?? null;
 
 				if (isCancelled) return;
 
 				if (!token) {
-					console.log("[socket] Sesión no iniciada. Socket desconectado.");
 					if (socket.connected) {
 						socket.disconnect();
 					}
@@ -66,13 +62,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 				if (socket.connected && currentToken !== token) {
 					socket.disconnect();
 				}
-				if (!socket.connected) {
-					console.log("[socket] Token JWT válido detectado. Conectando socket...");
+				if (!socket.connected)
 					socket.connect();
-				}
-
 			} catch (err) {
-				console.warn("[socket] Error inesperado en la sincronización:", err);
+				console.warn("[socket] Sync Error:", err);
 			}
 		};
 

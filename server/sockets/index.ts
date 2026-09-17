@@ -24,7 +24,6 @@ import {
 	exitMatchRoom,
 	clearTurnTimeout,
 	resetTurnTimeout,
-	isEndgameState,
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
@@ -35,7 +34,6 @@ export const turnTimeouts = new Map<string, NodeJS.Timeout>();
 export const disconnectionTimeouts = new Map<string, NodeJS.Timeout>();
 const app = express();
 const TIME_TO_DISCONNECT = 30000;
-// const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 app.use(cors());
 
@@ -48,7 +46,6 @@ const server = http.createServer(app);
 const io = new Server<any, any, any, SocketData>(server, {
 	cors: {
 		origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
-		// origin: process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000",
 		methods: ["GET", "POST"],
 	},
 });
@@ -70,7 +67,6 @@ io.use(async (socket: Socket, next) => {
 		socket.data.userName = userName;
 		next();
 	} catch (err) {
-		console.error("[socket-auth] Error validating JWT:", err);
 		return next(new Error("Authentication error: Invalid or expired token"));
 	}
 });
@@ -80,7 +76,6 @@ io.on("connection", (socket: Socket) => {
 	if (disconnectionTimeouts.has(socket.data.userId)) {
 		clearTimeout(disconnectionTimeouts.get(socket.data.userId));
 		disconnectionTimeouts.delete(socket.data.userId);
-		console.log("");
 	}
 	for (const [roomCode, match] of matchRooms) {
 		const player = match.players.find(p => p.playerId === socket.data.userId);
@@ -106,7 +101,6 @@ io.on("connection", (socket: Socket) => {
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
 		socket.emit("room_created", newRoom);
-		console.log(`Room ${newRoom.roomCode}: created by player ${socket.data.userId}`);
 	});
 
 	socket.on("join_room", (roomCode: string) => {
@@ -140,13 +134,11 @@ io.on("connection", (socket: Socket) => {
 		exitMatchRoom(io, socket, roomCode);
 	});
 
-	// Per passar de locked a unlocked.
 	socket.on("change_player_status", (roomCode: string, diceModel: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			changePlayerStatus(room, socket.data.userId, diceModel);
 			io.to(roomCode).emit("player_status_changed", room);
-			console.log(`Room ${room.roomCode}: player ${socket.data.userId} with socket ${socket.id} locked.`);
 		}
 		else
 			console.log("Room no longer exists.")
@@ -162,7 +154,6 @@ io.on("connection", (socket: Socket) => {
 				matchRooms.set(newMatch.roomCode, newMatch);
 				io.to(roomCode).emit("game_started", newMatch)
 				waitingRooms.delete(roomCode);
-				// send initial game data to db.
 				resetTurnTimeout(io, newMatch.roomCode);
 			}
 			else
@@ -178,11 +169,9 @@ io.on("connection", (socket: Socket) => {
 			io.to(roomCode).emit("player_status_changed", match);
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
-				// matchRooms.delete(roomCode);
 				io.to(roomCode).emit("match_won", { match });
 				return;
 			}
-			console.log(`Room ${match.roomCode}: player ${socket.data.userId} with socket ${socket.id} locked.`);
 			advanceToUnlocked(match);
 			io.to(roomCode).emit("player_status_changed", match);
 			resetTurnTimeout(io, match.roomCode);
@@ -205,7 +194,6 @@ io.on("connection", (socket: Socket) => {
 
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
-			// matchRooms.delete(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match, roll });
 			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
 			return;
@@ -217,7 +205,6 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("disconnect", (reason: string) => {
 		const userId = socket.data.userId;
-		console.log(`Player ${userId} with socket ${socket.id} disconnected. Reason: ${reason}`);
 
 		if (!userId) return;
 

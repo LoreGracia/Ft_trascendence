@@ -28,7 +28,6 @@ export async function validateToken(token: string) {
 		})
 		return payload;
 	} catch (err) {
-		console.error('Token validation failed:', err);
 		throw err;
 	}
 }
