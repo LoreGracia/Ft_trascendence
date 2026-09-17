@@ -2,7 +2,7 @@ import { MatchRoom, WaitingRoom, GameType } from "./GameTypes"
 import { isPlayerBusted, createMatchRoom } from "./DiceGame"
 import { verifyFreePlayWin, verifyAdd42Win } from "./Rules"
 
-// Product/Rules
+// Product
 export interface GameRules {
     evaluateRoll(match: MatchRoom, playerId: string): void;
     isGameWon(match: MatchRoom): boolean;

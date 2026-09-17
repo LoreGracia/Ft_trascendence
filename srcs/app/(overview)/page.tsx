@@ -14,6 +14,8 @@ export default function Home() {
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
         <section className="column">
+          <IndexDice />
+          {/*
             <IndexDice />
           
             {/* <IndexDice />
