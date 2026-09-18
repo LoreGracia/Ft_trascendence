@@ -53,7 +53,7 @@ p {
 }
 
 .container {
-  display: grid flex;
+  display: grid;
   grid-template-columns: 1fr;
   place-items: center;
 
@@ -92,6 +92,7 @@ p {
   display: flex;
   flex-direction: column;
   width: min(100%, 300px);
+  max-width: calc(100vw - 2rem);
   margin: 0 auto;
   /* gap: 1.5rem; */
   /* height: 3rem; */
@@ -107,7 +108,7 @@ p {
 }
 
 @media (min-width: 768px) {
-  .container{
+  .container-two{
     grid-template-columns: 1fr 1fr;
     width: min(1200px, 90vw);
   }

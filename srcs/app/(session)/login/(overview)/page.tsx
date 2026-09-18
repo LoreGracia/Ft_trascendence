@@ -60,7 +60,7 @@ export default function LogIn() {
             paused={paused}
             onToggle={() => setPaused(!paused)}
         />
-        <main className="container">
+        <main className="container flex flex-auto justify-center items-center">
           <Link
             className="corner-right button button-squere button--highlight"
             href={'/signup'}

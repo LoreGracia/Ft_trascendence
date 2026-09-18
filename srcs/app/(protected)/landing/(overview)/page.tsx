@@ -17,16 +17,16 @@ export default function GameSelection() {
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
   return (
-    <div className="container pt-30">
+    <div className="container pt-30 container-two">
         <LandingClient/>
-          <ThrowDice
-            onClick={handleRoomRoll}
-            presetValue='default'
-            lastResult={lastRoll}
-            triggerRoll={diceTrigger}
-            setIsRolling={setIsRolling}
-            isRolling={isRolling}
-          />
+        <ThrowDice
+          onClick={handleRoomRoll}
+          presetValue='default'
+          lastResult={lastRoll}
+          triggerRoll={diceTrigger}
+          setIsRolling={setIsRolling}
+          isRolling={isRolling}
+        />
     </div>
   );
 }
