@@ -63,8 +63,7 @@ export function useGameSocket() {
 
   const startGame = useCallback(
     (gameType: GameType) => {
-      if (waitingRoom)
-      {
+      if (waitingRoom) {
         setGameType(gameType);
         socket.emit('start_game', waitingRoom.roomCode);
       }
@@ -82,13 +81,15 @@ export function useGameSocket() {
   }, [matchRoom]);
 
   useEffect(() => {
-    const handleRoomCreated = (code: string) => {
-      setWaitingRoom({ roomCode: code, players: [{ id: socket.id ?? '', state: 'UNLOCKED', diceModel: 'default' }], gameType: gameType });
+    const handleRoomCreated = (code: WaitingRoom) => {
+      setWaitingRoom(code);
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
+      const player = waitingRoom?.players.find(p => p.socketId === socket.id);
+      console.log(`DiceModel es ${player?.diceModel}`);
       console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
         setWaitingRoom(data as WaitingRoom);
@@ -121,7 +122,7 @@ export function useGameSocket() {
 
       setMatchRoom(finalMatch);
 
-      const me = finalMatch.players.find((p) => p.id === socket.id);
+      const me = finalMatch.players.find((p) => p.socketId === socket.id);
       if (me?.state === 'WIN') setWinnerMessage('🎉 ¡YOU WON!');
       else if (me?.state === 'TIE') setWinnerMessage('🤝 ¡DRAW!');
       else setWinnerMessage('💀 YOU LOST');
@@ -159,7 +160,7 @@ export function useGameSocket() {
   const isMyTurn = useMemo(
     () =>
       matchRoom
-        ? matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === socket.id
+        ? matchRoom.players[matchRoom.turn % matchRoom.players.length]?.socketId === socket.id
         : false,
     [matchRoom],
   );

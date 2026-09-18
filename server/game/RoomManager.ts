@@ -1,10 +1,9 @@
-import { WaitingRoom, Players, MatchRoom, GameType } from "./GameTypes";
+import { WaitingRoom, Players, MatchRoom, GameType, PLAYER_STATE, PLAYER_ENDGAME } from "./GameTypes";
 import { Socket, Server } from "socket.io";
-import { matchRooms, turnTimeouts } from "../sockets/index";
+import { matchRooms, turnTimeouts, waitingRooms } from "../sockets/index";
 
 const SAFE_ALPHABET = "2345679ACEFHJKMNPRTUWXYZ" as const;
 const TURN_TIME_LIMIT = 30000;
-
 
 export function generateRoomCode(length: number = 5): string {
 	const bytes = new Uint8Array(length);
@@ -16,19 +15,21 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string, game: GameType): WaitingRoom {
+export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
+		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default" }],
 		state: "OPEN",
 	};
 	return room;
 }
 
-export function addPlayerToRoom(playerId: string, room: WaitingRoom): boolean {
-	if (room.state === "OPEN") 
-		return true;
-	else 
+export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom): boolean {
+	if (room.state === "OPEN") {
+		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default" });
+		return true
+	} else
 		return false;
 }
 
@@ -41,13 +42,12 @@ export function openRoom(room: WaitingRoom): void {
 }
 
 export function exitRoom(playerId: string, room: WaitingRoom | MatchRoom) {
-	room.players = room.players.filter(p => p.id !== playerId);
+	room.players = room.players.filter(p => p.playerId !== playerId);
 }
 
 export function changePlayerStatus(room: WaitingRoom | MatchRoom, playerId: string, diceModel: string): void {
-	const player = room.players.find(p => p.id === playerId);
-	if (!player)
-		return;
+	const player = room.players.find(p => p.playerId === playerId);
+	if (!player) return;
 	player.state = player.state === "LOCKED" ? "UNLOCKED" : "LOCKED";
 	player.diceModel = diceModel;
 }
@@ -80,11 +80,23 @@ export function advanceToUnlocked(match: MatchRoom): void {
 	}
 }
 
+export function exitWaitingRoom(io: Server, socket: Socket, roomCode: string) {
+	const room = waitingRooms.get(roomCode);
+	if (!room)
+		return;
+	exitRoom(socket.data.userId, room);
+	socket.leave(roomCode);
+	if (room.players.length === 0)
+		waitingRooms.delete(roomCode);
+	else
+		io.to(roomCode).emit("player_joined", room);
+}
+
 export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 	const match = matchRooms.get(roomCode);
 	if (match) {
-		const currentPlayer = match.players[match.turn % match.players.length].id;
-		exitRoom(socket.id, match);
+		const currentPlayer = match.players[match.turn % match.players.length].playerId;
+		exitRoom(socket.data.userId, match);
 		socket.leave(roomCode);
 		if (match.players.length === 0) {
 			matchRooms.delete(roomCode);
@@ -94,7 +106,7 @@ export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 			matchRooms.delete(roomCode);
 			io.to(roomCode).emit("match_won", { match });
 		} else {
-			if (socket.id === currentPlayer) {
+			if (socket.data.userId === currentPlayer) {
 				clearTurnTimeout(roomCode);
 				advanceToUnlocked(match);
 			}
@@ -117,7 +129,7 @@ export function resetTurnTimeout(io: Server, roomCode: string) {
 		io.to(roomCode).emit("turn_timeout", { match });
 		io.to(roomCode).emit("player_status_changed", match);
 		if (match.rules.isGameWon(match)) {
-			io.to(roomCode).emit("match_won", { match, lastRoll: match.rolls[match.rolls.length] });
+			io.to(roomCode).emit("match_won", { match, lastRoll: match.rolls[match.rolls.length - 1] });
 			clearTurnTimeout(roomCode);
 			matchRooms.delete(roomCode);
 			return;
