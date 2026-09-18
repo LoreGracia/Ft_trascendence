@@ -37,7 +37,7 @@ services:
       - ./prisma:/app/prisma:ro
       # named volumes for generated/build content (fast + persistent)
       - next-modules:/app/node_modules
-      - prisma-client-app:/app/generated/prisma
+      # - prisma-client-app:/app/generated/prisma
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
@@ -59,7 +59,7 @@ services:
     restart: no
     volumes:
       - server-modules:/server/node_modules
-      - prisma-client-server:/server/generated/prisma
+      # - prisma-client-server:/server/generated/prisma
       - ./server/sockets:/server/sockets
       - ./server/game:/server/game
     environment:

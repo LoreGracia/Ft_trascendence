@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth";
-import { genericOAuth } from "better-auth/plugins"
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { jwt } from "better-auth/plugins";
@@ -7,76 +6,76 @@ import { createAuthMiddleware, APIError } from "better-auth/api";
 import { signupSchema, loginSchema } from "./validation";
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "postgresql",
-  }),
+	database: prismaAdapter(prisma, {
+		provider: "postgresql",
+	}),
 
-  emailAndPassword: {
-    enabled: true, 
-  },
+	emailAndPassword: {
+		enabled: true, 
+	},
 
-  baseURL: process.env.BETTER_AUTH_URL,
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    },
-  },
+	baseURL: process.env.BETTER_AUTH_URL,
+	socialProviders: {
+		google: {
+		clientId: process.env.GOOGLE_CLIENT_ID as string,
+		clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+		},
+	},
 
-  plugins: [
-        jwt(),
-  ],
-  hooks: {
-    before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/sign-up/email") {
-        const result = signupSchema.safeParse(ctx.body);
-        if (!result.success) {
-          throw new APIError("BAD_REQUEST", {
-            message: result.error.issues[0].message,
-          });
-        }
+	plugins: [
+			jwt(),
+	],
+	hooks: {
+		before: createAuthMiddleware(async (ctx) => {
+		if (ctx.path === "/sign-up/email") {
+			const result = signupSchema.safeParse(ctx.body);
+			if (!result.success) {
+				throw new APIError("BAD_REQUEST", {
+					message: result.error.issues[0].message,
+				});
+			}
 
-        const { name, email } = result.data;
+			const { name, email } = result.data;
 
-        const [nameTaken, emailTaken] = await Promise.all([
-          prisma.user.findUnique({ where: { name }, select: { id: true } }),
-          prisma.user.findUnique({ where: { email }, select: { id: true } }),
-        ]);
+			const [nameTaken, emailTaken] = await Promise.all([
+				prisma.user.findUnique({ where: { name }, select: { id: true } }),
+				prisma.user.findUnique({ where: { email }, select: { id: true } }),
+			]);
 
-        if (nameTaken) {
-          throw new APIError("CONFLICT", {
-            message: "Username already taken",
-            code: "USERNAME_TAKEN",
-          });
-        }
-        if (emailTaken) {
-          throw new APIError("CONFLICT", {
-            message: "Email already registered",
-            code: "EMAIL_TAKEN",
-          });
-        }
-      }
+			if (nameTaken) {
+				throw new APIError("CONFLICT", {
+					message: "Username already taken",
+					code: "USERNAME_TAKEN",
+				});
+			}
+			if (emailTaken) {
+				throw new APIError("CONFLICT", {
+					message: "Email already registered",
+					code: "EMAIL_TAKEN",
+				});
+			}
+		}
 
-      if (ctx.path === "/sign-in/email") {
-        const result = loginSchema.safeParse(ctx.body);
-        if (!result.success) {
-          throw new APIError("BAD_REQUEST", {
-            message: result.error.issues[0].message,
-          })
-        }
-      }
-    })
-  },
-  databaseHooks: {
-    user: {
-      create: {
-        before: async (user, ctx) => {
-          if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
-            return { data: { ...user, name: null } };
-          }
-          return { data: user };
-        },
-      },
-    },
-  },
+		if (ctx.path === "/sign-in/email") {
+			const result = loginSchema.safeParse(ctx.body);
+			if (!result.success) {
+				throw new APIError("BAD_REQUEST", {
+					message: result.error.issues[0].message,
+				})
+			}
+		}
+		})
+	},
+	databaseHooks: {
+		user: {
+		create: {
+			before: async (user, ctx) => {
+			if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
+				return { data: { ...user, name: null, image: null  } };
+			}
+			return { data: user };
+			},
+		},
+		},
+	},
 })

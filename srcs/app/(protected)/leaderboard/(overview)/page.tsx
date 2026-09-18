@@ -15,7 +15,7 @@ import {
 	Crown,
 	Sparkles,
 } from 'lucide-react'
-import { getLeaderboardStats, getAllUsersDebug, type LeaderboardUserStats } from '@/app/actions/user'
+import { getLeaderboardStats, getAllUsersDebug, type LeaderboardUserStats } from '@/lib/user'
 import { AllUsersDebug } from '@/components/AllUsersDebug'
 
 type GameMode = 'FREE_PLAY' | 'ADD42'
