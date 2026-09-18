@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
+import { useSocket } from "@/components/SocketProvider";
 
 export default function GameRoom() {
   const [isRolling, setIsRolling] = useState(false);
@@ -209,7 +210,7 @@ export default function GameRoom() {
             { isTurn &&
               <ThrowDice
                 onClick={handleRoomRoll}
-                presetValue={matchRoom.players.find((p) => p.id === isTurn)?.diceModel ?? 'default'}
+                presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
                 lastResult={lastRoll}
                 triggerRoll={diceTrigger}
                 setIsRolling={setIsRolling}
