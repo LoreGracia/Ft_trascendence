@@ -61,7 +61,7 @@ export default function GameRoom() {
         ? "bg-violet-950"
         : "bg-violet-500 rounded-2xl ";
   return (
-    <div className="w-full h-full p-20">
+    <div className="flex flex-col w-screen h-screen p-20 me-20">
       <p className="text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
@@ -70,9 +70,8 @@ export default function GameRoom() {
       </p>
 
       {waitingRoom && !matchRoom && (
-        <div className="column flex-wrap">
-          <div className="w-full h-full flex flex-col justify-evenly md:flex-row">
-            <div className="w-full h-full flex flex-col justify-evenly">
+        <div className="flex flex-col items-center">
+            <div className="w-full h-full flex flex-col">
               <div className="flex flex-row items-center gap-5 w-full pb-5">
                 <h2>
                   🎲 {waitingRoom.gameType} :
@@ -84,7 +83,7 @@ export default function GameRoom() {
                   <ArrowRight />
                 </p>
               </div>
-              <ul className="pb-20">
+              <ul>
                 {waitingRoom.players.map((p) => (
                   <li className="flex flex-row" key={p.playerId}>
                     {p.name} ➡️ <b>{p.state}</b>
@@ -95,13 +94,11 @@ export default function GameRoom() {
                 ))}
               </ul>
             </div>
-
             <SelectDice
               selected={diceModel}
               playerState={myPlayerState}
               onSelect={setDiceModel}
             />
-          </div>
           <div className="fixed bottom-60 flex flex-col gap-2 items-center">
             <button
               onClick={() => startGame(waitingRoom.gameType)}

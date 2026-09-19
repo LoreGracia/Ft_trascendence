@@ -27,7 +27,7 @@ export default async function ProtectedLayout({
     <SidebarProvider>
       <AppSidebar className="list-none hidden md:flex" />
       <MobileBottomBar />
-      <SidebarTrigger className="hidden md:flex" />
+      {/* <SidebarTrigger className="hidden md:flex" /> */}
       <nav className="md:hidden [&_svg]:size-8 corner-left">
         {navigation.header.map((item) => {
           const Icon = item.icon;

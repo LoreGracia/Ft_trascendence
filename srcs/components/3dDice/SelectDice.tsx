@@ -83,19 +83,23 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
     };
 
     return (
-        <div className={styles.diceScene}>
-            <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
-            <h2 className={styles.diceScene__title}>Selecciona tu dado</h2>
-            <div className={styles.diceScene__carousel}>
-                {PRESET_OPTIONS.map((option) => (
-                    <DiceCarouselItem
-                        key={option.value}
-                        label={option.label}
-                        presetValue={option.value}
-                        selected={option.value === selectedPreset}
-                        onSelect={() => handlePick(option.value)}
-                    />
-                ))}
+        <div className="flex max-w-full flex-col items-center">
+            <div className={styles.diceScene}>
+                <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
+            </div>
+            <div className="flex flex-col w-full">
+                <h2 className="text-(--dark) size-5 pb-4 m-0 text-center w-full">Selecciona tu dado</h2>
+                <div className={styles.diceScene__carousel}>
+                    {PRESET_OPTIONS.map((option) => (
+                        <DiceCarouselItem
+                            key={option.value}
+                            label={option.label}
+                            presetValue={option.value}
+                            selected={option.value === selectedPreset}
+                            onSelect={() => handlePick(option.value)}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -17,7 +17,7 @@ export default function GameSelection() {
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
   return (
-    <div className="container pt-30 container-two">
+    <div className="container pt-30 md:pt-0 container-two">
         <LandingClient/>
         <ThrowDice
           onClick={handleRoomRoll}
