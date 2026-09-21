@@ -13,6 +13,14 @@
   --foreground: var(--black);
   --radius: 0.625rem;
   --accent: color-mix(in srgb, var(--dark) 50%, var(--light));
+  --t-error: #9f415f;
+  --t-content: color-mix(in srgb, var(--black) 80%, var(--white));
+
+  --t-muted: color-mix(in srgb, var(--black) 55%, var(--white));
+
+  --t-success: #2e7d32;
+  --t-danger: #c62828;
+  --t-warning: #b58900;
 }
 
 @theme inline {
@@ -25,8 +33,11 @@
     --black: #ededed;
     --light: #261f28;
     --dark: #e3d4ef;
-    --t-error: #9f415f;
-    --t-content: color-mix(in srgb, var(--black) 80%, var(--white));
+    /* --t-error: #9f415f;
+    --t-content: color-mix(in srgb, var(--black) 80%, var(--white)); */
+    --t-success: #81c784;
+    --t-danger: #ef9a9a;
+    --t-warning: #ffd54f;
   }
 }
 
@@ -39,8 +50,10 @@ body {
 
 h1 {
   max-width: 20rem;
-  font-size: 2.5rem; /* 30px */
-  line-height: 2.25rem; /* 36px */
+  font-size: 2.5rem;
+  /* 30px */
+  line-height: 2.25rem;
+  /* 36px */
   font-weight: 600;
   letter-spacing: -0.025em;
   color: var(--black);
@@ -48,7 +61,8 @@ h1 {
 
 p {
   /* color:color-mix(in srgb, var(--black) 80%, var(--white)); */
-  font-size: 0.9rem; /* 30px */
+  font-size: 0.9rem;
+  /* 30px */
 }
 
 .container {
@@ -82,7 +96,7 @@ p {
 }
 
 @media (min-width: 768px) {
-  .container-two{
+  .container-two {
     grid-template-columns: 1fr 1fr;
     width: min(1200px, 90vw);
     align-items: center;
@@ -96,7 +110,8 @@ p {
   gap: 1.5rem;
   height: 3rem;
   justify-content: center;
-  border-radius: 20px;/* rounded */
+  border-radius: 20px;
+  /* rounded */
   padding-inline: 1.25rem;
   min-width: 300px;
   height: fit-content;
@@ -107,8 +122,10 @@ p {
 }
 
 .box--primary {
-  background: var(--white);/* bg-foreground */
-  color: var(--black);/* text-(--light) */
+  background: var(--white);
+  /* bg-foreground */
+  color: var(--black);
+  /* text-(--light) */
   border-color: var(--light);
   border-width: 1px;
 }
@@ -129,7 +146,8 @@ p {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-top: 1rem; /* separates the last input from the action block */
+  margin-top: 1rem;
+  /* separates the last input from the action block */
 }
 
 .auth-divider {
