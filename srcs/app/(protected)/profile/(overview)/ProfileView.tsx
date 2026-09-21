@@ -49,7 +49,7 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 	return (
 		<main className="container">
 			<div className="profile-layout">
-				<div className="profile-banner" />
+				{/* <div className="profile-banner" /> */}
 				<div className="profile-columns">
 					<aside className="profile-sidebar">
 						<Card className="card--padded profile-header">
@@ -66,10 +66,7 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 								</button>
 							)}
 						</Card>
-						<h2 className="sidebar-title">Game Statistics</h2>
-						{stats.map((stat) => (
-						<StatCard key={stat.gameType} stat={stat} />
-						))}
+
 					</aside>
 					<section>
 						{isEditing ? (
@@ -85,6 +82,12 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 								<ProfileInfoCard icon={User} label="Username" value={displayValue(user.name)} />
 								<ProfileInfoCard icon={Mail} label="Email Address" value={displayValue(user.email)} />
 								<ProfileInfoCard icon={Calendar} label="Joined Date" value={formatDate(user.createdAt)} />
+							</div>
+							<div className="stats-grid">
+								<h2 className="stats-title ">Game Statistics</h2>
+								{stats.map((stat) => (
+								<StatCard key={stat.gameType} stat={stat} />
+								))}
 							</div>
 						</>
 						)}
