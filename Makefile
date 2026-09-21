@@ -27,6 +27,7 @@ certs/local.key certs/local.crt:
 	mkdir -p certs
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 			-keyout certs/local.key -out certs/local.crt \
-			-subj "/CN=*"
+			-subj "/CN=*" \
+			-addext "subjectAltName=DNS:dice.localhost,DNS:socket.localhost"
 
 .PHONY: all clean fclean prune re
