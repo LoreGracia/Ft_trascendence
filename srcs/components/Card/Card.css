@@ -1,0 +1,12 @@
+.card {
+  background: var(--light);
+  color: var(--black);
+  border: 1px solid var(--light);
+  border-radius: 15px;
+  padding: 1rem 1.25rem;
+  box-sizing: border-box;
+}
+
+.card--padded {
+  padding: 1.5rem;
+}

@@ -1,0 +1,209 @@
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.profile-header__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+.profile-sidebar {
+  top: 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: start;
+}
+
+.stats-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark);
+  letter-spacing: 0.05em;
+  margin-top: 2rem;
+  margin-bottom: 0; 
+}
+
+.stat-card__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dark);
+  margin: 0 0 0.75rem;
+}
+
+.stat-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .stat-card__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat--footer {
+  grid-column: 1 / -1;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--light);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.stat__label {
+  font-size: 0.75rem;
+  color: var(--t-muted);
+}
+
+.stat__value {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--t-content);
+}
+
+.stat__value[data-tone="success"] { color: var(--t-success); }
+.stat__value[data-tone="danger"]  { color: var(--t-danger); }
+.stat__value[data-tone="warning"] { color: var(--t-warning); }
+.stat__value[data-tone="accent"]  { color: var(--dark); }
+
+.stat__value[data-size="lg"] {
+  font-size: 1.25rem;
+}
+
+.stat-card__footer {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--light);
+}
+
+.info-field__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--t-light);
+  margin: 0 0 0.5rem;
+}
+
+.info-field__value {
+  margin: 0;
+  color: var(--t-content);
+  word-break: break-word;
+}
+
+.info-field__value[data-tone="success"] { color: var(--t-success); }
+.info-field__value[data-tone="danger"]  { color: var(--t-danger); }
+.info-field__value[data-tone="warning"] { color: var(--t-warning); }
+
+.info-field__label svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 1rem;
+}
+
+.info-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.status-banner {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid currentColor;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.status-banner[data-tone="success"] { color: var(--t-success); background: color-mix(in srgb, var(--t-success) 12%, transparent); }
+.status-banner[data-tone="danger"]  { color: var(--t-danger);  background: color-mix(in srgb, var(--t-danger)  12%, transparent); }
+.status-banner[data-tone="warning"] { color: var(--t-warning); background: color-mix(in srgb, var(--t-warning) 12%, transparent); }
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid var(--light);
+  background: var(--white);
+}
+
+.profile-form__avatar-preview {
+  position: relative;
+  align-self: center;
+}
+
+.profile-form__avatar-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: var(--dark);
+  color: var(--white);
+}
+
+.profile-form__passwords {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--light);
+  border-radius: 12px;
+}
+
+.profile-form__passwords legend {
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--t-muted);
+}
+
+.profile-form__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.profile-form__actions .button {
+  flex: 0 1 auto;
+  min-width: 120px;
+}
