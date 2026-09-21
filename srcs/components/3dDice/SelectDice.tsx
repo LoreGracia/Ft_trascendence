@@ -15,9 +15,10 @@ interface SelectDiceProps {
     playerState: string;
     /** Se dispara cada vez que el usuario elige un dado; conéctalo al backend cuando toque. */
     onSelect?: (value: DiceModel) => void;
+    toggleReadyStatus?: () => void;
 }
 
-export default function SelectDice({ selected, playerState, onSelect }: SelectDiceProps) {
+export default function SelectDice({ selected, playerState, onSelect, toggleReadyStatus }: SelectDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -87,8 +88,14 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
             <div className={styles.diceScene}>
                 <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
             </div>
+            <button
+                onClick={toggleReadyStatus}
+                className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                {playerState === 'LOCKED' ? "Ready" : "Not ready"}
+            </button>
+            {playerState === "UNLOCKED" &&
             <div className="flex flex-col w-full">
-                <h2 className="text-(--dark) size-5 pb-4 m-0 text-center w-full">Selecciona tu dado</h2>
+                <h2 className="text-(--dark) size-5 pb-4 m-0 text-center w-full">Select your dice</h2>
                 <div className={styles.diceScene__carousel}>
                     {PRESET_OPTIONS.map((option) => (
                         <DiceCarouselItem
@@ -100,7 +107,7 @@ export default function SelectDice({ selected, playerState, onSelect }: SelectDi
                         />
                     ))}
                 </div>
-            </div>
+            </div>}
         </div>
     );
 }

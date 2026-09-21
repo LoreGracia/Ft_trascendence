@@ -140,7 +140,7 @@ export function useGameSocket() {
     socket.on('match_won', handleMatchWon);
     // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
     socket.on('game_not_started', handlePlayError);
-    socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
+    // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
 
     return () => {

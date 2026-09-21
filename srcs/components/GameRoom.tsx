@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, Lock, LockOpen } from "lucide-react";
+import { ArrowRight, Lock, LockOpen, ClipboardCopy } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
 import { useSocket } from "@/components/SocketProvider";
@@ -16,6 +16,8 @@ export default function GameRoom() {
   const { isConnected } = useSocket();
   const [mounted, setMounted] = useState(false);
   const [socketId, setSocketId] = useState('');
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     setMounted(true);
     setSocketId(socket.id ?? '');
@@ -50,7 +52,7 @@ export default function GameRoom() {
       socket.emit('get_room', roomCode);
   }, [isConnected, waitingRoom, roomCode]);
 
-  if (!isConnected || !socket.id) return <div>Connecting...</div>;
+  if (!isConnected || !socket.id) return <div className="container">Connecting...</div>;
   const myPlayerState =
     waitingRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
   const myMatchState = matchRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
@@ -60,6 +62,18 @@ export default function GameRoom() {
       : winnerMessage === "💀 YOU LOST"
         ? "bg-violet-950"
         : "bg-violet-500 rounded-2xl ";
+
+  const handleCopyRoomCode = async () => {
+    if (!waitingRoom?.roomCode) return;
+
+    try {
+      await navigator.clipboard.writeText(waitingRoom.roomCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error('No se pudo copiar al portapapeles:', err);
+    }
+  };
   return (
     <div className="flex flex-col w-screen h-screen p-20 me-20">
       <p className="text-(--t-content)">
@@ -72,46 +86,80 @@ export default function GameRoom() {
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center">
             <div className="w-full h-full flex flex-col">
-              <div className="flex flex-row items-center gap-5 w-full pb-5">
+              <div className="flex flex-col gap-5 w-full pb-5 md:flex-row">
                 <h2>
                   🎲 {waitingRoom.gameType} :
                 </h2>
-                <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
+                <div className="flex flex-row">
+                  <h1 className="text-(--dark)"> {waitingRoom.roomCode}</h1>
+                    <button
+                      type="button"
+                      onClick={handleCopyRoomCode}
+                      className="self-start
+                      inline-flex items-center justify-center
+                      size-7 rounded-[min(var(--radius-md),12px)]
+                      active:not-aria-[haspopup]:translate-y-px
+                      [&_svg:not([class*='size-'])]:size-4
+                      focus-visible:ring-2  disabled:text-(--light)"
+                      disabled={copied}
+                    >
+                      <ClipboardCopy size={10}/>
+                    </button>
+                  </div>
                 <p className="text-(--t-content)">
                   {waitingRoom.players.length} / 2
                   <small> (max 6)</small>
                   <ArrowRight />
                 </p>
               </div>
-              <ul>
-                {waitingRoom.players.map((p) => (
-                  <li className="flex flex-row" key={p.playerId}>
-                    {p.name} ➡️ <b>{p.state}</b>
-                    {p.socketId === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-                      {myPlayerState === 'LOCKED' ? <Lock size={12} /> : <LockOpen size={12} />}
-                    </button> : ''}
-                  </li>
-                ))}
-              </ul>
+              <div className="flex flex-col md:flex-row justify-evenly">
+                <ul>
+                  {waitingRoom.players.map((p) => (
+                    <li className="flex flex-row" key={p.playerId}>
+                      {p.name} ➡️ <b>{p.state}</b>
+                      {p.socketId === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                        {myPlayerState === 'LOCKED' ? <Lock size={12} /> : <LockOpen size={12} />} </button> : 
+                      p.state === 'LOCKED'? <Lock size={12} /> : <LockOpen size={12} />}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-col gap-2 items-center justify-evenly">
+                  <div className="flex flex-row gap-2 items-center">
+                    <button
+                      onClick={() => startGame(waitingRoom.gameType)}
+                      disabled={waitingRoom.players.length === 1 || 
+                        !(waitingRoom.players.every((p) => p.state === 'LOCKED'))}
+                      className="button button--highlight rounded-sm"
+                    >
+                      {waitingRoom.players.length === 1? "1 / 2" : "Play"}
+                    </button>
+                    <button onClick={exitRoom} className="p-3 button--secondary rounded-sm">
+                      Exit room
+                    </button>
+                  </div>
+                </div>
+                {playError && <p className="text-(--t-error)">{playError}</p>}
+              </div>
             </div>
             <SelectDice
               selected={diceModel}
               playerState={myPlayerState}
               onSelect={setDiceModel}
             />
-          <div className="fixed bottom-60 flex flex-col gap-2 items-center">
+          {/* <div className="fixed bottom-70 flex flex-col gap-2 items-center">
             <button
               onClick={() => startGame(waitingRoom.gameType)}
-              disabled={waitingRoom.players.length === 1}
+              disabled={waitingRoom.players.length === 1 || 
+                !(waitingRoom.players.every((p) => p.state === 'LOCKED'))}
               className="p-10 pb-5 pt-5 rounded-3xl button--highlight"
             >
-              Play
+              {waitingRoom.players.length === 1? "1 / 2" : "Play"}
             </button>
             {playError && <p className="text-(--t-error)">{playError}</p>}
           </div>
           <button onClick={exitRoom} className="fixed bottom-20 p-3 button--secondary rounded-3xl">
             Exit room
-          </button>
+          </button> */}
         </div>
       )}
 
