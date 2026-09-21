@@ -6,7 +6,7 @@ import { loginSchema } from "@/lib/validation";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import TextInput from '@/components/Input/Input';
-import { GoogleButton } from "@/components/button/GoogleButton";
+import { GithubButton } from "@/components/button/GithubButton";
 import AuthForm from '@/components/Form/AuthForm';
 
 export default function LogIn() {
@@ -103,7 +103,7 @@ export default function LogIn() {
 							<div className="auth-divider" role="separator">
 								<span>or</span>
 							</div>
-							<GoogleButton />
+							<GithubButton />
 						</div>
 					</AuthForm>
 				</section>
