@@ -10,7 +10,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -43,15 +47,14 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       # NODE_OPTIONS: --max-old-space-size=2048
-    ports:
-      - "3000:3000"
+    env_file: ".env.local"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - transcendence-net
 
-  server:
+  socket:
     build:
       context: .
       dockerfile: server/Dockerfile
@@ -65,13 +68,48 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
-    ports:
-      - "3001:3001"
+      # BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      AUTH_INTERNAL_URL: ${AUTH_INTERNAL_URL}
+    # ports:
+    #   - "3001:3001"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - transcendence-net
+
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: no
+    security_opt:
+      - no-new-privileges:true
+
+    networks:
+      - transcendence-net
+
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+
+    volumes:
+      - ./certs:/certs:ro
+      - ./traefik:/dynamic:ro
+
+    command:
+      # EntryPoints
+      - "--entrypoints.web.address=:8000"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:8443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      - "--providers.file.filename=/dynamic/config.yaml"
+
+      # API & Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
 
 volumes:
   db-data:

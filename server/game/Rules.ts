@@ -6,7 +6,7 @@ function updateStateToEndgame(match: MatchRoom, winScore: number) {
     const scores = Object.values(match.sum);
     const reps = countRepetitions(scores, winScore);
     for (const player of match.players) {
-        const playerScore = match.sum[player.id] ?? 0;
+        const playerScore = match.sum[player.playerId] ?? 0;
 
         if (playerScore != winScore)
             player.state = "LOSE";
@@ -28,15 +28,15 @@ export function verifyFreePlayWin(match: MatchRoom): boolean {
 
 // Add42
 export function verifyAdd42Win(match: MatchRoom): boolean {
-	const scores: number[] = Object.values(match.sum); 
-	if (scores.includes(42)) {
-		updateStateToEndgame(match, 42);
-		return true;
-	} else if (allPlayersStand(match.players)) {
-		updateStateToEndgame(match, findClosestTo42(match.sum));
-		return true;
-	}
-	return false;
+    const scores: number[] = Object.values(match.sum);
+    if (scores.includes(42)) {
+        updateStateToEndgame(match, 42);
+        return true;
+    } else if (allPlayersStand(match.players)) {
+        updateStateToEndgame(match, findClosestTo42(match.sum));
+        return true;
+    }
+    return false;
 }
 
 function findClosestTo42(sum: Record<string, number>): number {

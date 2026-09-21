@@ -100,17 +100,17 @@ export const createDiceInstance = (
                 false,
                 Texture.TRILINEAR_SAMPLINGMODE,
                 () => {
-                    console.log(
-                        "✅ TEXTURA CARGADA:",
-                        resolvedConfig.bodyTexture
-                    );
+                    // console.log(
+                    //     "✅ TEXTURA CARGADA:",
+                    //     resolvedConfig.bodyTexture
+                    // );
                 },
                 (message) => {
-                    console.error(
-                        "❌ ERROR CARGANDO TEXTURA:",
-                        resolvedConfig.bodyTexture,
-                        message
-                    );
+                    // console.error(
+                    //     "❌ ERROR CARGANDO TEXTURA:",
+                    //     resolvedConfig.bodyTexture,
+                    //     message
+                    // );
                 }
             );
 

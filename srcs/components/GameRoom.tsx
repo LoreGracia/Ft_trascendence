@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Lock, LockOpen } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
+import { useSocket } from './SocketProvider';
 
 export default function GameRoom() {
   const searchParams = useSearchParams();
   const roomCode = searchParams.get('roomCode');
-  const router = useRouter();
+  const { isConnected } = useSocket();
   const {
     diceModel,
     setDiceModel,
@@ -30,35 +30,22 @@ export default function GameRoom() {
     getPlayerScore,
     playError,
   } = useGameSocket();
-  useEffect(() => {
-    if (!socket.id) {
-      router.push('/landing');
-    }
-  }, [socket.id, router]);
 
-  if (!socket.id) return <div>Redirecting...</div>;
   useEffect(() => {
-    if (!waitingRoom && roomCode) {
-      if (socket.connected) {
-        socket.emit('get_room', roomCode);
-      } else {
-        const onConnect = () => {
-          socket.emit('get_room', roomCode);
-        };
-        socket.on('connect', onConnect);
-        return () => {socket.off('connect', onConnect)};
-      }
-    }
-  }, [waitingRoom, roomCode]); // <- longitud y orden CONSTANTES
+    if (isConnected && !waitingRoom && roomCode)
+      socket.emit('get_room', roomCode);
+  }, [isConnected, waitingRoom, roomCode]);
+
+  if (!isConnected || !socket.id) return <div>Connecting...</div>;
   const myPlayerState =
-    waitingRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
-  const myMatchState = matchRoom?.players.find((p) => p.id === socket.id)?.state ?? 'UNLOCKED';
+    waitingRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
+  const myMatchState = matchRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
   const winnerClass =
     winnerMessage === "🎉 ¡YOU WON!"
       ? "bg-violet-300 text-violet-500 rounded-4xl "
       : winnerMessage === "💀 YOU LOST"
-      ? "bg-violet-950"
-      : "bg-violet-500 rounded-2xl ";
+        ? "bg-violet-950"
+        : "bg-violet-500 rounded-2xl ";
   return (
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
@@ -71,43 +58,43 @@ export default function GameRoom() {
         <div className="flex flex-col items-center">
           <div className="w-full h-full flex flex-col justify-evenly">
             <div className="flex flex-row items-center gap-5 w-full pb-5">
-            <h2>
-              🎲 {waitingRoom.gameType} : 
-            </h2>
+              <h2>
+                🎲 {waitingRoom.gameType} :
+              </h2>
               <h1 className="text-(--dark)"> {waitingRoom.roomCode} </h1>
               <p className="text-(--t-content)">
                 {waitingRoom.players.length} / 2
-                <small> (max 6)</small> 
-                <ArrowRight/>
+                <small> (max 6)</small>
+                <ArrowRight />
               </p>
             </div>
             <ul className="pb-20">
               {waitingRoom.players.map((p) => (
-                <li className="flex flex-row" key={p.id}>
-                  {p.id} ➡️ <b>{p.state}</b>
-                  {p.id === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-                {myPlayerState === 'LOCKED' ? <Lock size={12}/> : <LockOpen size={12}/>}
-              </button> : ''} 
+                <li className="flex flex-row" key={p.playerId}>
+                  {p.name} ➡️ <b>{p.state}</b>
+                  {p.socketId === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
+                    {myPlayerState === 'LOCKED' ? <Lock size={12} /> : <LockOpen size={12} />}
+                  </button> : ''}
                 </li>
               ))}
             </ul>
           </div>
-          <SelectDice
+          {/* <SelectDice
             // roomCode="test-room"
             selected={diceModel}
             playerState={myPlayerState}
             onSelect={setDiceModel}
-            />
+            /> */}
           <div className="fixed bottom-60 flex flex-col gap-2 items-center">
-          <button
-            onClick={() => startGame(waitingRoom.gameType)}
-            disabled={waitingRoom.players.length === 1 }
-            className="p-10 pb-5 pt-5 rounded-3xl button--highlight"
+            <button
+              onClick={() => startGame(waitingRoom.gameType)}
+              disabled={waitingRoom.players.length === 1}
+              className="p-10 pb-5 pt-5 rounded-3xl button--highlight"
             >
-            Play
-          </button>
-           {playError && <p className="text-(--t-error)">{playError}</p>}
-           </div>
+              Play
+            </button>
+            {playError && <p className="text-(--t-error)">{playError}</p>}
+          </div>
           <button onClick={exitRoom} className="fixed bottom-20 p-3 button--secondary rounded-3xl">
             Exit room
           </button>
@@ -117,10 +104,10 @@ export default function GameRoom() {
       {matchRoom && (
         <div>
           <div className="pb-5">
-          <h2>
-            Room: {matchRoom.roomCode} | Mode:{' '}
-            <span className="text-(--dark)">{matchRoom.gameType}</span>
-          </h2>
+            <h2>
+              Room: {matchRoom.roomCode} | Mode:{' '}
+              <span className="text-(--dark)">{matchRoom.gameType}</span>
+            </h2>
           </div>
           {winnerMessage && (
             <div
@@ -132,8 +119,8 @@ export default function GameRoom() {
           {!winnerMessage && (
             <h3>
               Turn of:{' '}
-              <span style={{ color: isMyTurn ? "bg-(--dark)": 'bf-(--light)' }}>
-                {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id}{' '}
+              <span style={{ color: isMyTurn ? "bg-(--dark)" : 'bf-(--light)' }}>
+                {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.name}{' '}
                 {isMyTurn ? '(¡TU TURNO!)' : ''}
               </span>
             </h3>
@@ -142,7 +129,7 @@ export default function GameRoom() {
           <div className="bg-(--light) p-2.5 rounded-lg me-4">
             <h3>📊 Total result summary:</h3>
             <table
-            className="w-full justify-evenly"
+              className="w-full justify-evenly"
             // style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}
             >
               <thead>
@@ -155,12 +142,12 @@ export default function GameRoom() {
               </thead>
               <tbody>
                 {matchRoom.players.map((p) => {
-                  const totalScore = getPlayerScore(matchRoom.sum, p.id);
+                  const totalScore = getPlayerScore(matchRoom.sum, p.playerId);
                   return (
-                    <tr key={p.id} style={{ borderBottom: '1px solid #333' }}>
+                    <tr key={p.playerId} style={{ borderBottom: '1px solid #333' }}>
                       <td style={{ padding: '8px' }}>
-                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.id === p.id? '➡️' : ''}
-                        {p.id} {p.id === socket.id ? ' (You)' : ''}
+                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.playerId === p.playerId ? '➡️' : ''}
+                        {p.name} {p.socketId === socket.id ? ' (You)' : ''}
                       </td>
                       <td className="p-2 text-lg text-(--dark)">
                         <b>{totalScore} pts</b>
@@ -196,9 +183,9 @@ export default function GameRoom() {
                 className="button button--highlight rounded-sm"
                 // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
                 className="button button--highlight rounded-sm"
-                // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
+              // style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
-              {myMatchState === "UNLOCKED"? "✋ Stay (Lock)" : "Locked"}
+                {myMatchState === "UNLOCKED" ? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
 
@@ -209,7 +196,7 @@ export default function GameRoom() {
           </div>
 
           {matchRoom.gameType === 'ADD42' && lastRoll && (
-            
+
             <div className="bg-(--light) p-3 rounded-lg border-l-4 border-l-(--accent) me-4">
               <h4>Last move ({lastRoll.idPlayer}):</h4>
               <p className="text-(--t-content)">
