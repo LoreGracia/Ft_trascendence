@@ -145,6 +145,7 @@ export default function GameRoom() {
               selected={diceModel}
               playerState={myPlayerState}
               onSelect={setDiceModel}
+              toggleReadyStatus={toggleReadyStatus}
             />
           {/* <div className="fixed bottom-70 flex flex-col gap-2 items-center">
             <button
