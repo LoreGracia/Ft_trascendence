@@ -31,7 +31,7 @@ export const getNavigation = (hasActiveRoom: boolean) => ({
     {
       href: "/leaderboard",
       label: "Leaderboard",
-      icon: Podium,
+      icon: Leaderboard,
     },
     {
       href: "/lobby",
@@ -44,7 +44,7 @@ export const getNavigation = (hasActiveRoom: boolean) => ({
   footer: [
     {
       href: "/privacy-politics",
-      label: "Privacy & politics",
+      label: "Privacy policy",
       icon: Cookie,
     },
   ] as NavigationItem[],

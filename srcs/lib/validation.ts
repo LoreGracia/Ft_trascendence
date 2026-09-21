@@ -8,7 +8,7 @@ export const usernameSchema = z
 	.trim()
 	.min(3, "Username must be at least 3 characters")
 	.max(20, "Username cannot be longer than 20 characters")
-	.regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscores");
+	.regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscores allowed");
 
 export const loginSchema = z.object({
 	email: emailSchema,

@@ -31,7 +31,7 @@ export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
         className="button button-round button--highlight whitespace-nowrap"
       >
         <Plus />
-        {isCreating ? "Creando..." : "Crear sala"}
+        {isCreating ? "Creating..." : "Create room"}
       </button>
     </div>
   );

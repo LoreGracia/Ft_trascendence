@@ -47,7 +47,7 @@ export default function LandingClient({ onEnterRoom }: Props) {
         </div>
       <p className="text-(--t-content)">
         <small>
-          Tu Socket ID: <code>{mounted ? sid : ''}</code>
+          Your Socket ID: <code>{mounted ? sid : ''}</code>
         </small>
       </p>
     </div>

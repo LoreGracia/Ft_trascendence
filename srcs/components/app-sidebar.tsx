@@ -49,7 +49,7 @@ export function AppSidebar({ className, user }: AppSidebarProps) {
 					return (
 						<SidebarMenuItem key={item.href}>
 							<SidebarMenuButton
-								tooltip={isDisabled ? "Crea o únete a una sala antes" : item.label}
+								tooltip={isDisabled ? "You must join or create a room first!" : item.label}
 								render={isDisabled ? undefined : <Link href={item.href} />}
 								disabled={isDisabled}
 								aria-disabled={isDisabled}

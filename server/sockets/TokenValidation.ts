@@ -9,7 +9,7 @@ function getBaseUrl(): string {
 }
 
 function getAuthInternalUrl(): string {
-	const url = process.env.AUTH_INTERNAL_URL;
+	const url = "http://next-app:3000";
 	if (!url || url === "")
 		throw new Error("Missing Auth Internal Url");
 	return url;
@@ -17,7 +17,7 @@ function getAuthInternalUrl(): string {
 
 const baseUrl = getBaseUrl();
 const authInternalUrl = getAuthInternalUrl();
-const JWKS = createRemoteJWKSet(new URL('/api/auth/jwks', authInternalUrl));
+const JWKS = createRemoteJWKSet(new URL('/api/auth/jwks', baseUrl));
 
 
 export async function validateToken(token: string) {

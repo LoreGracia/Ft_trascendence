@@ -1,18 +1,18 @@
 import { DICE_PRESETS, DICE_LEGENDARY_PRESETS } from "@/components/3dDice/modelDice/modelDice";
 
 export const PRESET_OPTIONS = [
-    { value: "default", label: "Default", group: "Básicos" },
-    { value: "redDice", label: "Rojo", group: "Básicos" },
-    { value: "blueDice", label: "Azul", group: "Básicos" },
-    { value: "greenDice", label: "Verde", group: "Básicos" },
-    { value: "goldDice", label: "Dorado", group: "Básicos" },
-    { value: "blackDice", label: "Negro", group: "Básicos" },
-    { value: "legendary:standard", label: "Standard", group: "Legendarios" },
-    { value: "legendary:universe", label: "Universe", group: "Legendarios" },
-    { value: "legendary:pride", label: "Pride", group: "Legendarios" },
-    { value: "legendary:magician", label: "Magician", group: "Legendarios" },
-    { value: "legendary:warrior", label: "Warrior", group: "Legendarios" },
-    { value: "legendary:code", label: "Code", group: "Legendarios" },
+    { value: "default", label: "Default", group: "Basic" },
+    { value: "redDice", label: "Red", group: "Basic" },
+    { value: "blueDice", label: "Blue", group: "Basic" },
+    { value: "greenDice", label: "Green", group: "Basic" },
+    { value: "goldDice", label: "Golden", group: "Basic" },
+    { value: "blackDice", label: "Black", group: "Basic" },
+    { value: "legendary:standard", label: "Standard", group: "Legendary" },
+    { value: "legendary:universe", label: "Universe", group: "Legendary" },
+    { value: "legendary:pride", label: "Pride", group: "Legendary" },
+    { value: "legendary:magician", label: "Magician", group: "Legendary" },
+    { value: "legendary:warrior", label: "Warrior", group: "Legendary" },
+    { value: "legendary:code", label: "Code", group: "Legendary" },
 ] as const;
 
 export type DicePresetValue = (typeof PRESET_OPTIONS)[number]["value"];

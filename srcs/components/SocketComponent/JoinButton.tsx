@@ -30,7 +30,7 @@ export default function JoinButton() {
           disabled={!roomCodeInput ? true : false}
           className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
         >
-          {isJoining ? "Uniéndose..." : "Join room"}
+          {isJoining ? "Joining..." : "Join room"}
         </button>
       </div>
       {error && <p>{error}</p>}

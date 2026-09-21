@@ -27,25 +27,25 @@ export default function GameClient() {
       <h1>🎲 Dice Game Tester</h1>
       <p className="text-(--t-content)">
         <small>
-          Tu Socket ID: <code>{socket.id}</code>
+          Your Socket ID: <code>{socket.id}</code>
         </small>
       </p>
 
       {!waitingRoom && !matchRoom && (
         <div style={{ border: '1px solid #444', padding: '15px', borderRadius: '8px' }}>
-          <h2>Unirse o Crear Sala</h2>
+          <h2>Join or Create room</h2>
           <button onClick={createRoom} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-            Crear Sala
+            Create Room
           </button>
           <hr style={{ margin: '15px 0', borderColor: '#333' }} />
           <input
-            placeholder="Código de sala"
+            placeholder="Room code"
             value={roomCodeInput}
             onChange={(e) => setRoomCodeInput(e.target.value)}
             style={{ padding: '8px', marginRight: '10px' }}
           />
           <button onClick={joinRoom} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-            Unirse
+            Join
           </button>
         </div>
       )}
@@ -53,26 +53,26 @@ export default function GameClient() {
       {waitingRoom && !matchRoom && (
         <div style={{ border: '1px solid #00a8ff', padding: '15px', borderRadius: '8px' }}>
           <h2>
-            Sala de Espera: <span style={{ color: '#00a8ff' }}>{waitingRoom.roomCode}</span>
+            Waiting Room: <span style={{ color: '#00a8ff' }}>{waitingRoom.roomCode}</span>
           </h2>
-          <h3>Jugadores ({waitingRoom.players.length}):</h3>
+          <h3>Players ({waitingRoom.players.length}):</h3>
           <ul>
             {waitingRoom.players.map((p) => (
               <li key={p.playerId}>
-                {p.playerId} {p.socketId === socket.id ? ' (Tú)' : ''} ➡️ <b>{p.state}</b>
+                {p.playerId} {p.socketId === socket.id ? ' (You)' : ''} ➡️ <b>{p.state}</b>
               </li>
             ))}
           </ul>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
             <button onClick={toggleReadyStatus} style={{ backgroundColor: '#e1b12c', padding: '8px' }}>
-              Cambiar Estado (Listo / No listo)
+              Toggle state (Ready / Not Ready)
             </button>
             <button onClick={() => startGame('FREE_PLAY')} style={{ backgroundColor: '#44bd32', color: 'white', padding: '8px' }}>
-              Iniciar FREE_PLAY
+              Start Free Play
             </button>
             <button onClick={() => startGame('ADD42')} style={{ backgroundColor: '#8c7ae6', color: 'white', padding: '8px' }}>
-              Iniciar ADD42
+              Start ADD42
             </button>
             <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white', padding: '8px' }}>
               Salir
@@ -84,7 +84,7 @@ export default function GameClient() {
       {matchRoom && (
         <div style={{ border: '1px solid #44bd32', padding: '15px', borderRadius: '8px' }}>
           <h2>
-            Partida: {matchRoom.roomCode} | Modo:{' '}
+            Game: {matchRoom.roomCode} | Mode:{' '}
             <span style={{ color: '#fbc531' }}>{matchRoom.gameType}</span>
           </h2>
 
@@ -107,18 +107,18 @@ export default function GameClient() {
             Turno de:{' '}
             <span style={{ color: isMyTurn ? '#44bd32' : '#e74c3c' }}>
               {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.playerId}{' '}
-              {isMyTurn ? '(¡TU TURNO!)' : ''}
+              {isMyTurn ? '(YOUR TURN!)' : ''}
             </span>
           </h3>
 
           <div style={{ backgroundColor: '#1e1e1e', padding: '10px', borderRadius: '6px', margin: '15px 0' }}>
-            <h3>📊 SUMA TOTAL DE RESULTADOS:</h3>
+            <h3>📊 Results:</h3>
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #444' }}>
-                  <th style={{ padding: '8px' }}>Jugador</th>
-                  <th style={{ padding: '8px' }}>Suma Total Acumulada</th>
-                  <th style={{ padding: '8px' }}>Estado</th>
+                  <th style={{ padding: '8px' }}>Player</th>
+                  <th style={{ padding: '8px' }}>Sum</th>
+                  <th style={{ padding: '8px' }}>State</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,7 +152,7 @@ export default function GameClient() {
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              🎲 Tirar Dados
+              🎲 Roll Dice
             </button>
 
             {matchRoom.gameType === 'ADD42' && (
@@ -161,20 +161,20 @@ export default function GameClient() {
                 disabled={!isMyTurn || !!winnerMessage}
                 style={{ padding: '12px 24px', fontSize: '16px', backgroundColor: '#e67e22', color: 'white' }}
               >
-                ✋ Plantarse (Lock)
+                ✋ Stand (Lock)
               </button>
             )}
 
             <button onClick={exitRoom} style={{ backgroundColor: '#c23616', color: 'white' }}>
-              Salir de la partida
+              Quit
             </button>
           </div>
 
           {lastRoll && (
             <div style={{ background: '#222', padding: '12px', borderRadius: '5px', borderLeft: '4px solid #00a8ff' }}>
-              <h4>Último movimiento ({lastRoll.idPlayer}):</h4>
+              <h4>Last roll ({lastRoll.idPlayer}):</h4>
               <p className="text-(--t-content)">
-                Dados sacados:{' '}
+                Last roll result:{' '}
                 {lastRoll.nums.map((d, idx) => (
                   <span
                     key={`${lastRoll.idPlayer}-${idx}`}
@@ -185,7 +185,7 @@ export default function GameClient() {
                 ))}
               </p>
               <p className="text-(--t-content)">
-                Suma de este turno: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
+                Turn total: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
           )}

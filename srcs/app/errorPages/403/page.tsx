@@ -4,7 +4,7 @@ import ErrorLayout from "@/components/Error/ErrorLayout";
 import ErrorText from "@/components/Error/ErrorText";
 import DiceErrorTriple from "@/components/Error/DiceErrorTriple";
 
-export default function Error404() {
+export default function Error403() {
     return (
         <ErrorLayout
             children={
@@ -12,7 +12,7 @@ export default function Error404() {
             }
             textContent={
                 <ErrorText
-                    topMessage="Sorry but you don't have acces!"
+                    topMessage="Sorry but you can't access this page!"
                     errorCode="403"
                     bottomMessage="Forbidden"
                 />

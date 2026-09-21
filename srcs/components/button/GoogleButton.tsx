@@ -11,7 +11,7 @@ export function GoogleButton() {
     setLoading(true);
     try {
       await authClient.signIn.social({
-        provider: "google",
+        provider: "github",
         callbackURL: "/complete-profile",
       });
     } catch (err) {

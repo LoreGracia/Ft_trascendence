@@ -12,7 +12,7 @@ export default function ExitButton({ currentRoomCode }: { currentRoomCode?: stri
         disabled={isExiting || !currentRoomCode}
         className="button button-round button--secondary absolute bottom-4"
       >
-        {isExiting ? "Saliendo..." : "Salir de la sala"}
+        {isExiting ? "Leaving..." : "Leave room"}
       </button>
       {error && <p>{error}</p>}
     </div>

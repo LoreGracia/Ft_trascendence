@@ -50,7 +50,7 @@ export default function GameRoom() {
     <div className="w-full h-full p-20">
       <p className="text-(--t-content)">
         <small>
-          Tu Socket ID: <code>{socket.id}</code>
+          Your Socket ID: <code>{socket.id}</code>
         </small>
       </p>
 
@@ -121,7 +121,7 @@ export default function GameRoom() {
               Turn of:{' '}
               <span style={{ color: isMyTurn ? "bg-(--dark)" : 'bf-(--light)' }}>
                 {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.name}{' '}
-                {isMyTurn ? '(¡TU TURNO!)' : ''}
+                {isMyTurn ? '(YOUR TURN!)' : ''}
               </span>
             </h3>
           )}
@@ -173,7 +173,7 @@ export default function GameRoom() {
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              🎲 Throw dice
+              🎲 Roll dice
             </button>
 
             {matchRoom.gameType === 'ADD42' && (
