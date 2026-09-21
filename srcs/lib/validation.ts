@@ -21,5 +21,12 @@ export const signupSchema = z.object({
 	password: passwordSchema,
 });
 
+export const updateProfileSchema = z.object({
+	name: usernameSchema.optional(),
+	email: emailSchema.optional(),
+	image: z.string().trim().url("Invalid image URL").optional(),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
