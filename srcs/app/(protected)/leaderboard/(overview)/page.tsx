@@ -1,20 +1,4 @@
 import {
-<<<<<<< HEAD
-	Trophy,
-	Users,
-	Zap,
-	TrendingUp,
-	Medal,
-	Flame,
-	RefreshCw,
-	Swords,
-	Dice5,
-	Crown,
-	Sparkles,
-} from 'lucide-react'
-import { getLeaderboardStats, getAllUsersDebug, type LeaderboardUserStats } from '@/lib/user'
-import { AllUsersDebug } from '@/components/AllUsersDebug'
-=======
 	Table,
 	TableBody,
 	TableCaption,
@@ -23,7 +7,6 @@ import { AllUsersDebug } from '@/components/AllUsersDebug'
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
->>>>>>> origin/JoanderBoard
 
 import { fetchLeaderboardStats, type LeaderboardUserStats } from '@/app/actions/user'
 
