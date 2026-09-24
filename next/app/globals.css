@@ -50,10 +50,8 @@ body {
 
 h1 {
   max-width: 20rem;
-  font-size: 2.5rem;
-  /* 30px */
-  line-height: 2.25rem;
-  /* 36px */
+  font-size: 2.5rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
   font-weight: 600;
   letter-spacing: -0.025em;
   color: var(--black);
@@ -61,8 +59,7 @@ h1 {
 
 p {
   /* color:color-mix(in srgb, var(--black) 80%, var(--white)); */
-  font-size: 0.9rem;
-  /* 30px */
+  font-size: 0.9rem; /* 30px */
 }
 
 .container {
@@ -110,8 +107,7 @@ p {
   gap: 1.5rem;
   height: 3rem;
   justify-content: center;
-  border-radius: 20px;
-  /* rounded */
+  border-radius: 20px;/* rounded */
   padding-inline: 1.25rem;
   min-width: 300px;
   height: fit-content;
@@ -122,10 +118,8 @@ p {
 }
 
 .box--primary {
-  background: var(--white);
-  /* bg-foreground */
-  color: var(--black);
-  /* text-(--light) */
+  background: var(--white);/* bg-foreground */
+  color: var(--black);/* text-(--light) */
   border-color: var(--light);
   border-width: 1px;
 }
@@ -147,7 +141,6 @@ p {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1rem;
-  /* separates the last input from the action block */
 }
 
 .auth-divider {
