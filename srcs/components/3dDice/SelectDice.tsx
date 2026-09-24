@@ -41,7 +41,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
         sceneRef.current = scene;
 
         // createOrbitCamera(scene, canvas);
-        const camera = createOrbitCamera(scene, canvas, undefined, { radius: 1, beta: Math.PI / 2.3 });
+        const camera = createOrbitCamera(scene, canvas, undefined, { radius: 0.5, beta: Math.PI / 2.3 });
 
         const light = new HemisphericLight("mainLight", new Vector3(0, 1, 0), scene);
         light.intensity = 0.9;
@@ -81,21 +81,37 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
         selected === value;
         onSelect?.(value);
     };
+    const carouselRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const carousel = carouselRef.current;
+        if (!carousel) return;
+
+        const onWheel = (event: WheelEvent) => {
+        if (Math.abs(event.deltaY) > 0) {
+            event.preventDefault();
+            carousel.scrollLeft += event.deltaY;
+        }
+        };
+
+        carousel.addEventListener("wheel", onWheel, { passive: false });
+        return () => carousel.removeEventListener("wheel", onWheel);
+    }, []);
 
     return (
         <div className="flex max-w-full aspect-square flex-col items-center">
-            <div className="flex">
-                <canvas ref={canvasRef} className="w-full h-auto aspect-square overflow-hidden" aria-label="3D dice scene" />
+            <div className="flex relative w-full h-full min-h-50 max-h-60 max-w-90 md:min-h-70">
+                <canvas ref={canvasRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] outline-none" aria-label="3D dice scene" />
             </div>
             <button
                 onClick={toggleReadyStatus}
-                className="p-2 mb-10 rounded-lg button--secondary">
+                className={playerState === 'UNLOCKED' ? "p-2 mb-3 md:mb-10 rounded-lg button--highlight" : "p-2 mb-10 rounded-lg button--secondary"}>
                 {playerState === 'LOCKED' ? "Not ready" : "Ready"}
             </button>
             {playerState === "UNLOCKED" &&
             <div className="flex flex-col w-full">
                 <h2 className="text-(--dark) size-5 pb-4 m-0 text-center w-full">Select your dice</h2>
-                <div className={styles.diceScene__carousel}>
+                <div ref={carouselRef} className={styles.diceScene__carousel}>
                     {PRESET_OPTIONS.map((option) => (
                         <DiceCarouselItem
                             key={option.value}

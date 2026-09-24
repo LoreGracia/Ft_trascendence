@@ -87,9 +87,9 @@ export default function GameRoom() {
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center">
             <div className="w-full h-full flex flex-col">
-              <div className="flex flex-row  w-full md:mb-5 md:flex-row md:gap-5">
-                <h2>
-                  🎲 {waitingRoom.gameType} :
+              <div className="flex flex-row w-full md:mb-5 md:flex-row gap-5">
+                <h2 className="text-(--t-content)">
+                  {waitingRoom.gameType} 🎲 
                 </h2>
                 <div className="flex flex-row">
                   <h1
@@ -121,10 +121,11 @@ export default function GameRoom() {
                 <ul>
                   {waitingRoom.players.map((p) => (
                     <li className="flex flex-col items-center justify-evenly mt-5" key={p.playerId}>
-                      <Avatar image={null} name={p.name} size="sm" />
+                      <div className='[&_svg]:size-5 md:[&_svg]:size-10'>
+                        <Avatar image={null} name={p.name} size="md"/>
+                      </div>
                       <h2 className="text-2xl">{p.name}</h2>
-                      {/* <b>{p.state}</b> */}
-                      {p.state === 'LOCKED'? "Wait" : "Ready" }
+                      {p.state === 'UNLOCKED'? "🤔" : "Ready" }
                     </li>
                   ))}
                 </ul>

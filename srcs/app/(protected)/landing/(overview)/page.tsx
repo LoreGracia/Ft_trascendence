@@ -17,8 +17,7 @@ export default function GameSelection() {
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
   return (
-    <div  className="container container-top container-two">
-        <LandingClient/>
+    <div  className="flex flex-col justify-evenly items-center md:flex-row-reverse h-full">
         <ThrowDice
           onClick={handleRoomRoll}
           presetValue='default'
@@ -27,6 +26,7 @@ export default function GameSelection() {
           setIsRolling={setIsRolling}
           isRolling={isRolling}
         />
+        <LandingClient/>
     </div>
   );
 }

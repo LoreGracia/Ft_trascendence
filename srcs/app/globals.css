@@ -71,7 +71,6 @@ p {
   justify-items: center;
   justify-content: center;
   align-items: center;
-  /* gap: 2rem; */
 
   width: min(1200px, 95vw);
   margin: 0 auto;
@@ -126,7 +125,7 @@ p {
   .container-two{
     /* grid-template-columns: 1fr 1fr; */
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     justify-content: space-evenly;
     width: min(1200px, 90vw);
   }

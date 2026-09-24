@@ -25,7 +25,7 @@ export default function MenuButton({ trigger, children }: MenuButtonProps) {
   const [resolvedTrigger] = Children.map(trigger, (child) => child) as ReactElement<TriggerProps>[];
 
   return (
-    <div className="absolut flex flex-col items-end corner-right">
+    <div className="absolut flex flex-col items-end corner-right z-50">
       {cloneElement(resolvedTrigger, {
         ...resolvedTrigger.props,
         onClick: () => setOpen((prev) => !prev),

@@ -57,7 +57,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             "diceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            10,
+            7,
             Vector3.Zero(),
             scene
         );
@@ -160,8 +160,16 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     };
 
     return (
-        <div className={styles.diceScene}>
-            <canvas onClick={onClick} ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
+        <div className="relative overflow-visible w-full max-w-80 h-full max-h-80">
+            <canvas 
+                onClick={onClick} 
+                ref={canvasRef} 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] block outline-none select-none" 
+                aria-label="3D dice scene" 
+            />
         </div>
+        // <div className={styles.diceScene}>
+        //     <canvas onClick={onClick} ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
+        // </div>
     );
 }

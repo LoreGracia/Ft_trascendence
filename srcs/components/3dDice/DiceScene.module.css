@@ -115,6 +115,7 @@
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--accent) rgba(255, 255, 255, 0);
 }
 
 .diceCarouselItem {
