@@ -60,12 +60,14 @@ io.use(async (socket: Socket, next) => {
 		const userId = payload.sub;
 		const userName =
 			typeof payload.name === "string" ? payload.name : "Jugador";
+		const userImage = payload.image;
 
 		if (typeof userId !== "string" || userId.length === 0) {
 			return next(new Error("Authentication error: Invalid subject in token payload"));
 		}
 		socket.data.userId = userId;
 		socket.data.userName = userName;
+		socket.data.userImage = userImage;
 		next();
 	} catch (err) {
 		return next(new Error("Authentication error: Invalid or expired token"));
@@ -82,6 +84,7 @@ io.on("connection", (socket: Socket) => {
 		const player = match.players.find(p => p.playerId === socket.data.userId);
 		if (player) {
 			player.socketId = socket.id;
+			player.userImage = socket.data.userImage;
 			socket.join(roomCode);
 			io.to(roomCode).emit("player_status_changed", match);
 			break;
@@ -91,6 +94,7 @@ io.on("connection", (socket: Socket) => {
 		const player = room.players.find(p => p.playerId === socket.data.userId);
 		if (player) {
 			player.socketId = socket.id;
+			player.userImage = socket.data.userImage;
 			socket.join(roomCode);
 			io.to(roomCode).emit("player_joined", room);
 			break;

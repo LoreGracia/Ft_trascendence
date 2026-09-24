@@ -10,6 +10,7 @@ export interface Players {
 	socketId: string;
 	name: string;
 	state: PLAYER_STATE | PLAYER_ENDGAME;
+	userImage: string;
 	diceModel: string;
 }
 
