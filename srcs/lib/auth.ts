@@ -14,16 +14,21 @@ export const auth = betterAuth({
 		enabled: true, 
 	},
 
-  baseURL: process.env.NEXT_PUBLIC_URL,
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    },
-  },
+	baseURL: process.env.NEXT_PUBLIC_URL,
+	socialProviders: {
+		github: {
+			clientId: process.env.GITHUB_CLIENT_ID as string,
+			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			mapProfileToUser: (profile) => {
+				return {
+					email: profile.email ?? `${profile.id}@github.invalid`,
+				};
+			},
+		},
+	},
 
 	plugins: [
-			jwt(),
+		jwt(),
 	],
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {

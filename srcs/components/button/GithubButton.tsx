@@ -2,20 +2,20 @@
 
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
-import { GoogleIcon } from "./GoogleIcon";
+import { GithubIcon } from "./GithubIcon";
 
-export function GoogleButton() {
+export function GithubButton() {
   const [loading, setLoading] = useState(false);
 
-  async function handleGoogle() {
+  async function handleGithub() {
     setLoading(true);
     try {
       await authClient.signIn.social({
-        provider: "google",
+        provider: "github",
         callbackURL: "/complete-profile",
       });
     } catch (err) {
-      console.error("Google sign-in failed:", err);
+      console.error("Github sign-in failed:", err);
       setLoading(false);
     }
   }
@@ -23,12 +23,12 @@ export function GoogleButton() {
   return (
     <button
       type="button"
-      onClick={handleGoogle}
+      onClick={handleGithub}
       disabled={loading}
       className="button button-squere button--secondary hover:bg-(--light) disable:hover-none disabled:bg-(--light)"
     >
-      <GoogleIcon size={18} />
-      <span>{loading ? "Redirecting…" : "Continue with Google"}</span>
+      <GithubIcon size={18} />
+      <span>{loading ? "Redirecting…" : "Continue with Github"}</span>
     </button>
   );
 }
