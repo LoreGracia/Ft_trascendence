@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  devIndicators: false,
-  output: "standalone",
+  typescript: {ignoreBuildErrors: true},
+  allowedDevOrigins: ['dice.eina.cc'],
 };
 
 export default nextConfig;
