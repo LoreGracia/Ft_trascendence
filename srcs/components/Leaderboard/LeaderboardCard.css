@@ -1,0 +1,73 @@
+.lb-card {
+  width: min(680px, 100%);
+  background: var(--light);
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.lb-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--black) 10%, transparent);
+}
+
+.lb-card__tab-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.lb-card__separator {
+  color: var(--t-muted);
+  font-weight: 700;
+}
+
+.lb-card__tab {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--t-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.lb-card__tab:hover {
+  color: var(--black);
+}
+
+.lb-card__tab.is-active {
+  color: var(--black);
+}
+
+.lb-card__tab.is-active::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: var(--dark);
+  margin-top: 2px;
+  border-radius: 2px;
+}
+
+.lb-card__panel {
+  /* background: var(--white); */
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  color: var(--black);
+}
+
+.lb-card__empty {
+  text-align: center;
+  color: var(--t-muted);
+  padding: 2rem 0;
+  margin: 0;
+}

@@ -76,98 +76,68 @@ export async function updateUserProfile(input: {
 	}
 }
 
-export async function getLeaderboardStats() {
-	const users = await prisma.user.findMany({ include: { stats: true }, })
-	try {
-		const freePlayPlayers = users
-			.map((user) => {
-				const stat = user.stats?.find((s) => s.gameType === 'FREE_PLAY')
-
-				if (!stat || stat.gamesPlayed === 0) return null
-
-				return {
-					id: user.id,
-					name: user.name || 'Unknown',
-					avatarSeed: user.name || 'default',
-					avatarUrl: user.image || undefined,
-					wins: stat.wins || 0,
-					ties: stat.ties || 0,
-					losses: stat.losses || 0,
-					totalGames: stat.gamesPlayed,
-					winRate: stat.gamesPlayed > 0 ? (stat.wins / stat.gamesPlayed) * 100 : 0,
-				}
-			})
-			.filter((p): p is LeaderboardUserStats => p !== null)
-
-		const add42Players = users
-			.map((user) => {
-				const stat = user.stats?.find((s) => s.gameType === 'ADD42')
-
-				if (!stat || stat.gamesPlayed === 0) return null
-
-				return {
-					id: user.id,
-					name: user.name || 'Unknown',
-					avatarSeed: user.name || 'default',
-					avatarUrl: user.image || undefined,
-					wins: stat.wins || 0,
-					ties: stat.ties || 0,
-					losses: stat.losses || 0,
-					totalGames: stat.gamesPlayed,
-					winRate: stat.gamesPlayed > 0 ? (stat.wins / stat.gamesPlayed) * 100 : 0,
-				}
-			})
-			.filter((p): p is LeaderboardUserStats => p !== null)
-		return {
-			freePlay: freePlayPlayers,
-			add42: add42Players,
-		}
-	} catch (error) {
-		return {
-			freePlay: [],
-			add42: [],
-		}
-	}
-}
-
-// Tipos para leaderboard
 export interface LeaderboardUserStats {
+	name: string;
+	wins: number;
+	ties: number;
+	losses: number;
+	avg: number;
+	image: string;
 	id: string
-	name: string
-	avatarSeed: string
-	avatarUrl?: string
-	wins: number
-	ties: number
-	losses: number
-	totalGames: number
-	winRate: number
 }
 
-
-/**
- * TEMPORAL: DEBUG  PARA LEADERBARD- Obtener TODOS los usuarios registrados (sin filtrar por stats)
- * ELIMINAR UNA VEZ LA CONEXIÓN BACKEND→DB FUNCIONE
- */
-export async function getAllUsersDebug() {
+export async function fetchLeaderboardStats(): Promise<{
+	FreePlay: LeaderboardUserStats[];
+	Add42: LeaderboardUserStats[];
+}> {
 	try {
 		const users = await prisma.user.findMany({
+			where: { stats: { some: { gamesPlayed: { gt: 0 } } } },
 			include: {
 				stats: true,
 			},
-		})
+		});
+		const freePlayPlayers = users.map((user) => {
+			
+			const stat = user.stats?.find((s) => s.gameType === 'FREE_PLAY')
 
-		return {
-			total: users.length,
-			users: users.map((user) => ({
+			if (!stat || stat.gamesPlayed === 0) return null;
+
+			return {
+				name: user.name || 'Unknown',
+				image: user.image || null,
+				wins: stat.wins || 0,
+				ties: stat.ties || 0,
+				losses: stat.losses || 0,
+				avg: (stat.wins * 3 + stat.ties),
 				id: user.id,
-				name: user.name,
-				email: user.email,
-				statsCount: user.stats.length,
-				stats: user.stats,
-			})),
+			}
+		}).filter((p): p is LeaderboardUserStats => p !== null).sort((a, b) => b.avg - a.avg).slice(0, 6)
+
+
+		const add42Players = users.map((user) => {
+			const stat = user.stats?.find((s) => s.gameType === 'ADD42')
+
+			if (!stat || stat.gamesPlayed === 0) return null
+
+			return {
+				name: user.name || 'Unknown',
+				image: user.image || null,
+				wins: stat.wins || 0,
+				ties: stat.ties || 0,
+				losses: stat.losses || 0,
+				avg: (stat.wins * 3 + stat.ties),
+				id: user.id,
+			}
+		}).filter((p): p is LeaderboardUserStats => p !== null).sort((a, b) => b.avg - a.avg).slice(0, 6)
+		return {
+			FreePlay: freePlayPlayers,
+			Add42: add42Players,
 		}
 	} catch (error) {
-		console.error('Error fetching all users:', error)
-		return { total: 0, users: [] }
+		return {
+			FreePlay: [],
+			Add42: [],
+		}
 	}
 }
