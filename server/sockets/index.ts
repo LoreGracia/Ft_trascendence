@@ -27,6 +27,7 @@ import {
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
+import { setEmptyGameDb, updateGameDb } from "../lib/user"
 
 export const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
@@ -59,12 +60,14 @@ io.use(async (socket: Socket, next) => {
 		const userId = payload.sub;
 		const userName =
 			typeof payload.name === "string" ? payload.name : "Jugador";
+		const userImage = payload.image;
 
 		if (typeof userId !== "string" || userId.length === 0) {
 			return next(new Error("Authentication error: Invalid subject in token payload"));
 		}
 		socket.data.userId = userId;
 		socket.data.userName = userName;
+		socket.data.userImage = userImage;
 		next();
 	} catch (err) {
 		return next(new Error("Authentication error: Invalid or expired token"));
@@ -81,6 +84,7 @@ io.on("connection", (socket: Socket) => {
 		const player = match.players.find(p => p.playerId === socket.data.userId);
 		if (player) {
 			player.socketId = socket.id;
+			player.userImage = socket.data.userImage;
 			socket.join(roomCode);
 			io.to(roomCode).emit("player_status_changed", match);
 			break;
@@ -90,6 +94,7 @@ io.on("connection", (socket: Socket) => {
 		const player = room.players.find(p => p.playerId === socket.data.userId);
 		if (player) {
 			player.socketId = socket.id;
+			player.userImage = socket.data.userImage;
 			socket.join(roomCode);
 			io.to(roomCode).emit("player_joined", room);
 			break;
@@ -144,7 +149,7 @@ io.on("connection", (socket: Socket) => {
 			console.log("Room no longer exists.")
 	});
 
-	socket.on("start_game", (roomCode: string) => {
+	socket.on("start_game", async (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
@@ -152,6 +157,7 @@ io.on("connection", (socket: Socket) => {
 				const factory = getGameFactory(room.gameType);
 				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);
+				newMatch.matchDbId = await setEmptyGameDb(newMatch);
 				io.to(roomCode).emit("game_started", newMatch)
 				waitingRooms.delete(roomCode);
 				resetTurnTimeout(io, newMatch.roomCode);
@@ -170,6 +176,7 @@ io.on("connection", (socket: Socket) => {
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
 				io.to(roomCode).emit("match_won", { match });
+				updateGameDb(match);
 				return;
 			}
 			advanceToUnlocked(match);
@@ -196,6 +203,7 @@ io.on("connection", (socket: Socket) => {
 			clearTurnTimeout(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match, roll });
 			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+			updateGameDb(match);
 			return;
 		}
 		advanceToUnlocked(match);

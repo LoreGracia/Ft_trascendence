@@ -25,18 +25,18 @@ services:
   next-app:
     build:
       context: .
-      dockerfile: srcs/Dockerfile
+      dockerfile: next/Dockerfile
     container_name: transcendence-app
     restart: no
     command: sh -c "for i in 1 2 3 4 5; do npx prisma migrate deploy && break; echo 'retry migrate...'; sleep 3; done; npm run dev"
     stop_grace_period: 5s
     volumes:
       # surgical bind mounts for hot-reload
-      - ./srcs/app:/app/app
-      - ./srcs/components:/app/components
-      - ./srcs/lib:/app/lib
-      - ./srcs/hooks:/app/hooks
-      - ./srcs/public:/app/public
+      - ./next/app:/app/app
+      - ./next/components:/app/components
+      - ./next/lib:/app/lib
+      - ./next/hooks:/app/hooks
+      - ./next/public:/app/public
       # prisma schema + migrations for migrate deploy at runtime
       - ./prisma:/app/prisma:ro
       # named volumes for generated/build content (fast + persistent)

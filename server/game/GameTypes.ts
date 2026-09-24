@@ -10,6 +10,7 @@ export interface Players {
 	socketId: string;
 	name: string;
 	state: PLAYER_STATE | PLAYER_ENDGAME;
+	userImage: string;
 	diceModel: string;
 }
 
@@ -39,6 +40,7 @@ export interface WaitingRoom extends BaseRoom {
 }
 
 export interface MatchRoom extends WaitingRoom {
+	matchDbId?: string;
 	rules: GameRules;
 	dices: Dices[];
 	rolls: RollResult[];
