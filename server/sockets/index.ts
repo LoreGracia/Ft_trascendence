@@ -27,6 +27,7 @@ import {
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
+import { setEmptyGameDb, updateGameDb } from "../lib/user"
 
 export const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
@@ -144,7 +145,7 @@ io.on("connection", (socket: Socket) => {
 			console.log("Room no longer exists.")
 	});
 
-	socket.on("start_game", (roomCode: string) => {
+	socket.on("start_game", async (roomCode: string) => {
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (validateLockedPlayers(room)) {
@@ -152,6 +153,7 @@ io.on("connection", (socket: Socket) => {
 				const factory = getGameFactory(room.gameType);
 				const newMatch = factory.createMatch(room);
 				matchRooms.set(newMatch.roomCode, newMatch);
+				newMatch.matchDbId = await setEmptyGameDb(newMatch);
 				io.to(roomCode).emit("game_started", newMatch)
 				waitingRooms.delete(roomCode);
 				resetTurnTimeout(io, newMatch.roomCode);
@@ -170,6 +172,7 @@ io.on("connection", (socket: Socket) => {
 			if (match.rules.isGameWon(match)) {
 				clearTurnTimeout(roomCode);
 				io.to(roomCode).emit("match_won", { match });
+				updateGameDb(match);
 				return;
 			}
 			advanceToUnlocked(match);
@@ -196,6 +199,7 @@ io.on("connection", (socket: Socket) => {
 			clearTurnTimeout(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match, roll });
 			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+			updateGameDb(match);
 			return;
 		}
 		advanceToUnlocked(match);

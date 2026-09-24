@@ -1,8 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { socket } from "@/lib/socket";
 import { authClient } from "@/lib/auth-client";
+
+const PUBLIC_PATHS = ["/signup", "/login"];
 
 interface SocketContextType {
 	isConnected: boolean;
@@ -15,9 +18,20 @@ export const useSocket = () => useContext(SocketContext);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
 	const [isConnected, setIsConnected] = useState<boolean>(false);
 	const { data: session } = authClient.useSession();
+	const pathname = usePathname();
 
 	useEffect(() => {
 		let isCancelled = false;
+
+		const isPublicPath = PUBLIC_PATHS.some((path) => pathname?.startsWith(path));
+
+		if (!session || isPublicPath) {
+			if (socket.connected) {
+				socket.disconnect();
+			}
+			setIsConnected(false);
+			return;
+		}
 
 		const onConnect = () => {
 			setIsConnected(true);
@@ -77,7 +91,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 			socket.off("disconnect", onDisconnect);
 			socket.off("connect_error", onConnectError);
 		};
-	}, [session]);
+	}, [session, pathname]);
 
 	return (
 		<SocketContext.Provider value={{ isConnected }}>

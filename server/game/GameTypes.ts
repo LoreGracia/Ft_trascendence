@@ -39,6 +39,7 @@ export interface WaitingRoom extends BaseRoom {
 }
 
 export interface MatchRoom extends WaitingRoom {
+	matchDbId?: string;
 	rules: GameRules;
 	dices: Dices[];
 	rolls: RollResult[];
