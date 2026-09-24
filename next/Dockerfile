@@ -11,7 +11,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # ---------- deps ----------
 FROM base AS deps
-COPY srcs/package.json srcs/package-lock.json ./
+COPY next/package.json next/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.npm \
 FROM base AS prisma
 COPY --from=deps /app/node_modules ./node_modules
 COPY prisma/schema.prisma ./prisma/schema.prisma
-COPY srcs/prisma.config.ts ./prisma.config.ts
+COPY next/prisma.config.ts ./prisma.config.ts
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
 RUN npx prisma generate --generator client_app
 
@@ -27,5 +27,5 @@ RUN npx prisma generate --generator client_app
 FROM base AS dev
 COPY --from=deps   /app/node_modules ./node_modules
 COPY --from=prisma /app/generated    ./generated
-COPY srcs/ .
+COPY next/ .
 CMD ["npm", "run", "dev"]

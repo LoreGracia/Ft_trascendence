@@ -16,8 +16,6 @@ export async function setEmptyGameDb(match: MatchRoom) {
                     create: match.players.map((p) => ({
                         userId: p.playerId,
                     })),
-                    // gameId: match.roomCode,
-                    // rolls: [],
                 },
             },
             include: {
