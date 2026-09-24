@@ -8,6 +8,8 @@ import { ArrowRight, Lock, LockOpen, ClipboardCopy } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
 import { useSocket } from "@/components/SocketProvider";
+import ThrowDice from "@/components/3dDice/ThrowDice";
+import { Avatar } from './Avatar/Avatar';
 
 export default function GameRoom() {
   const [isRolling, setIsRolling] = useState(false);
@@ -75,55 +77,58 @@ export default function GameRoom() {
     }
   };
   return (
-    <div className="flex flex-col w-screen h-screen p-20 me-20">
+    <div className="flex flex-col h-full p-20">
       <p className="text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
-          {/* Tu Socket ID: {socket.id} */}
         </small>
       </p>
 
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center">
             <div className="w-full h-full flex flex-col">
-              <div className="flex flex-col gap-5 w-full pb-5 md:flex-row">
+              <div className="flex flex-row  w-full md:mb-5 md:flex-row md:gap-5">
                 <h2>
                   🎲 {waitingRoom.gameType} :
                 </h2>
                 <div className="flex flex-row">
-                  <h1 className="text-(--dark)"> {waitingRoom.roomCode}</h1>
-                    <button
-                      type="button"
-                      onClick={handleCopyRoomCode}
-                      className="self-start
-                      inline-flex items-center justify-center
-                      size-7 rounded-[min(var(--radius-md),12px)]
-                      active:not-aria-[haspopup]:translate-y-px
-                      [&_svg:not([class*='size-'])]:size-4
-                      focus-visible:ring-2  disabled:text-(--light)"
-                      disabled={copied}
-                    >
-                      <ClipboardCopy size={10}/>
-                    </button>
-                  </div>
-                <p className="text-(--t-content)">
-                  {waitingRoom.players.length} / 2
-                  <small> (max 6)</small>
-                  <ArrowRight />
-                </p>
+                  <h1
+                    className="text-(--dark)"
+                    onClick={handleCopyRoomCode}
+                    > {waitingRoom.roomCode}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={handleCopyRoomCode}
+                    className="self-start
+                    inline-flex items-center justify-center
+                    size-7 rounded-[min(var(--radius-md),12px)]
+                    active:not-aria-[haspopup]:translate-y-px
+                    [&_svg:not([class*='size-'])]:size-4
+                    focus-visible:ring-2  disabled:text-(--light)"
+                    disabled={copied}
+                  >
+                    <ClipboardCopy size={10}/>
+                  </button>
+                  <p className="hidden md:visible ms-10 text-(--t-content)">
+                    {waitingRoom.players.length} / 2
+                    <small> (max 6)</small>
+                    <ArrowRight />
+                  </p>
+                </div>
               </div>
               <div className="flex flex-col md:flex-row justify-evenly">
                 <ul>
                   {waitingRoom.players.map((p) => (
-                    <li className="flex flex-row" key={p.playerId}>
-                      {p.name} ➡️ <b>{p.state}</b>
-                      {p.socketId === socket.id ? <button onClick={toggleReadyStatus} className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-                        {myPlayerState === 'LOCKED' ? <Lock size={12} /> : <LockOpen size={12} />} </button> : 
-                      p.state === 'LOCKED'? <Lock size={12} /> : <LockOpen size={12} />}
+                    <li className="flex flex-col items-center justify-evenly mt-5" key={p.playerId}>
+                      <Avatar image={null} name={p.name} size="sm" />
+                      <h2 className="text-2xl">{p.name}</h2>
+                      {/* <b>{p.state}</b> */}
+                      {p.state === 'LOCKED'? "Wait" : "Ready" }
                     </li>
                   ))}
                 </ul>
-                <div className="flex flex-col gap-2 items-center justify-evenly">
+                <div className="flex flex-col gap-2 items-center justify-evenly pt-5 md:pt-0">
                   <div className="flex flex-row gap-2 items-center">
                     <button
                       onClick={() => startGame(waitingRoom.gameType)}
@@ -182,7 +187,7 @@ export default function GameRoom() {
           {!winnerMessage && (
             <h3>
               Turn of:{' '}
-              <span style={{ color: isMyTurn ? "bg-(--dark)" : 'bf-(--light)' }}>
+              <span style={{ color: isMyTurn ? "bg-(--dark)" : 'bf-(--light)' }} className="m-auto">
                 {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.name}{' '}
                 {isMyTurn ? '(¡TU TURNO!)' : ''}
               </span>
@@ -248,7 +253,6 @@ export default function GameRoom() {
                 {myMatchState === "UNLOCKED" ? "✋ Stay (Lock)" : "Locked"}
               </button>
             )}
-
             <button onClick={exitMatch}
               className="button rounded-sm button--secondary">
               Exit match

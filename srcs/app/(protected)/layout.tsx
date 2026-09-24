@@ -31,7 +31,7 @@ export default async function ProtectedLayout({
 		<AppSidebar className="list-none hidden md:flex" user={user} />
 		<MobileBottomBar />
 		{/* <SidebarTrigger className="hidden md:flex" /> */}
-		<nav className="md:hidden [&_svg]:size-8 corner-left">
+		{/* <nav className="md:hidden [&_svg]:size-8 corner-left">
 			{navigation.header.map((item) => {
 			const Icon = item.icon;
 			return (
@@ -40,8 +40,11 @@ export default async function ProtectedLayout({
 				</Link>
 			);
 			})}
-			<button />
-		</nav>
+			<button />8
+		</nav> */}
+		<Link href="/profile" className="md:hidden [&_svg]:size-10 corner-left" >
+			<Avatar image={user.image} name={user.name} size="sm" />
+		</Link>
 		<MenuButton
 			trigger={
 			<button

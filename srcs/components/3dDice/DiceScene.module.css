@@ -8,7 +8,8 @@
   max-width: 100%;
   /* aspect-ratio: 1 / 1; */
   border-radius: 1rem;
-  overflow: auto;
+  overflow: visible;
+  outline: none;
 }
 
 /* .diceScene__select,
@@ -50,7 +51,8 @@
   /* -webkit-tap-highlight-color: transparent; */
   user-select: none;
   /* user-select: none; */
-  overflow: visible;
+  overflow: hidden;
+  outline:none
   /* align-items: center; */
 }
 
@@ -60,7 +62,7 @@
     height: auto;
     aspect-ratio: 1/1.5;
     display: block;
-    overflow: visible;
+    overflow: hidden;
   }
 }
 .diceScene__controls {

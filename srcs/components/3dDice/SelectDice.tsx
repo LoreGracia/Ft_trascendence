@@ -41,8 +41,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
         sceneRef.current = scene;
 
         // createOrbitCamera(scene, canvas);
-        const camera = createOrbitCamera(scene, canvas, undefined, { radius: 6, beta: Math.PI / 2.3 });
-        console.log("camera radius", camera.radius);
+        const camera = createOrbitCamera(scene, canvas, undefined, { radius: 1, beta: Math.PI / 2.3 });
 
         const light = new HemisphericLight("mainLight", new Vector3(0, 1, 0), scene);
         light.intensity = 0.9;
@@ -84,14 +83,14 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
     };
 
     return (
-        <div className="flex max-w-full flex-col items-center">
-            <div className={styles.diceScene}>
-                <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="3D dice scene" />
+        <div className="flex max-w-full aspect-square flex-col items-center">
+            <div className="flex">
+                <canvas ref={canvasRef} className="w-full h-auto aspect-square overflow-hidden" aria-label="3D dice scene" />
             </div>
             <button
                 onClick={toggleReadyStatus}
-                className="flex flex-col items-center p-1 max-w-7 rounded-lg button--secondary">
-                {playerState === 'LOCKED' ? "Ready" : "Not ready"}
+                className="p-2 mb-10 rounded-lg button--secondary">
+                {playerState === 'LOCKED' ? "Not ready" : "Ready"}
             </button>
             {playerState === "UNLOCKED" &&
             <div className="flex flex-col w-full">

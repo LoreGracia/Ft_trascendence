@@ -13,8 +13,6 @@
   --foreground: var(--black);
   --radius: 0.625rem;
   --accent: color-mix(in srgb, var(--dark) 50%, var(--light));
-  --t-error: #9f415f;
-  --t-content: color-mix(in srgb, var(--black) 80%, var(--white));
 
   --t-muted: color-mix(in srgb, var(--black) 55%, var(--white));
 
@@ -120,9 +118,16 @@ p {
   text-align: left;
 }
 
+.container-top{
+  margin-top: 30px;
+}
+
 @media (min-width: 768px) {
   .container-two{
-    grid-template-columns: 1fr 1fr;
+    /* grid-template-columns: 1fr 1fr; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     width: min(1200px, 90vw);
   }
   .column{
@@ -134,11 +139,14 @@ p {
       text-align: center;
       gap: 1.5rem;
   }
-
+  .container-top{
+    margin-top: 0px;
+  }
   .box{
     width: min(100%, 420px);
   }
 }
+
 
 .box--primary {
   background: var(--white);/* bg-foreground */

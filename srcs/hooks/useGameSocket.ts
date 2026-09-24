@@ -109,7 +109,7 @@ export function useGameSocket() {
       setMatchRoom(match);
       setLastRoll(roll);
       setTurn(
-        match.players[turnNum]?.id ?? "");
+        match.players[turnNum]?.playerId ?? "");
     };
 
     const handleMatchWon = (data: { match?: MatchRoom; lastRoll?: LastRoll } | MatchRoom) => {

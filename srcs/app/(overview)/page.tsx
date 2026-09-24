@@ -13,10 +13,9 @@ export default function Home() {
     <>
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
       <main className="container container-two">
-        <section className="column">
-          <IndexDice />
+          <IndexDice/>
           {/*
-            <IndexDice />
+            <IndexDice/>
           
             {/* <IndexDice />
             <SelectDice />
@@ -24,8 +23,6 @@ export default function Home() {
             <SelectDice roomCode="test-room" />
             <ThrowDice presetValue="default" roomCode="test-room" /> */}
 
-        </section>
-        <section className="column gap-8">
           <div className="column">
 
             <h1>This is Dice</h1>
@@ -51,7 +48,6 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
       </main>
     </>
   );

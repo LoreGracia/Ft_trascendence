@@ -241,7 +241,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       data-slot="sidebar-inset"
-      className={cn("m-auto w-screen h-screen",
+      className={cn("relative w-full min-w-0 h-screen overflow-hidden",
         className
       )}
       {...props}
