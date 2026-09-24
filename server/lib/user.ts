@@ -75,6 +75,7 @@ export async function updateGameDb(match: MatchRoom) {
                     }
                 },
                 update: {
+                    gamesPlayed: { increment: 1 },
                     wins: isWin ? { increment: 1 } : undefined,
                     losses: isLoss ? { increment: 1 } : undefined,
                     ties: isTie ? { increment: 1 } : undefined,
@@ -82,6 +83,7 @@ export async function updateGameDb(match: MatchRoom) {
                 create: {
                     userId: player.playerId,
                     gameType: match.gameType,
+                    gamesPlayed: 1,
                     wins: isWin ? 1 : 0,
                     losses: isLoss ? 1 : 0,
                     ties: isTie ? 1 : 0,

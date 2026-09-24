@@ -93,7 +93,7 @@ p {
 }
 
 @media (min-width: 768px) {
-  .container-two{
+  .container-two {
     grid-template-columns: 1fr 1fr;
     width: min(1200px, 90vw);
     align-items: center;
