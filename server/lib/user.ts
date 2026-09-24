@@ -66,7 +66,7 @@ export async function updateGameDb(match: MatchRoom) {
         });
         const userStatsOperations = match.players.map((player: any) => {
             const isWin = player.state === "WIN";
-            const isLoss = player.state === "LOSS";
+            const isLoss = player.state === "LOSE";
             const isTie = player.state === "TIE";
 
             return prisma.userStats.upsert({
