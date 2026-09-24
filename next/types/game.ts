@@ -21,7 +21,7 @@ export interface Player {
   socketId: string;
   name: string;
   state: PlayerState;
-  diceModel: string;
+  diceModel: DiceModel;
 }
 
 export type WaitingRoom = {

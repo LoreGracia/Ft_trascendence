@@ -1,18 +1,32 @@
-import Image from "next/image";
+'use client';
 
-import ToggleModeButton from "@/components/button/ToggleModeButton";
-import type { GameType } from "@/types/game";
-
-import JoinButton from "@/components/SocketComponent/JoinButton";
-import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
+import { useState } from 'react';
 import LandingClient from "@/components/LandingClient";
-import SelectDice from "@/components/3dDice/SelectDice";
+import ThrowDice from "@/components/3dDice/ThrowDice";
+import { useGameSocket } from '@/hooks/useGameSocket';
 
 export default function GameSelection() {
+  const [isRolling, setIsRolling] = useState(false);
+  const {
+    lastRoll,
+    rollDice,
+  } = useGameSocket();
+  const [diceTrigger, setDiceTrigger] = useState(0);
+  const handleRoomRoll = () => {
+    rollDice();// acción del socket
+    setDiceTrigger((v) => v + 1); // dispara la animación del dado
+  };
   return (
-    <div className="container container-two">
-      <LandingClient />
-      <SelectDice roomCode="test-room" />
+    <div  className="flex flex-col justify-evenly items-center md:flex-row-reverse h-full">
+        <ThrowDice
+          onClick={handleRoomRoll}
+          presetValue='default'
+          lastResult={lastRoll}
+          triggerRoll={diceTrigger}
+          setIsRolling={setIsRolling}
+          isRolling={isRolling}
+        />
+        <LandingClient/>
     </div>
   );
 }

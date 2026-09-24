@@ -22,6 +22,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [playError, setPlayError] = useState<string | null>(null);
+  const [isTurn, setTurn] = useState('');
 
   const createRoom = useCallback(() => {
     socket.emit('create_room', gameType);
@@ -104,8 +105,11 @@ export function useGameSocket() {
     };
 
     const handleDiceRolled = ({ match, roll }: { match: MatchRoom; roll: LastRoll }) => {
+      const turnNum = (match.turn === 0 ? match.players.length : (match.turn - 1) % match.players.length);
       setMatchRoom(match);
       setLastRoll(roll);
+      setTurn(
+        match.players[turnNum]?.playerId ?? "");
     };
 
     const handleMatchWon = (data: { match?: MatchRoom; lastRoll?: LastRoll } | MatchRoom) => {
@@ -128,7 +132,6 @@ export function useGameSocket() {
       setPlayError("All players must be locked");
     };
 
-
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_status_changed', handlePlayerStatusChanged);
@@ -137,7 +140,7 @@ export function useGameSocket() {
     socket.on('match_won', handleMatchWon);
     // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
     socket.on('game_not_started', handlePlayError);
-    socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
+    // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
 
     return () => {
@@ -173,6 +176,7 @@ export function useGameSocket() {
     matchRoom,
     lastRoll,
     winnerMessage,
+    isTurn,
     isMyTurn,
     createRoom,
     joinRoom,

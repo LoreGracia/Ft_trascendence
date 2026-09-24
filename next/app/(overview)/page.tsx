@@ -5,18 +5,27 @@ import IndexDice from "@/components/3dDice/IndexDice";
 import SelectDice from "@/components/3dDice/SelectDice";
 import ThrowDice from "@/components/3dDice/ThrowDice";
 import { useState } from "react";
+import { useGameSocket } from '@/hooks/useGameSocket';
 
 export default function Home() {
+    const [isRolling, setIsRolling] = useState(false);
+    const {
+      lastRoll,
+      rollDice,
+    } = useGameSocket();
+    const [diceTrigger, setDiceTrigger] = useState(0);
   const [paused, setPaused] = useState(false);
-
+  const handleRoomRoll = () => {
+    rollDice();// acción del socket
+    setDiceTrigger((v) => v + 1); // dispara la animación del dado
+  };
   return (
     <>
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
-      <main className="container container-two">
-        <section className="column">
-          <IndexDice />
+      <main className="flex flex-col-reverse justify-evenly items-center md:flex-row-reverse h-full">
+          <IndexDice/>
           {/*
-            <IndexDice />
+            <IndexDice/>
           
             {/* <IndexDice />
             <SelectDice />
@@ -24,8 +33,6 @@ export default function Home() {
             <SelectDice roomCode="test-room" />
             <ThrowDice presetValue="default" roomCode="test-room" /> */}
 
-        </section>
-        <section className="column gap-8">
           <div className="column">
 
             <h1>This is Dice</h1>
@@ -51,7 +58,6 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
       </main>
     </>
   );

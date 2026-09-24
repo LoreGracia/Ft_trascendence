@@ -76,7 +76,7 @@ export default function SignUp() {
 			>
 				Log in
 			</Link>
-			<div className="container">
+			{/* <div className="container"> */}
 				<section className="box box--primary">
 					<AuthForm onSubmit={handleRegister}>
 						<TextInput
@@ -106,7 +106,7 @@ export default function SignUp() {
 						<div className="auth-actions">
 							<button
 								type="submit"
-								className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+								className="button button-squere button--highlight hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
 								disabled={isPending}
 							>
 								{isPending ? "Signing up…" : "Sign up"}
@@ -118,7 +118,7 @@ export default function SignUp() {
 						</div>
 					</AuthForm>
 				</section>
-			</div>
+			{/* </div> */}
 		</main>
 		</>
 	)
