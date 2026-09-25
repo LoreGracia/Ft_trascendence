@@ -14,6 +14,12 @@ export const auth = betterAuth({
 		enabled: true, 
 	},
 
+	rateLimit: {
+		enabled: true,
+		window: 60,
+		max: 10,
+	},
+
 	baseURL: process.env.NEXT_PUBLIC_URL,
 	socialProviders: {
 		github: {
