@@ -160,7 +160,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     };
 
     return (
-        <div className="relative overflow-visible w-full max-w-80 h-full max-h-80">
+        <div className="relative overflow-visible w-full max-w-60 h-full max-h-60 md:max-h-80">
             <canvas 
                 onClick={onClick} 
                 ref={canvasRef} 

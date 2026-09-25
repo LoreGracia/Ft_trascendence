@@ -17,7 +17,7 @@ export default function GameSelection() {
     setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
   return (
-    <div  className="flex flex-col justify-evenly items-center md:flex-row-reverse h-full">
+    <div  className="flex flex-col justify-evenly items-center w-full md:flex-row-reverse h-full">
         <ThrowDice
           onClick={handleRoomRoll}
           presetValue='default'

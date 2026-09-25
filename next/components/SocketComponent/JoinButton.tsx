@@ -7,7 +7,6 @@ export default function JoinButton() {
   const router = useRouter();
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const { joinRoom, isJoining, joinedRoomCode, error } = useJoinRoom();
-  const isDisabled = roomCodeInput.trim().length === 0;
 
   useEffect(() => {
     if (joinedRoomCode) {
@@ -27,11 +26,11 @@ export default function JoinButton() {
         />
         <button
           onClick={() => joinRoom(roomCodeInput)}
-          type="submit"
-          disabled={isDisabled}
+          type="button"
+          disabled={roomCodeInput.trim().length !== 5}
           className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
         >
-          {isJoining ? "Uniéndose..." : "Join room"}
+          {isJoining ? "Joining..." : "Join room"}
         </button>
       </div>
       {error && <p>{error}</p>}
