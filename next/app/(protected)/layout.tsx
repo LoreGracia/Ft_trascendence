@@ -8,15 +8,14 @@ import { LogoutButton } from "@/components/button/LogoutButton";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { MobileBottomBar } from "@/components/BottomBar"
-import { navigation } from "@/lib/navigation";
-import { Avatar } from "@/components/Avatar/Avatar";
-
+import { MobileProfile } from "@/components/Avatar/MobileProfile";
 
 export default async function ProtectedLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
@@ -30,18 +29,7 @@ export default async function ProtectedLayout({
 		<SidebarProvider>
 		<AppSidebar className="list-none hidden md:flex" user={user} />
 		<MobileBottomBar />
-		<SidebarTrigger className="hidden md:flex" />
-		<nav className="md:hidden [&_svg]:size-8 corner-left">
-			{navigation.header.map((item) => {
-			const Icon = item.icon;
-			return (
-				<Link key={item.href} href={item.href} >
-					<Icon className="bg-(--accent) rounded-full" />
-				</Link>
-			);
-			})}
-			<button />
-		</nav>
+		<MobileProfile user={user}/>
 		<MenuButton
 			trigger={
 			<button

@@ -10,6 +10,7 @@ import {
 	SidebarMenuItem,
 	SidebarHeader,
 	SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebarLateral"
 import { cn } from "@/lib/utils";
 import { Avatar } from './Avatar/Avatar';
@@ -85,7 +86,7 @@ export function AppSidebar({ className, user }: AppSidebarProps) {
 					);
 				})}
 			</SidebarFooter>
-
+      <SidebarTrigger className="absolute top-0 -right-6 mt-0 z-10"/>
 		</Sidebar>
 	)
 }

@@ -7,7 +7,6 @@ import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import type { WaitingRoom } from '@/types/game';
 import ToggleModeButton from "@/components/button/ToggleModeButton";
-// import { JoinButton, CreateRoomButton } from "@/components/SocketComponent";
 import JoinButton from "@/components/SocketComponent/JoinButton";
 import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 
@@ -36,7 +35,7 @@ export default function LandingClient({ onEnterRoom }: Props) {
     }
   }, [waitingRoom, onEnterRoom, router]);
   return (
-    <div className="box items-center flex-wrap"> 
+    <div className="column flex-wrap"> 
       <ToggleModeButton
           selected={gameType}
           onChange={setGameType}

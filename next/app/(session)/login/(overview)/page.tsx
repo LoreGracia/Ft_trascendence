@@ -60,7 +60,7 @@ export default function LogIn() {
 			paused={paused}
 			onToggle={() => setPaused(!paused)}
 		/>
-		<main className="container">
+		<main className="container flex flex-auto justify-center items-center">
 			<Link
 				className="corner-right button button-squere button--highlight"
 				href={'/signup'}
@@ -94,7 +94,7 @@ export default function LogIn() {
 						<div className="auth-actions">
 							<button
 								type="submit"
-								className="button button-squere bg-(--black) text-(--white) hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+								className="button button-squere button--highlight hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
 								disabled={isPending}
 								>
 								{isPending ? "Logging in…" : "Login"}

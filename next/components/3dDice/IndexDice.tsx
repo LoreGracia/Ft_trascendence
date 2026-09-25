@@ -42,7 +42,7 @@ export default function IndexDice() {
             "indexDiceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            16,
+            10,
             Vector3.Zero(),
             scene
         );
@@ -97,10 +97,10 @@ export default function IndexDice() {
 
     //return <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="Independent dice demo" />;
     return (
-        <div className="w-full h-screen overflow-hidden">
+        <div className="flex relative w-full h-full min-h-70 max-h-90 max-w-90 md:min-h-70">
             <canvas
                 ref={canvasRef}
-                className="w-full h-full"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[130%] md:w-[120%] md:h-[120%] outline-none"
                 aria-label="Independent dice demo"
             />
         </div>
