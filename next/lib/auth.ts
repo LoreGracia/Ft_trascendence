@@ -5,6 +5,8 @@ import { jwt } from "better-auth/plugins";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { signupSchema, loginSchema } from "./validation";
 
+console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
+
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
@@ -20,7 +22,18 @@ export const auth = betterAuth({
 		max: 10,
 	},
 
-	baseURL: process.env.NEXT_PUBLIC_URL,
+	baseURL: {
+		allowedHosts: [
+			"dice.eina.cc",
+			"www.dice.eina.cc",
+			"*.dice.eina.cc",
+		],
+		protocol: "https",
+		fallback: process.env.NEXT_PUBLIC_URL,
+	},
+
+	trustedOrigins: [process.env.NEXT_PUBLIC_URL, "https://*.dice.eina.cc"],
+	
 	socialProviders: {
 		github: {
 			clientId: process.env.GITHUB_CLIENT_ID as string,

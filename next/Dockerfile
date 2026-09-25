@@ -29,3 +29,10 @@ COPY --from=deps   /app/node_modules ./node_modules
 COPY --from=prisma /app/generated    ./generated
 COPY next/ .
 CMD ["npm", "run", "dev"]
+
+# ---------- prod ----------
+FROM base AS prod
+COPY --from=deps   /app/node_modules ./node_modules
+COPY --from=prisma /app/generated    ./generated
+COPY next/ .
+CMD [ "npm", "run", "build" ";", "npm", "run", "start"]
