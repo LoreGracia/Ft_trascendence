@@ -100,7 +100,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
 
     return (
         <div className="flex w-full flex-col items-center">
-            <div className="flex relative w-full h-full min-h-50 max-h-60 max-w-90 md:min-h-70">
+            <div className="flex relative w-full h-full min-h-40 max-h-60 max-w-90 md:min-h-70">
                 <canvas ref={canvasRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] outline-none" aria-label="3D dice scene" />
             </div>
             <button

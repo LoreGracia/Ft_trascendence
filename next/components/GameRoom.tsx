@@ -287,7 +287,7 @@ export default function GameRoom() {
               </div>
             }
 
-          {matchRoom.gameType === 'ADD42' && lastRoll && (
+          {/* {matchRoom.gameType === 'ADD42' && lastRoll && (
 
             <div className="bg-(--light) p-3 rounded-lg border-l-4 border-l-(--accent) me-4">
               <h4>Last move ({lastRoll.idPlayer}):</h4>
@@ -306,7 +306,7 @@ export default function GameRoom() {
                 Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
               </p>
             </div>
-          )}
+          )} */}
         </div>
       )}
     </div>

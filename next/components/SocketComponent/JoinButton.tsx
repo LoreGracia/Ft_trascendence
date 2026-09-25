@@ -22,7 +22,7 @@ export default function JoinButton() {
           maxLength={5}
           value={roomCodeInput}
           onChange={(e) => setRoomCodeInput(e.target.value)}
-          className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30"
+          className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30 bg-(--accent)"
         />
         <button
           onClick={() => joinRoom(roomCodeInput)}

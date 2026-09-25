@@ -6,7 +6,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import MenuButton from "@/components/Menu/Menu";
 import { LogoutButton } from "@/components/button/LogoutButton";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { MobileBottomBar } from "@/components/BottomBar"
 import { MobileProfile } from "@/components/Avatar/MobileProfile";
 
@@ -30,24 +30,7 @@ export default async function ProtectedLayout({
 		<AppSidebar className="list-none hidden md:flex" user={user} />
 		<MobileBottomBar />
 		<MobileProfile user={user}/>
-		<MenuButton
-			trigger={
-			<button
-				className="[&_svg]:size-8 pr-0 rounded-xs md:hover:bg-(--accent)"
-			>
-				<Menu />
-			</button>}>
-			<button>Settings</button>
-			<button>Language</button>
-			<LogoutButton>Log out</LogoutButton>
-			<Link
-				href="/privacy-politics"
-				target="_self"
-				rel="noopener noreferrer"
-			>
-				Privacy
-			</Link>
-		</MenuButton>
+		<LogoutButton className="absolut flex flex-col items-end corner-right z-50 p-2 rounded-lg hover:bg-(--accent)"><LogOut/></LogoutButton>
 		<SidebarInset>
 			{children}
 		</SidebarInset>

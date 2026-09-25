@@ -57,7 +57,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             "diceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            7,
+            10,
             Vector3.Zero(),
             scene
         );
@@ -138,12 +138,22 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
 
         setIsRolling(true);
 
+        // animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
+        //     result: value,
+        //     onFinish: () => {
+        //         setIsRolling(false);
+        //     },
+        // });
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
+            startPosition: new Vector3(0, 0.0, 0),
+            endPosition: new Vector3(0, 0, 0),
+            jumpHeight: 1.9,
+            durationInFrames: 200,
+            rotations: 8,
             result: value,
-            onFinish: () => {
+                onFinish: () => {
                 setIsRolling(false);
-            },
-        });
+        }});
     }, [lastResult]);
 
     const handleRollClick = () => {
@@ -152,19 +162,23 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
         setIsRolling(true);
         const fallbackValue = mockRollDice(6);
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
+            startPosition: new Vector3(0, 0.0, 0),
+            endPosition: new Vector3(0, 0, 0),
+            jumpHeight: 1.9,
+            durationInFrames: 200,
+            rotations: 8,
             result: fallbackValue,
             onFinish: () => {
                 setIsRolling(false);
-            },
-        });
+        }});
     };
 
     return (
-        <div className="relative overflow-visible w-full max-w-60 h-full max-h-60 md:max-h-80">
+        <div className="relative overflow-visible w-full max-w-100 h-full max-h-80 md:max-h-150 md:max-w-50">
             <canvas 
                 onClick={onClick} 
                 ref={canvasRef} 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] block outline-none select-none" 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[110%] block outline-none select-none" 
                 aria-label="3D dice scene" 
             />
         </div>
