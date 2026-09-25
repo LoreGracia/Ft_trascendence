@@ -177,7 +177,7 @@ export default function GameRoom() {
               Turn of:{' '}
               <span style={{ color: isMyTurn ? "bg-(--dark)" : 'bf-(--light)' }} className="m-auto">
                 {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.name}{' '}
-                {isMyTurn ? '(¡TU TURNO!)' : ''}
+                {isMyTurn ? '(¡YOURS!)' : ''}
               </span>
             </h3>
           )}
