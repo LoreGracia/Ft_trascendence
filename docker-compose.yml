@@ -111,6 +111,23 @@ services:
       # API & Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=false"
+    
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: no
+    environment:
+      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
+      - NEWT_ID=${NEWT_ID}
+      - NEWT_SECRET=${NEWT_SECRET}
+    depends_on:
+      next-app:
+        condition: service_started
+      socket:
+        condition: service_started
+    networks:
+      - transcendence-net
+
 
 volumes:
   db-data:
