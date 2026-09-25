@@ -26,9 +26,10 @@ services:
     build:
       context: .
       dockerfile: next/Dockerfile
+      target: dev # canviar a prod per entregar
+    command: sh -c 'npx prisma migrate deploy && npm run dev' # canviar a npm run start
     container_name: transcendence-app
     restart: no
-    command: sh -c "for i in 1 2 3 4 5; do npx prisma migrate deploy && break; echo 'retry migrate...'; sleep 3; done; npm run dev"
     stop_grace_period: 5s
     volumes:
       # surgical bind mounts for hot-reload
@@ -37,16 +38,15 @@ services:
       - ./next/lib:/app/lib
       - ./next/hooks:/app/hooks
       - ./next/public:/app/public
+      - ./next/next.config.ts:/app/next.config.ts
       # prisma schema + migrations for migrate deploy at runtime
       - ./prisma:/app/prisma:ro
       # named volumes for generated/build content (fast + persistent)
       - next-modules:/app/node_modules
-      # - prisma-client-app:/app/generated/prisma
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-      # NODE_OPTIONS: --max-old-space-size=2048
     env_file: ".env.local"
     depends_on:
       db:
@@ -62,16 +62,12 @@ services:
     restart: no
     volumes:
       - server-modules:/server/node_modules
-      # - prisma-client-server:/server/generated/prisma
       - ./server/sockets:/server/sockets
       - ./server/game:/server/game
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
-      # BETTER_AUTH_URL: ${BETTER_AUTH_URL}
-      AUTH_INTERNAL_URL: ${AUTH_INTERNAL_URL}
-    # ports:
-    #   - "3001:3001"
+      AUTH_INTERNAL_URL: http://next-app:3000
     depends_on:
       db:
         condition: service_healthy
@@ -110,6 +106,24 @@ services:
       # API & Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=false"
+
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: no
+    environment:
+      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
+      - NEWT_ID=${NEWT_ID}
+      - NEWT_SECRET=${NEWT_SECRET}
+    depends_on:
+      next-app:
+        condition: service_started
+      socket:
+        condition: service_started
+    networks:
+      - transcendence-net
+
+
 
 volumes:
   db-data:
