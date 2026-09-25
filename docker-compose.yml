@@ -26,7 +26,8 @@ services:
     build:
       context: .
       dockerfile: next/Dockerfile
-      target: dev # canviar a prod per entregar
+      target: prod # canviar a prod per entregar
+    command: sh -c 'npx prisma migrate deploy && npm run start' # canviar a npm run start
     container_name: transcendence-app
     restart: no
     stop_grace_period: 5s
