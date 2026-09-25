@@ -1,8 +1,0 @@
-import type { NextConfig } from "next";
-/** @type {import('next').NextConfig} */
-const nextConfig: NextConfig = {
-  devIndicators: false,
-  output: "standalone",
-};
-
-export default nextConfig;
