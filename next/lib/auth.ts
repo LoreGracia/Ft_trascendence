@@ -5,8 +5,6 @@ import { jwt } from "better-auth/plugins";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { signupSchema, loginSchema } from "./validation";
 
-console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
-
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
