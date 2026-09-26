@@ -25,7 +25,7 @@ interface ThrowDiceProps {
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling}: ThrowDiceProps) {
+export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -36,8 +36,8 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     useEffect(() => {
         if (triggerRoll === 0) return;
         handleRollClick();
-        }, [triggerRoll]);
-    
+    }, [triggerRoll]);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -110,10 +110,12 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             cameraRef.current = camera;
             return;
         }
+        else
+            socket.emit("has_rolled");
 
         camera.attachControl(canvas, true);
     }, [isRolling]);
-    
+
     useEffect(() => {
         const scene = sceneRef.current;
         if (!scene) return;
@@ -161,11 +163,11 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
 
     return (
         <div className="relative overflow-visible w-full max-w-80 h-full max-h-80">
-            <canvas 
-                onClick={onClick} 
-                ref={canvasRef} 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] block outline-none select-none" 
-                aria-label="3D dice scene" 
+            <canvas
+                onClick={onClick}
+                ref={canvasRef}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] block outline-none select-none"
+                aria-label="3D dice scene"
             />
         </div>
         // <div className={styles.diceScene}>
