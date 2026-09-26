@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: next/Dockerfile
       target: dev # canviar a prod per entregar
-    command: sh -c 'npx prisma migrate deploy && npm run dev' # canviar a npm run start
+    command: sh -c 'npx prisma migrate deploy && npm run dev' # canviar a npm run build && npm run start
     container_name: transcendence-app
     restart: no
     stop_grace_period: 5s
@@ -106,7 +106,7 @@ services:
       # API & Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=false"
-
+    
   newt:
     image: fosrl/newt
     container_name: newt
@@ -122,8 +122,6 @@ services:
         condition: service_started
     networks:
       - transcendence-net
-
-
 
 volumes:
   db-data:

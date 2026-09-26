@@ -73,9 +73,9 @@ export function LeaderboardCard({
 							<TableRow>
 								<TableHead className="w-16 text-left">Rank</TableHead>
 								<TableHead className="text-left">Player</TableHead>
-								<TableHead className="w-20 text-right text-(--t-success)">Wins</TableHead>
-								<TableHead className="w-20 text-right text-(--t-warning)">Ties</TableHead>
-								<TableHead className="w-20 text-right text-(--t-danger)">Losses</TableHead>
+								<TableHead className="hidden md:table-cell w-20 text-right text-(--t-success)">Wins</TableHead>
+								<TableHead className="hidden md:table-cell w-20 text-right text-(--t-warning)">Ties</TableHead>
+								<TableHead className="hidden md:table-cell w-20 text-right text-(--t-danger)">Losses</TableHead>
 								<TableHead className="w-24 text-right">Points</TableHead>
 							</TableRow>
 						</TableHeader>
@@ -96,9 +96,9 @@ export function LeaderboardCard({
 											<Avatar image={player.image} name={player.name} size="xs" />
 											{player.name}
 										</TableCell>
-										<TableCell className="text-right text-(--t-success)">{player.wins}</TableCell>
-										<TableCell className="text-right text-(--t-warning)">{player.ties}</TableCell>
-										<TableCell className="text-right text-(--t-danger)">{player.losses}</TableCell>
+										<TableCell className="hidden md:table-cell text-right text-(--t-success)">{player.wins}</TableCell>
+										<TableCell className="hidden md:table-cell text-right text-(--t-warning)">{player.ties}</TableCell>
+										<TableCell className="hidden md:table-cell text-right text-(--t-danger)">{player.losses}</TableCell>
 										<TableCell className="text-right">{player.avg}</TableCell>
 									</TableRow>
 								);

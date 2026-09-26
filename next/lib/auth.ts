@@ -14,7 +14,24 @@ export const auth = betterAuth({
 		enabled: true, 
 	},
 
-	baseURL: process.env.NEXT_PUBLIC_URL,
+	rateLimit: {
+		enabled: true,
+		window: 60,
+		max: 10,
+	},
+
+	baseURL: {
+		allowedHosts: [
+			"dice.eina.cc",
+			"www.dice.eina.cc",
+			"*.dice.eina.cc",
+		],
+		protocol: "https",
+		fallback: process.env.NEXT_PUBLIC_URL,
+	},
+
+	trustedOrigins: [process.env.NEXT_PUBLIC_URL, "https://*.dice.eina.cc"],
+	
 	socialProviders: {
 		github: {
 			clientId: process.env.GITHUB_CLIENT_ID as string,
