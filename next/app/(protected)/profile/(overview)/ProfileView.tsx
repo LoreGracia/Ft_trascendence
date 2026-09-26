@@ -47,7 +47,7 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 		return null;
 	}
 	return (
-		<main className="container">
+		<div className="profile-scroll">
 			<div className="profile-layout">
 				{/* <div className="profile-banner" /> */}
 				<div className="profile-columns">
@@ -94,6 +94,6 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 					</section>
 				</div>
 			</div>
-		</main>
+		</div>
 	);
 }

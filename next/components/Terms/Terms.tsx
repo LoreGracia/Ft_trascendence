@@ -1,21 +1,9 @@
-"use client"
 import React from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export default function TermsAndConditions() {
 	return (
-		<main className="min-h-screen text-foreground py-12 px-4 sm:px-6">
+		<main className="min-h-fit text-foreground py-12 px-4 sm:px-6">
 			<article className="max-w-3xl mx-auto space-y-8 text-muted-foreground leading-relaxed">
-				<div>
-					<Link
-						href="/"
-						className="inline-flex items-center text-sm hover:text-foreground transition-colors"
-					>
-						<ArrowLeft className="w-4 h-4 mr-2" />
-						Back
-					</Link>
-				</div>
 				<header className="space-y-2 border-b border-border pb-6">
 					<h1 className="text-3xl font-bold tracking-tight text-foreground">
 						TERMS, CONDITIONS AND PRIVACY POLICY
@@ -28,7 +16,7 @@ export default function TermsAndConditions() {
 						AGREEMENT TO OUR LEGAL TERMS
 					</h2>
 					<p>
-						We are Dice (&apos;<strong>Company</strong>&apos;, &apos;<strong>we</strong>&apos;, &apos;<strong>us</strong>&apos;, or &apos;<strong>our</strong>&apos;), a company registered in Catalonia at Carrer d&apos;Albert Einstein, 11, Nou Barris, 08042 Barcelona, Barcelona, Barcelona 08042.
+						We are Dice (&apos;<strong>Company</strong>&apos;, &apos;<strong>we</strong>&apos;, &apos;<strong>us</strong>&apos;, or &apos;<strong>our</strong>&apos;), a company registered in Catalonia at Carrer d&apos;Albert Einstein, 11, Nou Barris, 08042 Barcelona.
 					</p>
 					<p>
 						We operate the website <span className="text-foreground font-medium">dice.eina.cc</span> (the &apos;<strong>Site</strong>&apos;), as well as any other related products and services that refer or link to these legal terms (the &apos;<strong>Legal Terms</strong>&apos;) (collectively, the &apos;<strong>Services</strong>&apos;).
@@ -41,7 +29,7 @@ export default function TermsAndConditions() {
 						>
 							pamanzan@student.42barcelona.com
 						</a>
-						, or by mail to Carrer d&apos;Albert Einstein, 11, Nou Barris, 08042 Barcelona, Barcelona, Barcelona 08042, Catalonia.
+						, or by mail to Carrer d&apos;Albert Einstein, 11, Nou Barris, 08042 Barcelona, Catalonia.
 					</p>
 					<p>
 						These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&apos;<strong>you</strong>&apos;), and Dice, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
@@ -382,7 +370,6 @@ export default function TermsAndConditions() {
 					<div className="space-y-1 font-medium text-foreground">
 						<p>Dice</p>
 						<p>Carrer d&apos;Albert Einstein, 11, Nou Barris, 08042 Barcelona</p>
-						<p>Barcelona, Barcelona 08042</p>
 						<p>Catalonia</p>
 						<p>Phone: 112</p>
 						<p>

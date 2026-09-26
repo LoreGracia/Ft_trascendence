@@ -153,6 +153,13 @@
 .status-banner[data-tone="danger"]  { color: var(--t-danger);  background: color-mix(in srgb, var(--t-danger)  12%, transparent); }
 .status-banner[data-tone="warning"] { color: var(--t-warning); background: color-mix(in srgb, var(--t-warning) 12%, transparent); }
 
+.profile-scroll {
+  width: 100%;
+  height: 100dvh;
+  overflow-y: auto;
+  padding-block: 2rem;
+}
+
 .profile-form {
   display: flex;
   flex-direction: column;
