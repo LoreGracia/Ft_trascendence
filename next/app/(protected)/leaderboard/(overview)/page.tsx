@@ -6,7 +6,7 @@ export default async function LeaderboardPage() {
 	const stats = await fetchLeaderboardStats();
 
 	return (
-		<main className="container">
+		<div className="container">
 			<div className="leaderboard-page">
 				<header className="leaderboard-page__header">
 					<h1 className="leaderboard-page__title">Leaderboard</h1>
@@ -24,6 +24,6 @@ export default async function LeaderboardPage() {
 					</p>
 				</div>
 			</div>
-		</main>
+		</div>
 	);
 }

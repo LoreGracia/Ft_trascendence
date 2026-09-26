@@ -12,5 +12,9 @@ export default async function ProfilePage() {
 		(empty) => user.stats.find((s) => s.gameType === empty.gameType) ?? empty,
 	);
 
-	return <ProfileView user={user} stats={stats} />;
+	return (
+		<div className="mt-5 pb-30">
+			<ProfileView user={user} stats={stats} />
+		</div>
+	);
 }

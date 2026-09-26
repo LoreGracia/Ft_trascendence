@@ -104,10 +104,14 @@ export function useGameSocket() {
       setWinnerMessage('');
     };
 
-    const handleDiceRolled = ({ match, roll }: { match: MatchRoom; roll: LastRoll }) => {
+    const handleRoll = ({ roll }: { roll: LastRoll }) => {
+      setLastRoll(roll);
+    };
+
+
+    const handleDiceRolled = ({ match }: { match: MatchRoom; }) => {
       const turnNum = (match.turn === 0 ? match.players.length : (match.turn - 1) % match.players.length);
       setMatchRoom(match);
-      setLastRoll(roll);
       setTurn(
         match.players[turnNum]?.playerId ?? "");
     };
@@ -137,6 +141,7 @@ export function useGameSocket() {
     socket.on('player_status_changed', handlePlayerStatusChanged);
     socket.on('game_started', handleGameStarted);
     socket.on('dice_rolled', handleDiceRolled);
+    socket.on('roll_number', handleRoll);
     socket.on('match_won', handleMatchWon);
     // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
     socket.on('game_not_started', handlePlayError);
@@ -149,6 +154,7 @@ export function useGameSocket() {
       socket.off('player_status_changed', handlePlayerStatusChanged);
       socket.off('game_started', handleGameStarted);
       socket.off('dice_rolled', handleDiceRolled);
+      socket.off('roll_number', handleRoll);
       socket.off('match_won', handleMatchWon);
       socket.off('join_error');
       socket.off('game_not_started');

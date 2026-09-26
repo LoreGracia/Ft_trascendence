@@ -153,6 +153,13 @@
 .status-banner[data-tone="danger"]  { color: var(--t-danger);  background: color-mix(in srgb, var(--t-danger)  12%, transparent); }
 .status-banner[data-tone="warning"] { color: var(--t-warning); background: color-mix(in srgb, var(--t-warning) 12%, transparent); }
 
+.profile-scroll {
+  width: 100%;
+  height: 100dvh;
+  overflow-y: auto;
+  padding-block: 2rem;
+}
+
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -206,4 +213,27 @@
 .profile-form__actions .button {
   flex: 0 1 auto;
   min-width: 120px;
+}
+
+.profile-footer-link {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--t-muted);
+}
+
+.profile-footer-link a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.profile-footer-link a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .profile-footer-link {
+    display: none;
+  }
 }
