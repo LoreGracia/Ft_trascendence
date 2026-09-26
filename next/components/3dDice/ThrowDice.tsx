@@ -15,6 +15,7 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { getDicePreset } from "@/components/3dDice/select/diceOptions";
 import styles from "./DiceScene.module.css";
 import { DiceModel, LastRoll } from "@/types/game";
+import { socket } from '@/lib/socket';
 
 interface ThrowDiceProps {
     onClick?: () => void;
@@ -25,7 +26,7 @@ interface ThrowDiceProps {
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling}: ThrowDiceProps) {
+export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -36,8 +37,8 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     useEffect(() => {
         if (triggerRoll === 0) return;
         handleRollClick();
-        }, [triggerRoll]);
-    
+    }, [triggerRoll]);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -113,7 +114,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
 
         camera.attachControl(canvas, true);
     }, [isRolling]);
-    
+
     useEffect(() => {
         const scene = sceneRef.current;
         if (!scene) return;
@@ -170,7 +171,9 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             result: fallbackValue,
             onFinish: () => {
                 setIsRolling(false);
-        }});
+                socket.emit("has_rolled");
+            },
+        });
     };
 
     return (

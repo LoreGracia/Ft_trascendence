@@ -77,6 +77,7 @@ export default function GameRoom() {
       console.error('No se pudo copiar al portapapeles:', err);
     }
   };
+
   return (
     <div className="flex flex-col h-full pt-20 pb-15 p-10 md:p-20">
       <p className="text-(--t-content)">
@@ -87,21 +88,21 @@ export default function GameRoom() {
 
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center h-full">
-            <div className="w-full h-full flex flex-col">
-              <div className="flex flex-row w-full md:mb-5 gap-5">
-                <h2 className="text-(--t-content)">
-                  {waitingRoom.gameType} 🎲 
-                </h2>
-                <div className="flex flex-row">
-                  <h1
-                    className="text-(--dark)"
-                    onClick={handleCopyRoomCode}
-                    > {waitingRoom.roomCode}
-                  </h1>
-                  <button
-                    type="button"
-                    onClick={handleCopyRoomCode}
-                    className="self-start
+          <div className="w-full h-full flex flex-col">
+            <div className="flex flex-row w-full md:mb-5 gap-5">
+              <h2 className="text-(--t-content)">
+                {waitingRoom.gameType} 🎲
+              </h2>
+              <div className="flex flex-row">
+                <h1
+                  className="text-(--dark)"
+                  onClick={handleCopyRoomCode}
+                > {waitingRoom.roomCode}
+                </h1>
+                <button
+                  type="button"
+                  onClick={handleCopyRoomCode}
+                  className="self-start
                     inline-flex items-center justify-center
                     size-7 rounded-[min(var(--radius-md),12px)]
                     active:not-aria-[haspopup]:translate-y-px
