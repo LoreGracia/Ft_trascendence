@@ -76,6 +76,7 @@ export default function GameRoom() {
       console.error('No se pudo copiar al portapapeles:', err);
     }
   };
+
   return (
     <div className="flex flex-col h-full p-20">
       <p className="text-(--t-content)">
@@ -86,73 +87,73 @@ export default function GameRoom() {
 
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center">
-            <div className="w-full h-full flex flex-col">
-              <div className="flex flex-row w-full md:mb-5 md:flex-row gap-5">
-                <h2 className="text-(--t-content)">
-                  {waitingRoom.gameType} 🎲 
-                </h2>
-                <div className="flex flex-row">
-                  <h1
-                    className="text-(--dark)"
-                    onClick={handleCopyRoomCode}
-                    > {waitingRoom.roomCode}
-                  </h1>
-                  <button
-                    type="button"
-                    onClick={handleCopyRoomCode}
-                    className="self-start
+          <div className="w-full h-full flex flex-col">
+            <div className="flex flex-row w-full md:mb-5 md:flex-row gap-5">
+              <h2 className="text-(--t-content)">
+                {waitingRoom.gameType} 🎲
+              </h2>
+              <div className="flex flex-row">
+                <h1
+                  className="text-(--dark)"
+                  onClick={handleCopyRoomCode}
+                > {waitingRoom.roomCode}
+                </h1>
+                <button
+                  type="button"
+                  onClick={handleCopyRoomCode}
+                  className="self-start
                     inline-flex items-center justify-center
                     size-7 rounded-[min(var(--radius-md),12px)]
                     active:not-aria-[haspopup]:translate-y-px
                     [&_svg:not([class*='size-'])]:size-4
                     focus-visible:ring-2  disabled:text-(--light)"
-                    disabled={copied}
-                  >
-                    <ClipboardCopy size={10}/>
-                  </button>
-                  <p className="hidden md:visible ms-10 text-(--t-content)">
-                    {waitingRoom.players.length} / 2
-                    <small> (max 6)</small>
-                    <ArrowRight />
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row justify-evenly">
-                <ul>
-                  {waitingRoom.players.map((p) => (
-                    <li className="flex flex-col items-center justify-evenly mt-5" key={p.playerId}>
-                      <div className='[&_svg]:size-5 md:[&_svg]:size-10'>
-                        <Avatar image={null} name={p.name} size="md"/>
-                      </div>
-                      <h2 className="text-2xl">{p.name}</h2>
-                      {p.state === 'UNLOCKED'? "🤔" : "Ready" }
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-col gap-2 items-center justify-evenly pt-5 md:pt-0">
-                  <div className="flex flex-row gap-2 items-center">
-                    <button
-                      onClick={() => startGame(waitingRoom.gameType)}
-                      disabled={waitingRoom.players.length === 1 || 
-                        !(waitingRoom.players.every((p) => p.state === 'LOCKED'))}
-                      className="button button--highlight rounded-sm"
-                    >
-                      {waitingRoom.players.length === 1? "1 / 2" : "Play"}
-                    </button>
-                    <button onClick={exitRoom} className="p-3 button--secondary rounded-sm">
-                      Exit room
-                    </button>
-                  </div>
-                </div>
-                {playError && <p className="text-(--t-error)">{playError}</p>}
+                  disabled={copied}
+                >
+                  <ClipboardCopy size={10} />
+                </button>
+                <p className="hidden md:visible ms-10 text-(--t-content)">
+                  {waitingRoom.players.length} / 2
+                  <small> (max 6)</small>
+                  <ArrowRight />
+                </p>
               </div>
             </div>
-            <SelectDice
-              selected={diceModel}
-              playerState={myPlayerState}
-              onSelect={setDiceModel}
-              toggleReadyStatus={toggleReadyStatus}
-            />
+            <div className="flex flex-col md:flex-row justify-evenly">
+              <ul>
+                {waitingRoom.players.map((p) => (
+                  <li className="flex flex-col items-center justify-evenly mt-5" key={p.playerId}>
+                    <div className='[&_svg]:size-5 md:[&_svg]:size-10'>
+                      <Avatar image={null} name={p.name} size="md" />
+                    </div>
+                    <h2 className="text-2xl">{p.name}</h2>
+                    {p.state === 'UNLOCKED' ? "🤔" : "Ready"}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-col gap-2 items-center justify-evenly pt-5 md:pt-0">
+                <div className="flex flex-row gap-2 items-center">
+                  <button
+                    onClick={() => startGame(waitingRoom.gameType)}
+                    disabled={waitingRoom.players.length === 1 ||
+                      !(waitingRoom.players.every((p) => p.state === 'LOCKED'))}
+                    className="button button--highlight rounded-sm"
+                  >
+                    {waitingRoom.players.length === 1 ? "1 / 2" : "Play"}
+                  </button>
+                  <button onClick={exitRoom} className="p-3 button--secondary rounded-sm">
+                    Exit room
+                  </button>
+                </div>
+              </div>
+              {playError && <p className="text-(--t-error)">{playError}</p>}
+            </div>
+          </div>
+          <SelectDice
+            selected={diceModel}
+            playerState={myPlayerState}
+            onSelect={setDiceModel}
+            toggleReadyStatus={toggleReadyStatus}
+          />
           {/* <div className="fixed bottom-70 flex flex-col gap-2 items-center">
             <button
               onClick={() => startGame(waitingRoom.gameType)}
@@ -258,7 +259,7 @@ export default function GameRoom() {
               className="button rounded-sm button--secondary">
               Exit match
             </button>
-            { isTurn &&
+            {isTurn &&
               <ThrowDice
                 onClick={handleRoomRoll}
                 presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}

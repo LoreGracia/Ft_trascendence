@@ -15,6 +15,7 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { getDicePreset } from "@/components/3dDice/select/diceOptions";
 import styles from "./DiceScene.module.css";
 import { DiceModel, LastRoll } from "@/types/game";
+import { socket } from '@/lib/socket';
 
 interface ThrowDiceProps {
     onClick?: () => void;
@@ -110,8 +111,6 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             cameraRef.current = camera;
             return;
         }
-        else
-            socket.emit("has_rolled");
 
         camera.attachControl(canvas, true);
     }, [isRolling]);
@@ -157,6 +156,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             result: fallbackValue,
             onFinish: () => {
                 setIsRolling(false);
+                socket.emit("has_rolled");
             },
         });
     };
