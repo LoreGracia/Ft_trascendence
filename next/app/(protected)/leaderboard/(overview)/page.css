@@ -1,0 +1,42 @@
+.leaderboard-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding-block: 2rem;
+}
+
+.leaderboard-page__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.leaderboard-page__title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--black);
+  margin: 0;
+}
+
+.leaderboard-page__subtitle {
+  margin: 0;
+  color: var(--t-muted);
+}
+
+.leaderboard-page__info {
+  width: min(640px, 100%);
+  background: var(--light);
+  border: 1px solid var(--light);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  color: var(--t-content);
+}
+
+.leaderboard-page__info p {
+  margin: 0;
+}
