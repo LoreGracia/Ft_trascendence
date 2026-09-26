@@ -63,7 +63,7 @@ export default function GameRoom() {
     winnerMessage === "🎉 ¡YOU WON!"
       ? "bg-linear-to-t from-violet-300 to-violet-100 text-violet-500 rounded-4xl "
       : winnerMessage === "💀 YOU LOST"
-        ? "bg-linear-to-t from-violet-900 to-0"
+        ? " bg-linear-to-t from-violet-900 to-0"
         : "bg-violet-500 rounded-2xl ";
 
   const handleCopyRoomCode = async () => {
@@ -78,7 +78,7 @@ export default function GameRoom() {
     }
   };
   return (
-    <div className="flex flex-col h-full p-20">
+    <div className="flex flex-col h-full pt-20 pb-15 p-10 md:p-20">
       <p className="text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
@@ -88,7 +88,7 @@ export default function GameRoom() {
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center h-full">
             <div className="w-full h-full flex flex-col">
-              <div className="flex flex-row w-full md:mb-5 md:flex-row gap-5">
+              <div className="flex flex-row w-full md:mb-5 gap-5">
                 <h2 className="text-(--t-content)">
                   {waitingRoom.gameType} 🎲 
                 </h2>
@@ -126,12 +126,12 @@ export default function GameRoom() {
                         <Avatar image={p.userImage} name={p.name}/>
                       </div>
                       <h2 className="text-2xl">{p.name}</h2>
-                      {p.state === 'UNLOCKED'? "🤔" : "Ready" }
+                      {p.state === 'UNLOCKED'? "🤔" : "👍" }
                     </li>
                   ))}
                 </ul>
                 <div className="flex flex-col gap-2 items-center justify-evenly pt-5 md:pt-0">
-                  <div className="flex flex-row gap-2 items-center">
+                  <div className="flex flex-wrap gap-2 items-center">
                     <button
                       onClick={() => startGame(waitingRoom.gameType)}
                       disabled={waitingRoom.players.length === 1 || 
@@ -158,7 +158,7 @@ export default function GameRoom() {
       )}
 
       {matchRoom && (
-        <div>
+        <div  className="flex flex-col items-center h-full justify-evenly">
           <div className="pb-5">
             <h2>
               Room: {matchRoom.roomCode} | Mode:{' '}
@@ -182,7 +182,7 @@ export default function GameRoom() {
             </h3>
           )}
 
-          <ul className="flex flex-row gap-5 items-center justify-evenly">
+          <ul className="flex flex-wrap md:flex-row gap-5 items-center justify-evenly">
             {matchRoom.players.map((p) => {
               const totalScore = getPlayerScore(matchRoom.sum, p.playerId);
               return (
@@ -245,7 +245,7 @@ export default function GameRoom() {
             </table>
           </div> */}
 
-          <div className="flex flex-row gap-2.5 mt-10 mb-10 justify-evenly items-center">
+          <div className="flex flex-wrap gap-2.5 mt-10 mb-10 justify-evenly items-center">
             <button
               hidden={!(myMatchState === "UNLOCKED")}
               onClick={handleRoomRoll}
@@ -273,9 +273,8 @@ export default function GameRoom() {
               Exit match
             </button>
           </div>
-
             { isTurn &&
-              <div  className="flex justify-evenly items-center w-full h-full max-h-40 md:max-h-80 md:flex-row-reverse">
+              <div  className="flex justify-evenly items-center w-full h-full min-h-30 max-h-40 md:max-h-80 md:flex-row-reverse">
               <ThrowDice
                 // onClick={handleRoomRoll}
                 presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
