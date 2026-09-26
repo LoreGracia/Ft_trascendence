@@ -1,13 +1,21 @@
+"use client"
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export default function TermsAndConditions() {
 	return (
-		<main className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6">
+		<main className="min-h-screen text-foreground py-12 px-4 sm:px-6">
 			<article className="max-w-3xl mx-auto space-y-8 text-muted-foreground leading-relaxed">
-
-				{/* Header */}
+				<div>
+					<Link
+						href="/"
+						className="inline-flex items-center text-sm hover:text-foreground transition-colors"
+					>
+						<ArrowLeft className="w-4 h-4 mr-2" />
+						Back
+					</Link>
+				</div>
 				<header className="space-y-2 border-b border-border pb-6">
 					<h1 className="text-3xl font-bold tracking-tight text-foreground">
 						TERMS, CONDITIONS AND PRIVACY POLICY
@@ -15,7 +23,6 @@ export default function TermsAndConditions() {
 					<p className="text-sm">Last updated September 25, 2026</p>
 				</header>
 
-				{/* Agreement */}
 				<section id="agreement" className="space-y-4">
 					<h2 className="text-xl font-semibold text-foreground">
 						AGREEMENT TO OUR LEGAL TERMS
@@ -50,7 +57,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Table of Contents */}
 				<section className="space-y-3 pt-4 border-t border-border">
 					<h2 className="text-xl font-semibold text-foreground">TABLE OF CONTENTS</h2>
 					<nav className="flex flex-col space-y-1 text-sm font-medium">
@@ -79,7 +85,6 @@ export default function TermsAndConditions() {
 					</nav>
 				</section>
 
-				{/* Section 1 */}
 				<section id="services" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">1. OUR SERVICES</h2>
 					<p>
@@ -87,7 +92,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 2 */}
 				<section id="ip" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">2. INTELLECTUAL PROPERTY RIGHTS</h2>
 					<h3 className="text-lg font-medium text-foreground">Our intellectual property</h3>
@@ -166,7 +170,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 3 */}
 				<section id="userreps" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">3. USER REPRESENTATIONS</h2>
 					<p>
@@ -177,7 +180,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 4 */}
 				<section id="userreg" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">4. USER REGISTRATION</h2>
 					<p>
@@ -185,7 +187,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 5 */}
 				<section id="prohibited" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">5. PROHIBITED ACTIVITIES</h2>
 					<p>
@@ -219,7 +220,6 @@ export default function TermsAndConditions() {
 					</ul>
 				</section>
 
-				{/* Section 6 */}
 				<section id="ugc" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">6. USER GENERATED CONTRIBUTIONS</h2>
 					<p>
@@ -245,7 +245,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 7 */}
 				<section id="license" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">7. CONTRIBUTION LICENCE</h2>
 					<p>
@@ -262,7 +261,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 8 */}
 				<section id="sitemanage" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">8. SERVICES MANAGEMENT</h2>
 					<p>
@@ -270,7 +268,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 9 */}
 				<section id="ppyes" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">9. PRIVACY POLICY</h2>
 					<p>
@@ -278,7 +275,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 10 */}
 				<section id="terms" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">10. TERM AND TERMINATION</h2>
 					<p>
@@ -289,7 +285,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 11 */}
 				<section id="modifications" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">11. MODIFICATIONS AND INTERRUPTIONS</h2>
 					<p>
@@ -300,7 +295,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 12 */}
 				<section id="law" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">12. GOVERNING LAW</h2>
 					<p>
@@ -308,7 +302,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 13 */}
 				<section id="disputes" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">13. DISPUTE RESOLUTION</h2>
 					<p>
@@ -325,7 +318,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 14 */}
 				<section id="corrections" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">14. CORRECTIONS</h2>
 					<p>
@@ -333,7 +325,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 15 */}
 				<section id="disclaimer" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">15. DISCLAIMER</h2>
 					<p>
@@ -341,7 +332,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 16 */}
 				<section id="liability" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">16. LIMITATIONS OF LIABILITY</h2>
 					<p>
@@ -349,7 +339,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 17 */}
 				<section id="indemnification" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">17. INDEMNIFICATION</h2>
 					<p>
@@ -357,7 +346,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 18 */}
 				<section id="userdata" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">18. USER DATA</h2>
 					<p>
@@ -365,7 +353,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 19 */}
 				<section id="electronic" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">19. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES</h2>
 					<p>
@@ -373,7 +360,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 20 */}
 				<section id="misc" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">20. MISCELLANEOUS</h2>
 					<p>
@@ -381,7 +367,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 21 */}
 				<section id="addclause" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">21. GRADING GUIDELINES</h2>
 					<p>
@@ -389,7 +374,6 @@ export default function TermsAndConditions() {
 					</p>
 				</section>
 
-				{/* Section 22 */}
 				<section id="contact" className="space-y-3 pt-4">
 					<h2 className="text-xl font-semibold text-foreground">22. CONTACT US</h2>
 					<p>

@@ -14,7 +14,7 @@ export function MobileBottomBar({className} : {className?: string;} ) {
   return (
     <nav
     className={cn("list-none fixed bottom-0 left-0 right-0 z-50",
-      "flex items-center justify-evenly h-16 bg-(--light) shadow-lg shadow-gray-50 md:hidden", className)}>
+      "flex items-center justify-evenly h-16 bg-(--light) shadow-(color:--black) shadow-2xl md:hidden", className)}>
       {navigation.content.map((item) => {
         const Icon = item.icon;
         const isDisabled = Boolean(item.disabled);

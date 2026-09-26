@@ -65,9 +65,9 @@ export default function IndexDice() {
         const randomResult = Math.floor(Math.random() * 6) + 1;
 
         animateDiceFlight(scene, dice.root, {
-            startPosition: new Vector3(1.5, 3, 0),
+            startPosition: new Vector3(1.5, 2.0, 0),
             endPosition: new Vector3(0, -1, 0),
-            jumpHeight: 2.1,
+            jumpHeight: 1.9,
             durationInFrames: 200,
             rotations: 8,
             result: randomResult,

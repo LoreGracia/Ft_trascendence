@@ -199,6 +199,8 @@ io.on("connection", (socket: Socket) => {
 		match.rolls.push(roll);
 
 		match.rules.evaluateRoll(match, socket.data.userId);
+		io.to(roomCode).emit("roll_number", { roll });
+		waitForSocketEvent(socket, "has_rolled", 7500);
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
 			io.to(roomCode).emit("dice_rolled", { match });
