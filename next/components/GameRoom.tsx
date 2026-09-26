@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, Lock, LockOpen, ClipboardCopy } from "lucide-react";
+import { ArrowRight, ClipboardCopy } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
 import { useSocket } from "@/components/SocketProvider";
@@ -46,8 +46,8 @@ export default function GameRoom() {
   const [diceTrigger, setDiceTrigger] = useState(0);
   const handleRoomRoll = () => {
     if (winnerMessage && !isMyTurn) return;
+    console.log("1 ROLLDICE");
     rollDice();// acción del socket
-    setDiceTrigger((v) => v + 1); // dispara la animación del dado
   };
 
   useEffect(() => {
@@ -210,41 +210,7 @@ export default function GameRoom() {
               </li>
             );})}
             </ul>
-          {/* <div className="bg-(--light) p-2.5 rounded-lg me-4">
-            <h3>📊 Total result summary:</h3>
-            <table
-              className="w-full justify-evenly"
-            >
-              <thead>
-                <tr style={{ borderBottom: '1px solid #444' }}>
-                  <th style={{ padding: '8px' }}>Player</th>
-                  <th style={{ padding: '8px' }}>Total score</th>
-                  <th style={{ padding: '8px' }}>State</th>
-                  <th style={{ padding: '8px' }}>dice</th>
-                </tr>
-              </thead>
-              <tbody>
-                {matchRoom.players.map((p) => {
-                  const totalScore = getPlayerScore(matchRoom.sum, p.playerId);
-                  return (
-                    <tr key={p.playerId} style={{ borderBottom: '1px solid #333' }}>
-                      <td style={{ padding: '8px' }}>
-                        {matchRoom.players[matchRoom.turn % matchRoom.players.length]?.playerId === p.playerId ? '➡️' : ''}
-                        {p.name} {p.socketId === socket.id ? ' (You)' : ''}
-                      </td>
-                      <td className="p-2 text-lg text-(--dark)">
-                        <b>{totalScore} pts</b>
-                      </td>
-                      <td style={{ padding: '8px' }}>{p.state}</td>
-                      <td>
-                        <b>{p.diceModel}</b>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div> */}
+
 
           <div className="flex flex-wrap gap-2.5 mt-10 mb-10 justify-evenly items-center">
             <button
@@ -278,7 +244,7 @@ export default function GameRoom() {
               <div  className="flex justify-evenly items-center w-full h-full min-h-30 max-h-40 md:max-h-80 md:flex-row-reverse">
               <ThrowDice
                 // onClick={handleRoomRoll}
-                presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
+                presetValue={matchRoom.players.find((p) => matchRoom.turn % matchRoom.players.length)?.diceModel ?? 'default'}
                 lastResult={lastRoll}
                 triggerRoll={diceTrigger}
                 setIsRolling={setIsRolling}
@@ -286,27 +252,6 @@ export default function GameRoom() {
               />
               </div>
             }
-
-          {/* {matchRoom.gameType === 'ADD42' && lastRoll && (
-
-            <div className="bg-(--light) p-3 rounded-lg border-l-4 border-l-(--accent) me-4">
-              <h4>Last move ({lastRoll.idPlayer}):</h4>
-              <p className="text-(--t-content)">
-                Dados sacados:{' '}
-                {lastRoll.nums.map((d, idx) => (
-                  <span
-                    key={`${lastRoll.idPlayer}-${idx}`}
-                    style={{ backgroundColor: '#333', padding: '4px 8px', borderRadius: '4px', marginRight: '5px' }}
-                  >
-                    <b>[{d.value}]</b>
-                  </span>
-                ))}
-              </p>
-              <p className="text-(--t-content)">
-                Added from this turn: <b>+{lastRoll.nums.reduce((acc, d) => acc + d.value, 0)} pts</b>
-              </p>
-            </div>
-          )} */}
         </div>
       )}
     </div>

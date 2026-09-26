@@ -186,7 +186,7 @@ io.on("connection", (socket: Socket) => {
 		}
 	});
 
-	socket.on("roll_dice", (roomCode: string) => {
+	socket.on("roll_dice", async (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
 		if (!match) {
 			return;
@@ -200,11 +200,11 @@ io.on("connection", (socket: Socket) => {
 
 		match.rules.evaluateRoll(match, socket.data.userId);
 		io.to(roomCode).emit("roll_number", { roll });
-		waitForSocketEvent(socket, "has_rolled", 7500);
+		await waitForSocketEvent(socket, "has_rolled", 7500);
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
-			io.to(roomCode).emit("dice_rolled", { match, roll });
-			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+			io.to(roomCode).emit("dice_rolled", { match });
+			io.to(roomCode).emit("match_won", { match });
 			updateGameDb(match);
 			return;
 		}
