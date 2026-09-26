@@ -214,3 +214,26 @@
   flex: 0 1 auto;
   min-width: 120px;
 }
+
+.profile-footer-link {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--t-muted);
+}
+
+.profile-footer-link a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.profile-footer-link a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .profile-footer-link {
+    display: none;
+  }
+}

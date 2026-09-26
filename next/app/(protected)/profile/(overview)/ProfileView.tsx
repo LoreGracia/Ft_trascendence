@@ -13,6 +13,7 @@ import { ProfileFormValues, useProfileForm } from '@/hooks/useProfileForm';
 import { ProfileEditForm } from '@/components/Form/ProfileEditForm';
 import { getAvatarUrl } from '@/lib/avatar';
 import { updateUserProfile } from '@/lib/user';
+import Link from 'next/link';
 
 type ProfileUser = Prisma.UserGetPayload<{ include: { stats: true } }>;
 
@@ -93,6 +94,11 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 						)}
 					</section>
 				</div>
+				<nav className="profile-footer-link" aria-label="Legal">
+					<Link href="/privacy-politics" className="hover:underline">
+						Terms, conditions and privacy policy
+					</Link>
+				</nav>
 			</div>
 		</div>
 	);
