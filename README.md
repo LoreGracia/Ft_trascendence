@@ -1,384 +1,288 @@
+*This project has been created as part of the 42 curriculum by @lgracia, @pamanzan, @jgirbau-, @amarquez, @ecoma-ba.*
+
 # Transcendence
 
-A 42-school final project: a multiplayer online dice game built with a modern full-stack architecture. The application combines a Next.js frontend, a real-time Socket.IO backend, PostgreSQL persistence, Prisma ORM, and Traefik-based HTTPS routing to deliver a complete web game platform with authentication, user profiles, rooms, and leaderboard tracking.
+## Description
 
-## Team and roles
+Transcendence is a full-stack, real-time multiplayer dice game. Players authenticate, choose a game mode, create or join a room, ready up, and play synchronously against other players. The project combines a responsive Next.js interface, a Socket.IO game server, PostgreSQL persistence, and a containerized HTTPS setup.
 
-This project was developed by a small multidisciplinary team, with clear responsibilities assigned to each member to ensure a balanced final delivery and a maintainable architecture.
+### Key features
 
-- Project Manager / Frontend Developer (@lgracia): Implementation of the user interface, navigation flow, responsive pages, client-side state management, architecture decisions, and delivery management.
-- Team Lead / Frontend Developer (@pamanzan): Coordination of tasks, sprint planning, issue tracking, client-side state management, and presentation of the game experience.
-- Backend Developer (@jgirbau-): Design and maintenance of the real-time multiplayer logic, Socket.IO server, turn system, room management, and game rules enforcement.
-- Database / Auth Developer (@amarquez): Prisma schema design, PostgreSQL integration, authentication flows, session management, and persistence of user statistics.
-- DevOps / Infrastructure Engineer (@ecoma-ba): Docker Compose orchestration, HTTPS routing with Traefik, certificate generation, environment configuration, and deployment support.
+- Email/password authentication and GitHub OAuth through Better Auth.
+- Profile completion and editing, avatar selection, and account information.
+- Multiplayer rooms with five-character codes and a maximum of six players.
+- Two game modes: Free Play and Add42.
+- Server-authoritative turns, dice rolls, room state, win conditions, and tie resolution.
+- One d6 roll per turn, with a 30-second turn timeout.
+- Temporary reconnection support for active waiting rooms and matches.
+- Persistent match results, per-mode statistics, and separate leaderboards.
+- Responsive desktop and mobile navigation, including a mobile bottom bar.
+- Animated 3D dice presentation using Babylon.js.
+- Local HTTPS routing through Traefik.
 
-## 1. Project overview
+## Team Information
 
-This project implements a competitive multiplayer dice game where users can create or join rooms, select a game mode, ready up, and play in real time against other users. The challenge is not only to build a game, but also to provide a polished user experience with authentication, persistent statistics, OAuth login, room management, and a real-time backend.
+- **@lgracia - Project Manager and Frontend Developer:** coordinates delivery, implements user-facing pages and navigation, and contributes to responsive UI and client-side state management.
+- **@pamanzan - Team Lead and Frontend Developer:** coordinates technical work, plans and tracks tasks, and contributes to the game interface and client-side experience.
+- **@jgirbau- - Backend Developer:** implements the Socket.IO server, room lifecycle, turn handling, reconnection behavior, and server-side game rules.
+- **@amarquez - Database and Authentication Developer:** maintains the Prisma/PostgreSQL model, authentication and session flows, OAuth integration, and user statistics persistence.
+- **@ecoma-ba - DevOps and Infrastructure Engineer:** maintains Docker Compose orchestration, Traefik routing, local certificate generation, and deployment support.
 
-The system is designed around three main layers:
+Roles overlap where the feature required coordination between frontend, backend, database, and infrastructure work.
 
-- Frontend: Next.js + React + TypeScript
-- Backend / game server: Node.js + Express + Socket.IO
-- Data layer: PostgreSQL + Prisma
+## Project Management
 
-The app is structured to support a 42-style final evaluation focused on:
+The team divided the project by ownership areas while reviewing integration points together. Frontend, backend, database/authentication, and infrastructure work were developed in parallel and connected through shared interfaces such as socket events, Prisma models, and the Docker network.
 
-- authentication and user management
-- multiplayer room creation and joining
-- real-time synchronization
-- database persistence
-- leaderboard and game statistics
-- a production-like deployment setup with HTTPS, reverse proxy, and containers
+- **Work organization:** responsibilities were assigned by technical area; features were integrated and manually tested through the complete login-to-match flow.
+- **Task tracking:** Git branches and repository history were used to organize implementation work and review changes.
+- **Communication:** the team used direct team communication for coordination, clarification, and integration decisions.
 
-## 2. Core features
+The README intentionally documents only the project-management practices that are safe and relevant to the public repository.
 
-### Authentication and user system
-
-- Email/password authentication via Better Auth
-- GitHub OAuth login
-- User profile management
-- Username and email uniqueness validation
-- Persistent sessions and accounts in PostgreSQL
-- JWT-based validation for socket access
-
-### Multiplayer room system
-
-- Create rooms by game mode
-- Join a room using a room code
-- Waiting lobby with live player status updates
-- Ready / lock selection and validation
-- Match start only when the room is ready
-- Support for multiple players in a shared room
-
-### Game modes
-
-#### Free Play
-
-- Each player accumulates points across turns
-- The player with the highest total score wins
-- The game ends after a full round cycle across the table
-
-#### Add42
-
-- Players accumulate dice values into a personal total
-- If a player exceeds 42, they are locked
-- If a player reaches exactly 42, they win immediately
-- If all players lock, the highest score not exceeding 42 wins
-- Ties are handled as draws
-
-### Real-time gameplay
-
-- Socket-based room synchronization
-- Server-side turn management
-- Dice rolls are validated and broadcast to all players
-- Match state transitions and winner resolution happen on the server
-- Reconnection support restores the room state for active players
-
-### Persistent stats and leaderboard
-
-- User statistics are saved per game mode
-- Match outcomes update win/loss/tie counters
-- Leaderboard values are generated from user stats
-- Rankings are displayed separately for Free Play and Add42
-
-### User interface
-
-- Responsive multi-page interface
-- Animated 3D dice interactions
-- Active lobby and in-game state synchronization
-- Profile and leaderboard views
-- HTTPS access through Traefik and generated local certificates
-
-## 3. Project architecture
-
-The repository is organized as follows:
-
-```text
-.
-├── docker-compose.yml          # Container orchestration for Postgres, app, socket, Traefik
-├── Makefile                    # Convenience commands for running the stack
-├── .env.local.example          # Environment variables template
-├── certs/                     # TLS certificates used locally
-├── traefik/
-│   └── config.yaml             # Reverse proxy routing rules
-├── prisma/
-│   ├── schema.prisma            # Database schema
-│   ├── migrations/             # Prisma migration history
-│   └── seed.ts                 # Seed utilities if used
-├── next/
-│   ├── app/                    # App Router pages and layout
-│   ├── components/             # Frontend UI and game visual components
-│   ├── hooks/                  # Client-side game and socket logic
-│   ├── lib/                    # Auth, validation, utility logic
-│   ├── public/                 # Static assets
-│   ├── package.json            # Frontend dependencies and scripts
-│   └── Dockerfile              # Frontend container definition
-├── server/
-│   ├── game/                   # Rules, factories, room logic, dice mechanics
-│   ├── lib/                    # DB integration helpers
-│   ├── sockets/                # Socket.IO server entrypoints
-│   ├── package.json            # Backend dependencies and scripts
-│   └── Dockerfile              # Backend container definition
-└── README.md
-```
-
-## 4. Tech stack
+## Technical Stack
 
 ### Frontend
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS
-- Babylon.js / custom 3D dice visualizations
-- Socket.IO client
+- Next.js 16 App Router, React 19, and TypeScript.
+- Tailwind CSS 4, custom CSS modules, and `lucide-react` for UI elements.
+- Babylon.js for the animated 3D dice scene.
+- Socket.IO Client for live room and match updates.
+- Zod for input validation.
 
 ### Backend
 
-- Node.js
-- Express
-- Socket.IO
-- JWT validation
-- Prisma client
+- Node.js, Express 5, and Socket.IO 4.
+- TypeScript executed through `tsx` and `nodemon` during development.
+- `jose` and `jsonwebtoken` for token-related validation.
+- A server-side game model with Factory and Strategy-style rule objects.
 
-### Database
+### Database and persistence
 
-- PostgreSQL 17
-- Prisma ORM
+- PostgreSQL 17 stores users, sessions, accounts, verification records, games, players, rolls, and statistics.
+- Prisma 7 provides the schema, migrations, generated client, relations, and transactional updates.
 
-### Authentication and security
+PostgreSQL was chosen because the project has relational data and integrity constraints: users participate in games, games contain players, players own rolls, and statistics are unique per user and game mode. Prisma makes these relations explicit and keeps database access type-safe.
 
-- Better Auth
-- GitHub OAuth
-- HTTPS termination with Traefik
-- JWT-based socket authentication
+### Infrastructure
 
-### Deployment
+- Docker and Docker Compose isolate the database, Next.js app, Socket.IO server, Traefik, and the external tunnel client.
+- Traefik 3.7 terminates local HTTPS and routes the frontend, socket server, and dashboard by hostname.
+- OpenSSL generates the local development certificate used by the HTTPS entrypoint.
 
-- Docker
-- Docker Compose
-- local certificate generation with OpenSSL
+## Instructions
 
-## 5. Game logic
+### Prerequisites
 
-### Room system
+- Linux or another Docker-compatible operating system.
+- Docker Engine and Docker Compose.
+- GNU Make.
+- OpenSSL for local certificate generation.
+- A project runtime configuration supplied separately from this public README. Credentials and private integration values are intentionally not documented here.
 
-A room is created when a user clicks Create Room in a selected game mode. The server registers a waiting room with:
+### Start the application
 
-- a unique room code
-- a game type
-- a players array
-- room state (OPEN or CLOSED)
+1. Obtain the repository and enter its root directory.
+2. Make sure the private runtime configuration has been provided through the team's normal deployment process.
+3. Run the following command:
 
-Once created, other users can join the room with the code. The game does not start until the room is ready and all players are locked / ready.
+   ```bash
+   make up
+   ```
 
-### Turn system
+   This generates the local certificate when necessary, starts PostgreSQL, applies Prisma migrations from the application container, and starts the application services.
 
-The server keeps track of the current turn index in the match state. Each player can roll only when it is their turn. After a valid roll, the turn advances to the next player and the updated state is broadcast to everyone in the room.
+4. Open `https://dice.eina.cc` in a browser. A browser warning can appear because the local certificate is not issued by a public certificate authority.
 
-### Rules engine
-
-The logic is separated into:
-
-- game rules
-- game factory
-- room manager
-- dice generation functions
-
-The backend implements two game strategies:
-
-- Free Play: maximize the score after the last turn cycle
-- Add42: avoid busting above 42 and outperform opponents under that cap
-
-## 6. Database design
-
-The Prisma schema defines the core persistence model for the application:
-
-- User: authenticated users and profiles
-- Session: session tracking
-- Account: OAuth/email account associations
-- Verification: verification tokens
-- Jwks: key material for JWT usage
-- Game: match metadata
-- PlayerGame: participation data per user per game
-- Roll: individual roll history
-- UserStats: cumulative wins, losses, ties, and game totals
-
-This design supports both runtime game data and persistent leaderboard information.
-
-## 7. Running the project
-
-The project includes a `Makefile` with the main commands:
+### Useful commands
 
 ```bash
-make up
+make re       # rebuild images and start the stack
+make down     # stop and remove running containers
+make clean    # remove containers, images, and project volumes
+make fclean   # clean and prune unused Docker resources
+make prune    # perform fclean and prune builder cache
 ```
 
-Starts the full environment with the configured Docker services.
-
-```bash
-make re
-```
-
-Rebuilds the images and starts everything again.
-
-```bash
-make down
-```
-
-Stops the running services.
-
-```bash
-make clean
-```
-
-Stops containers and removes the generated resources.
-
-```bash
-make fclean
-```
-
-Performs a more aggressive cleanup, including Docker system prune operations.
-
-### Direct Docker Compose usage
-
-```bash
-docker-compose --env-file .env.local up --build
-```
-
-## 8. Accessing the application
-
-Once the stack is running, the app is exposed through local HTTPS endpoints:
-
-- Frontend: https://dice.localhost:8443
-- Socket server: https://socket.localhost:8443
-- Traefik dashboard: https://traefik.localhost
-
-The local certificate is generated under `certs/local.crt` and `certs/local.key`.
-
-> In a local development environment, browsers may warn about the self-signed certificate. This is expected for a 42 project and should be accepted temporarily for local testing.
-
-## 9. Main routes and application flow
-
-The frontend includes the following key user flows:
-
-- `/` landing page
-- `/login` login page
-- `/signup` registration page
-- `/landing` authenticated game entry point
-- `/lobby` waiting room and room management
-- `/leaderboard` leaderboard view
-- `/profile` user profile and stats
-- `/privacy-politics` legal content page
-
-### Typical game flow
-
-1. The user logs in or creates an account.
-2. The user selects a game mode: Free Play or Add42.
-3. The user creates or joins a room.
-4. Other players join and choose their ready state.
-5. Once the room is ready, the match starts.
-6. Each player rolls in turn.
-7. The server validates the roll, updates totals, and broadcasts the results.
-8. Match results are persisted and reflected in profiles and leaderboard stats.
-
-## 10. Validation, rules, and subject alignment
-
-This project follows the spirit of the 42 Transcendence subject by combining multiple layers of real-world web development:
-
-- database persistence with Prisma
-- authentication with secure session management
-- real-time communication with Socket.IO
-- interactive game logic with room states and match rules
-- user-centric interfaces with leaderboard and profile systems
-- containerized local deployment with HTTPS routing
-
-The project therefore goes beyond a simple frontend demo: it is a complete multi-service web application designed like a production game platform.
-
-## 11. Responsibilities by folder
-
-### Frontend (`next/`)
-
-Responsible for:
-
-- rendering UI and pages
-- handling authentication flows
-- managing client-side game state
-- connecting to the Socket.IO server
-- displaying matchmaking and leaderboard views
-
-### Game server (`server/`)
-
-Responsible for:
-
-- validating socket clients via tokens
-- creating and managing rooms
-- validating turns and dice rolls
-- enforcing the game rules
-- persisting completed matches
-
-### Database (`prisma/`)
-
-Responsible for:
-
-- schema definition
-- relationships between users, games, and stats
-- migration history and data consistency
-
-### Infrastructure (`traefik/`, `certs/`, `docker-compose.yml`)
-
-Responsible for:
-
-- route orchestration
-- secure local HTTPS access
-- service isolation and container lifecycle
-- deployment readiness in local environments
-
-## 12. Implementation notes
-
-- Docker Compose is used to simplify local development and evaluation.
-- The app is designed for local HTTPS hosts rather than public internet deployment.
-- Socket authentication is enforced using validated tokens to protect the backend.
-- The project stores both runtime state and database records for ranking and stats.
-
-## 13. Deliverable notes for evaluation
-
-For a final 42 submission, this project is expected to demonstrate:
-
-- stable local deployment
-- coherent game flow from login to match completion
-- working multiplayer communication
-- persistent user and stat models
-- clear separation between frontend, backend, and database
-- organized code and container-based execution
-
-## 14. Conclusion
-
-Transcendence is a complete multiplayer online dice game project that combines real-time gameplay, secure authentication, persistent storage, and modern web technologies in a single system. It matches the expectations of the 42 final project: a polished product, a robust architecture, and a functional full-stack application with a real game loop and user experience.
-
-## 15. Quick start summary
-
-```bash
-cp .env.local.example .env.local
-make up
-```
-
-Then open:
+## Architecture
 
 ```text
-https://dice.localhost:8443
+Browser
+  |
+  +--> Traefik HTTPS router
+		 |--> Next.js App Router and Better Auth
+		 |       |
+		 |       +--> Prisma --> PostgreSQL
+		 |
+		 +--> Socket.IO game server
+				 |
+				 +--> in-memory waiting/match rooms
+				 +--> Prisma --> PostgreSQL
 ```
 
-and start playing.
+Important boundaries:
 
-## Resources Used
+- `next/app/`, `next/components/`, and `next/hooks/` provide pages, UI, and socket-driven client behavior.
+- `server/sockets/` authenticates socket connections and broadcasts room events.
+- `server/game/` owns dice generation, turn progression, room state, and win rules.
+- `prisma/` defines the persistent relational model and migrations.
+- `docker-compose.yml`, `traefik/`, and `certs/` provide local service orchestration and routing.
 
-- Libraries: Next.js, React, TypeScript, Tailwind CSS, Babylon.js (3D dice), Socket.IO, Express, Prisma, and related npm packages.
-- Tools: Docker, Docker Compose, Traefik, OpenSSL, PostgreSQL, Prisma Migrate, Make.
-- External services / APIs: GitHub OAuth, Better Auth, PANGOLIN endpoint, NEWT (replace with exact service names/URLs used in your deployment).
-- Assets and 3D resources: textures, models and other assets used for the dice and UI — include author and license information here (replace with concrete attributions).
-- Documentation & references: link to official docs for core technologies (Next.js, Socket.IO, Prisma, Babylon.js) and any tutorials or articles followed.
-- Licenses & credits: list third-party licenses and any required attributions for assets or libraries.
-- Quick commands & locations: `cp .env.local.example .env.local`, `make up`, certificates at `certs/`.
+## Database Schema
+
+The following diagram summarizes the relations in `prisma/schema.prisma`:
+
+```mermaid
+erDiagram
+	USER ||--o{ SESSION : has
+	USER ||--o{ ACCOUNT : has
+	USER ||--o{ PLAYER_GAME : participates
+	USER ||--o{ USER_STATS : owns
+	GAME ||--o{ PLAYER_GAME : contains
+	PLAYER_GAME ||--o{ ROLL : records
+
+	USER {
+		string id PK
+		string name UK
+		string email UK
+		boolean emailVerified
+		datetime createdAt
+		datetime updatedAt
+	}
+	GAME {
+		string id PK
+		enum status
+		enum gameType
+		datetime createdAt
+	}
+	PLAYER_GAME {
+		string id PK
+		string userId FK
+		string gameId FK
+		enum outcome
+		int totalPoints
+		int rank
+		datetime joinedAt
+	}
+	ROLL {
+		string id PK
+		string playerId FK
+		int value
+		int round
+		datetime createdAt
+	}
+	USER_STATS {
+		string id PK
+		string userId FK
+		enum gameType
+		int gamesPlayed
+		int wins
+		int losses
+		int ties
+		int totalPoints
+	}
+```
+
+Additional authentication tables are `Session`, `Account`, `Verification`, and `Jwks`. `UserStats` is unique for each `(userId, gameType)` pair. `PlayerGame` is unique for each `(userId, gameId)` pair, and each player participation can have many `Roll` records.
+
+## Features List
+
+| Feature | Contributors | Functionality |
+| --- | --- | --- |
+| Authentication | @amarquez, @lgracia | Email/password sign-up and login, Better Auth sessions, and GitHub OAuth. |
+| Profiles | @amarquez, @lgracia, @pamanzan | Complete a profile, edit user information, choose an avatar, and view statistics. |
+| Room creation and joining | @jgirbau-, @pamanzan, @lgracia | Create a room for a selected mode, join by room code, leave, and receive live player updates. |
+| Ready and lobby flow | @jgirbau-, @pamanzan, @lgracia | Lock player selection and start only when all players are ready. |
+| Free Play | @jgirbau- | Accumulate one d6 result per turn and decide the winner after a full turn cycle. |
+| Add42 | @jgirbau- | Lock players above 42, win on exactly 42, or resolve the closest valid score. |
+| Real-time gameplay | @jgirbau-, @pamanzan | Authenticate sockets, validate turns, broadcast rolls, and synchronize state. |
+| Reconnection and timeout handling | @jgirbau- | Restore active players after a short disconnect window and lock a player after 30 seconds. |
+| 3D dice interface | @lgracia, @pamanzan | Present dice selection and animated rolls with Babylon.js. |
+| Leaderboards | @amarquez, @lgracia, @jgirbau- | Display per-mode rankings based on persistent user statistics. |
+| Responsive interface | @lgracia, @pamanzan | Provide desktop navigation and mobile layouts for the main game flows. |
+| Containerized HTTPS deployment | @ecoma-ba | Run services through Docker Compose and route them through Traefik. |
+
+## Modules
+
+The project claims the following modules from the subject. Major modules are worth 2 points and Minor modules are worth 1 point.
+
+**Total claimed: 14 points**
+
+- Major modules: 6 x 2 points = 12 points.
+- Minor modules: 2 x 1 point = 2 points.
+
+### Major modules
+
+| Subject module | Points | Implementation and justification | Contributors |
+| --- | ---: | --- | --- |
+| **Web: Use a framework for both the frontend and backend** | 2 | The frontend uses Next.js with the App Router, while the real-time backend uses Express. Together they provide structured routing, server/client application boundaries, HTTP server setup, and a maintainable full-stack architecture. | @lgracia, @pamanzan, @jgirbau- |
+| **Web: Implement real-time features using WebSockets or similar technology** | 2 | Socket.IO broadcasts room membership, ready states, match state, dice rolls, turn changes, timeouts, and match results. The server validates socket tokens, handles disconnects, and allows players to reconnect during the disconnection window. | @jgirbau-, @pamanzan |
+| **Gaming and user experience: Implement a complete web-based game** | 2 | Transcendence provides a complete playable dice game with two modes, clear turn rules, server-side roll validation, win/loss/tie outcomes, and a browser interface for creating, joining, and playing matches. `DiceGame`, `Rules`, `Product`, and `RoomManager` separate the game responsibilities. | @jgirbau-, @lgracia, @pamanzan |
+| **Gaming and user experience: Remote players** | 2 | Players on separate clients join the same Socket.IO room and play the same match through synchronized server state. Disconnect handling, reconnection, turn timeouts, and server-authoritative validation address the network and fairness requirements. | @jgirbau-, @pamanzan |
+| **Gaming and user experience: Multiplayer game (more than two players)** | 2 | Waiting rooms accept up to six players. Turns advance through all active players, locked players are skipped when appropriate, and every state transition is broadcast to the complete room. | @jgirbau-, @pamanzan |
+| **Gaming and user experience: Implement advanced 3D graphics** | 2 | Babylon.js is used for the interactive 3D dice experience, including dice models, camera/scene rendering, selection, and animated throws. This gives the game a dedicated 3D presentation rather than a purely 2D result display. | @lgracia, @pamanzan |
+
+### Minor modules
+
+| Subject module | Points | Implementation and justification | Contributors |
+| --- | ---: | --- | --- |
+| **Web: Use an ORM for the database** | 1 | Prisma defines the PostgreSQL schema, relations, migrations, generated clients, unique constraints, and transactional persistence for games, players, rolls, and statistics. | @amarquez |
+| **User Management: Implement remote authentication with OAuth 2.0** | 1 | Better Auth integrates GitHub as an external authentication provider and stores the associated account and session data in PostgreSQL. | @amarquez |
+
+### Module scope and exclusions
+
+Only fully implemented modules are included in the point total. The following subject modules are intentionally not claimed:
+
+- **Standard user management and authentication:** the project has secure sign-up/login, profiles, and avatars, but the subject module also requires adding/removing friends and displaying friend online status. Those requirements are not implemented in the current schema or application flow.
+- **Game statistics and match history:** the project persists game outcomes and displays leaderboards, but the subject requires a complete match history with opponents, dates, achievements, and progression. The current implementation does not provide all of those requirements.
+- **Modules of choice:** no additional custom module is claimed. The dice game, real-time multiplayer, remote players, and 3D graphics are documented under the subject's existing Gaming and user experience modules rather than presented as custom modules.
+- **Infrastructure and HTTPS:** Docker Compose, Traefik, and local HTTPS support the mandatory deployment and security requirements, but they are not counted as a Devops module because the subject's Devops modules require ELK, Prometheus/Grafana, microservices, or the specified health-check and disaster-recovery system.
+
+## Individual Contributions
+
+### @lgracia
+
+Led project delivery and contributed the main frontend experience: navigation, responsive pages, profile and user-facing flows, client-side state handling, and integration of the game interface. A key challenge was keeping desktop and mobile interaction models consistent; shared layouts and dedicated mobile navigation components address that split.
+
+### @pamanzan
+
+Coordinated frontend work and contributed to the lobby, gameplay presentation, responsive behavior, and client-side synchronization. The main integration challenge was presenting server-driven room and match state clearly; the UI consumes Socket.IO events and reflects readiness, turns, rolls, and results.
+
+### @jgirbau-
+
+Implemented the real-time backend and game core: Socket.IO authentication, waiting and match rooms, room codes, player readiness, turn validation, dice rolls, timeout handling, reconnection, and Free Play/Add42 rules. The main challenge was keeping all clients consistent while enforcing rules server-side; room state is owned by the server and broadcast after every state transition.
+
+### @amarquez
+
+Implemented the Prisma schema, PostgreSQL integration, Better Auth persistence, account/session relations, OAuth support, and statistics updates. The main challenge was connecting authentication identities to game participation and leaderboard data; the schema uses explicit foreign keys, unique constraints, and transactional match updates.
+
+### @ecoma-ba
+
+Implemented the local deployment layer: Docker Compose services, PostgreSQL container orchestration, Traefik HTTPS routing, certificate generation, and deployment support. The main challenge was making multiple services communicate consistently; the Compose network and health-checked database startup define the service dependencies.
+
+## Resources
+
+### Documentation and references
+
+- [42 Transcendence subject](https://cdn.intra.42.fr/pdf/pdf/146455/en.subject.pdf)
+- [Next.js documentation](https://nextjs.org/docs)
+- [React documentation](https://react.dev/)
+- [TypeScript handbook](https://www.typescriptlang.org/docs/)
+- [Socket.IO documentation](https://socket.io/docs/v4/)
+- [Prisma documentation](https://www.prisma.io/docs)
+- [PostgreSQL documentation](https://www.postgresql.org/docs/)
+- [Better Auth documentation](https://www.better-auth.com/docs)
+- [Babylon.js documentation](https://doc.babylonjs.com/)
+- [Docker Compose documentation](https://docs.docker.com/compose/)
+- [Traefik documentation](https://doc.traefik.io/traefik/)
+
+These references were used to understand framework APIs, authentication, relational persistence, real-time communication, 3D rendering, container orchestration, and reverse-proxy configuration. Third-party dependencies retain their respective licenses. Project-specific visual assets should be credited according to their original licenses when redistributed.
+
+### Use of AI
+
+AI tools were used as development assistance for targeted codebase exploration, debugging hypotheses, TypeScript and React implementation suggestions, README structure, and technical writing. They were also used to help review the consistency of the documented architecture against the source files. The team reviewed, adapted, and tested generated suggestions; AI was not used as a substitute for ownership of the design, integration, or final validation of the project.
+
+## License and Credits
+
+This repository is an educational project created for the 42 curriculum. Frameworks, libraries, Docker images, and external assets remain subject to their own licenses and attribution requirements.
 
