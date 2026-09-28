@@ -27,7 +27,7 @@ export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
       <button
         type="button"
         onClick={handleCreateRoom}
-        disabled={isCreating}
+        disabled={isCreating || roomCode != null}
         className="button button-round button--highlight whitespace-nowrap disabled:bg-amber-400"
       >
         <Plus />

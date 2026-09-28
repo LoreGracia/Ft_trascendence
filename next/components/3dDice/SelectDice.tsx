@@ -99,7 +99,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
     }, []);
 
     return (
-        <div className="items-center w-full h-full flex flex-col">
+        <div className="items-center w-full h-full flex flex-col pb-4">
             <div className="flex relative w-full h-full min-h-40 max-h-60 max-w-90 md:min-h-70">
                 <canvas ref={canvasRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] outline-none" aria-label="3D dice scene" />
             </div>
@@ -109,8 +109,8 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
                 {playerState === 'LOCKED' ? "Not ready" : "Ready"}
             </button>
             {playerState === "UNLOCKED" &&
-            <div className="flex flex-col w-full pb-30">
-                <h2 className="text-(--dark) size-5 pb-4 m-0 text-center w-full">Select your dice</h2>
+            <div className="flex flex-col w-full pb-30 h-">
+                <h2 className="text-(--dark) size-5 m-0 text-center w-full">Select your dice</h2>
                 <div ref={carouselRef} className={styles.diceScene__carousel}>
                     {PRESET_OPTIONS.map((option) => (
                         <DiceCarouselItem

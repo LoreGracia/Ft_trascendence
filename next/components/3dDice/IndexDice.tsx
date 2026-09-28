@@ -97,7 +97,7 @@ export default function IndexDice() {
 
     //return <canvas ref={canvasRef} className={styles.diceScene__canvas} aria-label="Independent dice demo" />;
     return (
-        <div className="flex relative w-full h-full min-h-70 max-h-90 max-w-90 md:min-h-70">
+        <div className="flex relative w-full h-full min-h-30 max-h-60 max-w-60 md:min-h-70 md:max-h-90">
             <canvas
                 ref={canvasRef}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[130%] md:w-[120%] md:h-[120%] outline-none"

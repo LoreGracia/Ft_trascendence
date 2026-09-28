@@ -132,8 +132,9 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     }, [presetValue]);
 
     useEffect(() => {
-        console.log("3 EFFECT");
+        // console.log(`3 EFFECT`);
         if (!lastResult || !diceInstanceRef.current || !sceneRef.current) return;
+        // console.log(`3 F ${lastResult.nums[0]?.value}`);
 
         const value = lastResult.nums[0]?.value;
         if (value === undefined) return;
@@ -156,7 +157,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
 
     const handleRollClick = () => {
         console.log("3.5 EFFECT");
-        if (lastResult ||isRolling || !diceInstanceRef.current || !sceneRef.current) return;
+        if (lastResult || isRolling || !diceInstanceRef.current || !sceneRef.current) return;
 
         setIsRolling(true);
         const fallbackValue = mockRollDice(6);
@@ -175,7 +176,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     };
 
     return (
-        <div className="relative overflow-visible w-full max-w-100 h-full max-h-80 md:max-h-150 md:max-w-50">
+        <div className="relative overflow-visible w-full max-w-50 h-full max-h-60 md:max-h-150 md:max-w-50 pb-4">
             <canvas 
                 onClick={onClick} 
                 ref={canvasRef} 

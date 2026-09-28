@@ -22,7 +22,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [playError, setPlayError] = useState<string | null>(null);
-  const [isTurn, setTurn] = useState(false);
+  const [isTurn, setTurn] = useState('');
 
   const createRoom = useCallback(() => {
     socket.emit('create_room', gameType);
@@ -101,13 +101,19 @@ export function useGameSocket() {
     const handleGameStarted = (matchData: MatchRoom) => {
       setWaitingRoom(null);
       setMatchRoom(matchData);
+      // setLastRoll({
+      //   idPlayer: "0",
+      //   gameType: matchData.gameType,
+      //   nums: [{ value: 0 }]
+      // });
+      // console.log(`lastRoll ${lastRoll.nums[0]?.value} F`);
       setWinnerMessage('');
     };
 
     const handleRoll = ({ roll }: { roll: LastRoll }) => {
       console.log(`2 ROLL_NUMBER ${roll.nums[0]?.value} A`);
       setLastRoll(roll);
-      setTurn(true);
+      setTurn(roll.idPlayer);
     };
 
 

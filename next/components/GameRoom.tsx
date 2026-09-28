@@ -61,10 +61,10 @@ export default function GameRoom() {
   const myMatchState = matchRoom?.players.find((p) => p.socketId === socket.id)?.state ?? 'UNLOCKED';
   const winnerClass =
     winnerMessage === "🎉 ¡YOU WON!"
-      ? "bg-linear-to-t from-violet-300 to-violet-100 text-violet-500 rounded-4xl "
+      ? "sm:w-4/4 md:w-3/4 popout bg-linear-to-t from-violet-300 to-violet-100 text-violet-500 rounded-4xl "
       : winnerMessage === "💀 YOU LOST"
-        ? " bg-linear-to-t from-violet-900 to-0"
-        : "bg-violet-500 rounded-2xl ";
+        ? "sm:w-4/4 md:w-4/4 inset-x-0 fade-in bg-linear-to-t from-violet-900 to-0"
+        : "sm:w-4/4 md:w-3/4 top-10 slide outline-1 outline-(--dark) rounded-2xl ";
 
   const handleCopyRoomCode = async () => {
     if (!waitingRoom?.roomCode) return;
@@ -80,7 +80,7 @@ export default function GameRoom() {
 
   return (
     <div className="flex flex-col h-full pt-20 pb-15 p-10 md:p-20">
-      <p className="text-(--t-content)">
+      <p className="ms-10 text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
         </small>
@@ -123,10 +123,10 @@ export default function GameRoom() {
                 <ul className="flex flex-row gap-5 items-center justify-evenly">
                   {waitingRoom.players.map((p) => (
                     <li className="flex flex-col items-center justify-evenly mt-5" key={p.playerId}>
-                      <div className='[&_svg]:size-5 md:[&_svg]:size-10'>
+                      <div>
                         <Avatar image={p.userImage} name={p.name}/>
                       </div>
-                      <h2 className="text-2xl">{p.name}</h2>
+                      <h2 className="text-lg md:text-2xl">{p.name}</h2>
                       {p.state === 'UNLOCKED'? "🤔" : "👍" }
                     </li>
                   ))}
@@ -159,20 +159,13 @@ export default function GameRoom() {
       )}
 
       {matchRoom && (
-        <div  className="flex flex-col items-center h-full justify-evenly">
+        <div  className="flex flex-col items-center h-full">
           <div className="pb-5">
             <h2>
               Room: {matchRoom.roomCode} | Mode:{' '}
               <span className="text-(--dark)">{matchRoom.gameType}</span>
             </h2>
           </div>
-          {!isRolling && winnerMessage && (
-            <div
-              className={cn("flex items-center justify-evenly p-5 text-4xl", winnerClass)}>
-              {winnerMessage}
-            </div>
-          )}
-
           {!winnerMessage && (
             <h3>
               Turn of:{' '}
@@ -182,7 +175,12 @@ export default function GameRoom() {
               </span>
             </h3>
           )}
-
+          {!isRolling && winnerMessage && (
+            <div
+              className={cn("top-20 flex items-center justify-evenly p-5 text-2xl md:4xl", winnerClass)}>
+              {winnerMessage}
+            </div>
+          )}
           <ul className="flex flex-wrap md:flex-row gap-5 items-center justify-evenly">
             {matchRoom.players.map((p) => {
               const totalScore = getPlayerScore(matchRoom.sum, p.playerId);
@@ -193,12 +191,12 @@ export default function GameRoom() {
                 p.state === "WIN"? "bg-linear-to-t from-0 to-violet-300" : ""
               )}
               key={p.playerId}>
-                <b className="p-2 text-xl text-(--black)">{totalScore} pts</b>
-                <p className={cn(p.state === "WIN"? "" : "hidden", "absolut")}
+                <b className="p-2 text-sm md:text-xl text-(--black)">{totalScore} pts</b>
+                <p className={cn(p.state === "WIN"? "" : "hidden", "absolut animate-bounce")}
                 >👑</p>
-                <Avatar image={p.userImage} name={p.name} size="md"/>
-                <h2 className="text-2xl">{p.name}</h2>
-                <p className="p-5 pb-2 pt-2 bg-(--light) rounded-2xl text-2xl truncate">
+                <Avatar image={p.userImage} name={p.name} size="sm"/>
+                <h2 className="text-md md:text-2xl">{p.name}</h2>
+                <p className="p-5 pb-2 pt-2 bg-(--light) rounded-2xl text-md md:text-2xl truncate">
                   {p.state === "WIN"
                   ? "₍₍⚞(˶>ᗜ<˶)⚟⁾⁾"
                   : (p.state === "TIE"
@@ -240,18 +238,18 @@ export default function GameRoom() {
               Exit match
             </button>
           </div>
-            { isTurn &&
-              <div  className="flex justify-evenly items-center w-full h-full min-h-30 max-h-40 md:max-h-80 md:flex-row-reverse">
-              <ThrowDice
-                // onClick={handleRoomRoll}
-                presetValue={matchRoom.players.find((p) => matchRoom.turn % matchRoom.players.length)?.diceModel ?? 'default'}
-                lastResult={lastRoll}
-                triggerRoll={diceTrigger}
-                setIsRolling={setIsRolling}
-                isRolling={isRolling}
-              />
-              </div>
-            }
+          { isTurn &&
+            <div  className="flex justify-evenly items-center size-30 md:size-70 md:flex-row-reverse">
+            <ThrowDice
+              // onClick={handleRoomRoll}
+              presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
+              lastResult={lastRoll}
+              triggerRoll={diceTrigger}
+              setIsRolling={setIsRolling}
+              isRolling={isRolling}
+            />
+            </div>
+          }
         </div>
       )}
     </div>

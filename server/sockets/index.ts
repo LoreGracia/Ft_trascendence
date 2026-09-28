@@ -209,7 +209,7 @@ io.on("connection", (socket: Socket) => {
 			return;
 		}
 		advanceToUnlocked(match);
-		io.to(roomCode).emit("dice_rolled", { match, roll });
+		io.to(roomCode).emit("dice_rolled", { match });
 		resetTurnTimeout(io, match.roomCode);
 	});
 

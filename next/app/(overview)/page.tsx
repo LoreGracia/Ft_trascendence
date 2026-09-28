@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <>
       <PatternControl paused={paused} onToggle={() => setPaused(!paused)} />
-      <main className="flex flex-col-reverse justify-evenly items-center md:flex-row-reverse h-full">
+      <main className="flex flex-col-reverse justify-evenly items-center gap-0 md:flex-row-reverse h-full">
         <IndexDice />
         {/*
             <IndexDice/>
