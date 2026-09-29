@@ -12,11 +12,11 @@ export function StatCard({ stat }: { stat: GameStat }) {
 		<Card>
 			<h3 className="stat-card__title">{GAME_LABELS[stat.gameType]}</h3>
 			<dl className="stat-card__grid">
-				<Stat label="Games" value={stat.gamesPlayed} />
-				<Stat label="Wins" value={stat.wins} tone="success" />
-				<Stat label="Losses" value={stat.losses} tone="danger" />
-				<Stat label="Ties" value={stat.ties} tone="warning" />
-				<Stat label="Total Points" value={stat.totalPoints} tone="accent" size="lg" variant="footer" />
+				<Stat aria-label="Games" label="Games" value={stat.gamesPlayed} />
+				<Stat aria-label="Wins" label="🎉" value={stat.wins} tone="success" />
+				<Stat aria-label="Losses" label="💀" value={stat.losses} tone="danger" />
+				<Stat aria-label="Ties" label="🤝" value={stat.ties} tone="warning" />
+				<Stat aria-label="Total Points" label="Total Points" value={stat.totalPoints} tone="accent" size="lg" variant="footer" />
 			</dl>
 		</Card>
   );

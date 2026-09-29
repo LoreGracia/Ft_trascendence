@@ -27,7 +27,7 @@ export default function JoinButton() {
         <button
           onClick={() => joinRoom(roomCodeInput)}
           type="button"
-          disabled={roomCodeInput.trim().length !== 5}
+          disabled={roomCodeInput.trim().length !== 5 || joinedRoomCode != null}
           className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
         >
           {isJoining ? "Joining..." : "Join room"}
