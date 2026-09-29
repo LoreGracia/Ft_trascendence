@@ -5,15 +5,16 @@ import { Plus } from "lucide-react";
 import "@/components/Input/Input.css";
 import type { GameType } from "@/types/game";
 import { useCreateRoom } from "@/hooks/useCreateRoom";
+import { useJoinRoom } from "@/hooks/useJoinRoom";
 
 type CreateRoomButtonProps = {
   mode: GameType;
-  isRoom: boolean;
 };
 
-export default function CreateRoomButton({ mode, isRoom }: CreateRoomButtonProps) {
+export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
   const router = useRouter();
   const { roomCode, isCreating, createRoom } = useCreateRoom();
+  const { joinedRoomCode } = useJoinRoom();
 
   useEffect(() => {
     if (roomCode) {
@@ -28,7 +29,7 @@ export default function CreateRoomButton({ mode, isRoom }: CreateRoomButtonProps
       <button
         type="button"
         onClick={handleCreateRoom}
-        disabled={isRoom || isCreating || roomCode != null}
+        disabled={isCreating || joinedRoomCode != null}
         className="button button-round button--highlight whitespace-nowrap disabled:bg-amber-400"
       >
         <Plus />

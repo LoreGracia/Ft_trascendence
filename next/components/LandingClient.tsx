@@ -10,13 +10,9 @@ import ToggleModeButton from "@/components/button/ToggleModeButton";
 import JoinButton from "@/components/SocketComponent/JoinButton";
 import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 
-type Props = {
-  onEnterRoom?: (room: WaitingRoom) => void;
-};
 
-export default function LandingClient({ onEnterRoom }: Props) {
-  const router = useRouter();
-  const { gameType, setGameType, waitingRoom } = useGameSocket();
+export default function LandingClient() {
+  const { gameType, setGameType, waitingRoom, doubleRoomError } = useGameSocket();
   const [mounted, setMounted] = useState(false);
   const [sid, setSid] = useState('');
 
@@ -28,12 +24,6 @@ export default function LandingClient({ onEnterRoom }: Props) {
     return () => {socket?.off?.('connect', onConnect)};
   }, []);
 
-  useEffect(() => {
-    if (waitingRoom?.roomCode) {
-      if (onEnterRoom) onEnterRoom(waitingRoom);
-      else router.push(`/lobby?roomCode=${encodeURIComponent(waitingRoom.roomCode)}`);
-    }
-  }, [waitingRoom, onEnterRoom, router]);
   return (
     <div className="column flex-wrap"> 
       <ToggleModeButton
@@ -41,9 +31,10 @@ export default function LandingClient({ onEnterRoom }: Props) {
         onChange={setGameType}
       />
       <div className="flex flex-row gap-4 mt-5 text-base font-medium">
-        <CreateRoomButton mode={gameType} isRoom={onEnterRoom? true : false}/>
+        <CreateRoomButton mode={gameType}/>
         <JoinButton/>
       </div>
+      {doubleRoomError && <p className='text-(--t-error)'>{doubleRoomError}</p>}
       <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{mounted ? sid : ''}</code>

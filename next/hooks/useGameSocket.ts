@@ -22,6 +22,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [playError, setPlayError] = useState<string | null>(null);
+  const [doubleRoomError, setDoubleRoomError] = useState<string | null>(null);
   const [isTurn, setTurn] = useState('');
 
   const createRoom = useCallback(() => {
@@ -142,6 +143,10 @@ export function useGameSocket() {
       setPlayError("All players must be locked");
     };
 
+    const handleDoubleRoomError = () => {
+      setDoubleRoomError("You are already in a room");
+    };
+
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_status_changed', handlePlayerStatusChanged);
@@ -149,7 +154,7 @@ export function useGameSocket() {
     socket.on('dice_rolled', handleDiceRolled);
     socket.on('roll_number', handleRoll);
     socket.on('match_won', handleMatchWon);
-    // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    socket.on('doubleRoom_error', handleDoubleRoomError);
     socket.on('game_not_started', handlePlayError);
     // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
@@ -162,7 +167,7 @@ export function useGameSocket() {
       socket.off('dice_rolled', handleDiceRolled);
       socket.off('roll_number', handleRoll);
       socket.off('match_won', handleMatchWon);
-      socket.off('join_error');
+      socket.off('doubleRoom_error');
       socket.off('game_not_started');
       socket.off('error_turn');
 
@@ -199,6 +204,7 @@ export function useGameSocket() {
     rollDice,
     standPlayer,
     getPlayerScore,
-    playError
+    playError,
+    doubleRoomError
   };
 }
