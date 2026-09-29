@@ -20,12 +20,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 	const { data: session } = authClient.useSession();
 	const pathname = usePathname();
 
+	const userId = session?.user?.id;
+	const isPublicPath = PUBLIC_PATHS.some((path) => pathname?.startsWith(path));
+
 	useEffect(() => {
 		let isCancelled = false;
 
-		const isPublicPath = PUBLIC_PATHS.some((path) => pathname?.startsWith(path));
-
-		if (!session || isPublicPath) {
+		if (!userId || isPublicPath) {
 			if (socket.connected) {
 				socket.disconnect();
 			}
@@ -33,17 +34,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 			return;
 		}
 
-		const onConnect = () => {
-			setIsConnected(true);
-		};
+		const onConnect = () => { setIsConnected(true); };
 
-		const onDisconnect = (reason: string) => {
-			setIsConnected(false);
-		};
+		const onDisconnect = (reason: string) => { setIsConnected(false); };
 
-		const onConnectError = (error: Error) => {
-			setIsConnected(false);
-		};
+		const onConnectError = (error: Error) => { setIsConnected(false); };
 
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
@@ -51,6 +46,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
 		const syncSocketAuth = async () => {
 			try {
+				if (socket.connected && socket.auth && typeof socket.auth === "object" && socket.auth.token) {
+					setIsConnected(true);
+					return;
+				}
+
 				const { data, error } = await authClient.token();
 				if (error) {
 					console.warn("[socket] Error obtaining JWT:", error.message);
@@ -91,7 +91,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 			socket.off("disconnect", onDisconnect);
 			socket.off("connect_error", onConnectError);
 		};
-	}, [session, pathname]);
+	}, [userId, isPublicPath]);
 
 	return (
 		<SocketContext.Provider value={{ isConnected }}>
