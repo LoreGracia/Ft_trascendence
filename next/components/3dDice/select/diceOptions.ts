@@ -7,6 +7,7 @@ export const PRESET_OPTIONS = [
     { value: "greenDice", label: "Green", group: "Basic" },
     { value: "goldDice", label: "Gold", group: "Basic" },
     { value: "blackDice", label: "Black", group: "Basic" },
+    { value: "legendary:team", label: "Team", group: "Legendary" },
     { value: "legendary:standard", label: "Standard", group: "Legendary" },
     { value: "legendary:universe", label: "Universe", group: "Legendary" },
     { value: "legendary:pride", label: "Pride", group: "Legendary" },
