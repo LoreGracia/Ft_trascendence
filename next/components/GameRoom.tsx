@@ -43,10 +43,10 @@ export default function GameRoom() {
     playError,
   } = useGameSocket();
 
-  const [diceTrigger, setDiceTrigger] = useState(0);
   const handleRoomRoll = () => {
     if (winnerMessage && !isMyTurn) return;
     console.log("1 ROLLDICE");
+    // console.log();
     rollDice();// acción del socket
   };
 
@@ -244,7 +244,6 @@ export default function GameRoom() {
               // onClick={handleRoomRoll}
               presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
               lastResult={lastRoll}
-              triggerRoll={diceTrigger}
               setIsRolling={setIsRolling}
               isRolling={isRolling}
             />

@@ -21,7 +21,7 @@ interface ThrowDiceProps {
     onClick?: () => void;
     presetValue: DiceModel;
     lastResult: LastRoll | null;
-    triggerRoll: number;
+    triggerRoll?: number;
     isRolling: boolean;
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
 }
