@@ -8,9 +8,10 @@ import { useCreateRoom } from "@/hooks/useCreateRoom";
 
 type CreateRoomButtonProps = {
   mode: GameType;
+  isRoom: boolean;
 };
 
-export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
+export default function CreateRoomButton({ mode, isRoom }: CreateRoomButtonProps) {
   const router = useRouter();
   const { roomCode, isCreating, createRoom } = useCreateRoom();
 
@@ -27,7 +28,7 @@ export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
       <button
         type="button"
         onClick={handleCreateRoom}
-        disabled={isCreating || roomCode != null}
+        disabled={isRoom || isCreating || roomCode != null}
         className="button button-round button--highlight whitespace-nowrap disabled:bg-amber-400"
       >
         <Plus />
