@@ -20,6 +20,7 @@ export interface Player {
   playerId: string;
   socketId: string;
   name: string;
+	userImage: string;
   state: PlayerState;
   diceModel: DiceModel;
 }

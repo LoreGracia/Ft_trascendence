@@ -24,10 +24,12 @@ import {
 	exitMatchRoom,
 	clearTurnTimeout,
 	resetTurnTimeout,
+	isPlayerInOtherRoom
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
 import { setEmptyGameDb, updateGameDb } from "../lib/user"
+import { waitForSocketEvent } from "../game/Utils"
 
 export const waitingRooms = new Map<string, WaitingRoom>();
 export const matchRooms = new Map<string, MatchRoom>();
@@ -102,6 +104,8 @@ io.on("connection", (socket: Socket) => {
 	}
 
 	socket.on("create_room", (game: GameType) => {
+		if (isPlayerInOtherRoom(socket))
+			return (socket.emit("doubleRoom_error"));
 		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
@@ -109,6 +113,8 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	socket.on("join_room", (roomCode: string) => {
+		if (isPlayerInOtherRoom(socket))
+			return (socket.emit("doubleRoom_error"));
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room))
@@ -185,7 +191,7 @@ io.on("connection", (socket: Socket) => {
 		}
 	});
 
-	socket.on("roll_dice", (roomCode: string) => {
+	socket.on("roll_dice", async (roomCode: string) => {
 		const match = matchRooms.get(roomCode);
 		if (!match) {
 			return;
@@ -198,16 +204,17 @@ io.on("connection", (socket: Socket) => {
 		match.rolls.push(roll);
 
 		match.rules.evaluateRoll(match, socket.data.userId);
-
+		io.to(roomCode).emit("roll_number", { roll });
+		await waitForSocketEvent(socket, "has_rolled", 7500);
 		if (match.rules.isGameWon(match)) {
 			clearTurnTimeout(roomCode);
-			io.to(roomCode).emit("dice_rolled", { match, roll });
-			io.to(roomCode).emit("match_won", { match, lastRoll: roll });
+			io.to(roomCode).emit("dice_rolled", { match });
+			io.to(roomCode).emit("match_won", { match });
 			updateGameDb(match);
 			return;
 		}
 		advanceToUnlocked(match);
-		io.to(roomCode).emit("dice_rolled", { match, roll });
+		io.to(roomCode).emit("dice_rolled", { match });
 		resetTurnTimeout(io, match.roomCode);
 	});
 

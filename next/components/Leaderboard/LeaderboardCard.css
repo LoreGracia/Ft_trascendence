@@ -59,7 +59,6 @@
 }
 
 .lb-card__panel {
-  /* background: var(--white); */
   border-radius: 12px;
   padding: 0.5rem 0.75rem;
   color: var(--black);

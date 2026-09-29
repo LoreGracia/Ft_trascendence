@@ -6,12 +6,12 @@ import {
   User,
 } from "lucide-react";
 
-// export type NavigationItem = {
-//   href: string;
-//   label: string;
-//   icon: typeof User;
-//   disabled?: boolean;
-// };
+export type NavigationItem = {
+  href: string;
+  label: string;
+  icon: typeof User;
+  disabled?: boolean;
+};
 
 export const getNavigation = (hasActiveRoom: boolean) => ({
   header: [

@@ -15,17 +15,18 @@ import { createDiceInstance } from "@/components/3dDice/bodyDice/diceFactory";
 import { getDicePreset } from "@/components/3dDice/select/diceOptions";
 import styles from "./DiceScene.module.css";
 import { DiceModel, LastRoll } from "@/types/game";
+import { socket } from '@/lib/socket';
 
 interface ThrowDiceProps {
     onClick?: () => void;
     presetValue: DiceModel;
     lastResult: LastRoll | null;
-    triggerRoll: number;
+    triggerRoll?: number;
     isRolling: boolean;
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling}: ThrowDiceProps) {
+export default function ThrowDice({ onClick, presetValue, lastResult, triggerRoll, setIsRolling, isRolling }: ThrowDiceProps) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const engineRef = useRef<Engine | null>(null);
     const sceneRef = useRef<Scene | null>(null);
@@ -36,8 +37,8 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     useEffect(() => {
         if (triggerRoll === 0) return;
         handleRollClick();
-        }, [triggerRoll]);
-    
+    }, [triggerRoll]);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -57,12 +58,12 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             "diceCamera",
             -Math.PI / 2,
             Math.PI / 2.5,
-            7,
+            10,
             Vector3.Zero(),
             scene
         );
         cameraRef.current = camera;
-        camera.attachControl(canvas, true);
+        // camera.attachControl(canvas, true);
 
         const light = new HemisphericLight("mainLight", new Vector3(0, 1, 0), scene);
         light.intensity = 0.9;
@@ -99,21 +100,21 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
         };
     }, []);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const camera = cameraRef.current;
+    // useEffect(() => {
+    //     const canvas = canvasRef.current;
+    //     const camera = cameraRef.current;
 
-        if (!canvas || !camera) return;
+    //     if (!canvas || !camera) return;
 
-        if (isRolling) {
-            camera.detachControl();
-            cameraRef.current = camera;
-            return;
-        }
+    //     if (isRolling) {
+    //         camera.detachControl();
+    //         cameraRef.current = camera;
+    //         return;
+    //     }
 
-        camera.attachControl(canvas, true);
-    }, [isRolling]);
-    
+    //     camera.attachControl(canvas, true);
+    // }, [isRolling]);
+
     useEffect(() => {
         const scene = sceneRef.current;
         if (!scene) return;
@@ -131,7 +132,9 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     }, [presetValue]);
 
     useEffect(() => {
+        // console.log(`3 EFFECT`);
         if (!lastResult || !diceInstanceRef.current || !sceneRef.current) return;
+        // console.log(`3 F ${lastResult.nums[0]?.value}`);
 
         const value = lastResult.nums[0]?.value;
         if (value === undefined) return;
@@ -139,32 +142,45 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
         setIsRolling(true);
 
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
+            startPosition: new Vector3(0, 0.0, 0),
+            endPosition: new Vector3(0, 0, 0),
+            jumpHeight: 1.9,
+            durationInFrames: 200,
+            rotations: 8,
             result: value,
             onFinish: () => {
                 setIsRolling(false);
-            },
-        });
+                console.log(`3 HAS_ROLLED ${lastResult.nums[0]?.value} A`);
+                socket.emit("has_rolled");
+        }});
     }, [lastResult]);
 
     const handleRollClick = () => {
-        if (isRolling || !diceInstanceRef.current || !sceneRef.current) return;
+        console.log("3.5 EFFECT");
+        if (lastResult || isRolling || !diceInstanceRef.current || !sceneRef.current) return;
 
         setIsRolling(true);
         const fallbackValue = mockRollDice(6);
         animateDiceFlight(sceneRef.current, diceInstanceRef.current.root, {
+            startPosition: new Vector3(0, 0.0, 0),
+            endPosition: new Vector3(0, 0, 0),
+            jumpHeight: 1.9,
+            durationInFrames: 200,
+            rotations: 8,
             result: fallbackValue,
             onFinish: () => {
                 setIsRolling(false);
+                console.log("3.5 HAS_ROLLED");
             },
         });
     };
 
     return (
-        <div className="relative overflow-visible w-full max-w-80 h-full max-h-80">
+        <div className="relative overflow-visible w-full max-w-50 h-full max-h-60 md:max-h-150 md:max-w-50 pb-4">
             <canvas 
                 onClick={onClick} 
                 ref={canvasRef} 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[120%] block outline-none select-none" 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] md:w-[120%] md:h-[110%] block outline-none select-none" 
                 aria-label="3D dice scene" 
             />
         </div>

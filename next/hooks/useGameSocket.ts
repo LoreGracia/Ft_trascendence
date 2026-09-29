@@ -22,6 +22,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [playError, setPlayError] = useState<string | null>(null);
+  const [doubleRoomError, setDoubleRoomError] = useState<string | null>(null);
   const [isTurn, setTurn] = useState('');
 
   const createRoom = useCallback(() => {
@@ -101,24 +102,34 @@ export function useGameSocket() {
     const handleGameStarted = (matchData: MatchRoom) => {
       setWaitingRoom(null);
       setMatchRoom(matchData);
+      // setLastRoll({
+      //   idPlayer: "0",
+      //   gameType: matchData.gameType,
+      //   nums: [{ value: 0 }]
+      // });
+      // console.log(`lastRoll ${lastRoll.nums[0]?.value} F`);
       setWinnerMessage('');
     };
 
-    const handleDiceRolled = ({ match, roll }: { match: MatchRoom; roll: LastRoll }) => {
-      const turnNum = (match.turn === 0 ? match.players.length : (match.turn - 1) % match.players.length);
-      setMatchRoom(match);
+    const handleRoll = ({ roll }: { roll: LastRoll }) => {
+      console.log(`2 ROLL_NUMBER ${roll.nums[0]?.value} A`);
       setLastRoll(roll);
-      setTurn(
-        match.players[turnNum]?.playerId ?? "");
+      setTurn(roll.idPlayer);
     };
 
-    const handleMatchWon = (data: { match?: MatchRoom; lastRoll?: LastRoll } | MatchRoom) => {
-      const payload = data as { match?: MatchRoom; lastRoll?: LastRoll };
+
+    const handleDiceRolled = ({ match }: { match: MatchRoom; }) => {
+      console.log("4 DICE_ROLLED");
+      setMatchRoom(match);
+    };
+
+    const handleMatchWon = (data: { match?: MatchRoom } | MatchRoom) => {
+      const payload = data as { match?: MatchRoom };
       const finalMatch = 'match' in payload ? payload.match : (data as MatchRoom);
 
       if (!finalMatch || !finalMatch.players) return;
 
-      if ('lastRoll' in payload && payload.lastRoll) setLastRoll(payload.lastRoll);
+      // if ('lastRoll' in payload && payload.lastRoll) setLastRoll(payload.lastRoll);
 
       setMatchRoom(finalMatch);
 
@@ -132,13 +143,18 @@ export function useGameSocket() {
       setPlayError("All players must be locked");
     };
 
+    const handleDoubleRoomError = () => {
+      setDoubleRoomError("You are already in a room");
+    };
+
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_status_changed', handlePlayerStatusChanged);
     socket.on('game_started', handleGameStarted);
     socket.on('dice_rolled', handleDiceRolled);
+    socket.on('roll_number', handleRoll);
     socket.on('match_won', handleMatchWon);
-    // socket.on('join_error', () => alert('No se pudo unirse a la sala.'));
+    socket.on('doubleRoom_error', handleDoubleRoomError);
     socket.on('game_not_started', handlePlayError);
     // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
@@ -149,8 +165,9 @@ export function useGameSocket() {
       socket.off('player_status_changed', handlePlayerStatusChanged);
       socket.off('game_started', handleGameStarted);
       socket.off('dice_rolled', handleDiceRolled);
+      socket.off('roll_number', handleRoll);
       socket.off('match_won', handleMatchWon);
-      socket.off('join_error');
+      socket.off('doubleRoom_error');
       socket.off('game_not_started');
       socket.off('error_turn');
 
@@ -187,6 +204,7 @@ export function useGameSocket() {
     rollDice,
     standPlayer,
     getPlayerScore,
-    playError
+    playError,
+    doubleRoomError
   };
 }

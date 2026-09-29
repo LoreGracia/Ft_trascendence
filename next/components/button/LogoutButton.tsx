@@ -16,7 +16,7 @@ export function LogoutButton({ className = "", children }: LogoutButtonProps) {
   }
 
   return (
-    <button type="button" className={className} onClick={handleLogout}>
+    <button data-tooltip="Logout" aria-label="logout" type="button" className={className} onClick={handleLogout}>
       {children}
     </button>
   );
