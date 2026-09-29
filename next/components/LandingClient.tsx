@@ -37,13 +37,13 @@ export default function LandingClient({ onEnterRoom }: Props) {
   return (
     <div className="column flex-wrap"> 
       <ToggleModeButton
-          selected={gameType}
-          onChange={setGameType}
-        />
-        <div className="flex flex-row gap-4 mt-5 text-base font-medium">
-          <CreateRoomButton mode={gameType} />
-          <JoinButton/>
-        </div>
+        selected={gameType}
+        onChange={setGameType}
+      />
+      <div className="flex flex-row gap-4 mt-5 text-base font-medium">
+        <CreateRoomButton mode={gameType} isRoom={onEnterRoom? true : false}/>
+        <JoinButton/>
+      </div>
       <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{mounted ? sid : ''}</code>
