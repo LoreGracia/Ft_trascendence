@@ -97,7 +97,26 @@ export const DICE_PRESETS: Record<string, DiceConfig> = {
 /**
  * Dados "legendarios": skins curados con temática propia.
  */
+
+
+
 export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
+
+    team: {
+        ...DEFAULT_DICE_CONFIG,
+        faceIconSize: 1,
+        pipAlpha: 0,
+        faceIcons: {
+            1: { type: "image", src: "/textures/43/Lore.jpg" },
+            2: { type: "image", src: "/textures/43/Alba.jpg" },
+            3: { type: "image", src: "/textures/43/Eina.jpg" },
+            4: { type: "image", src: "/textures/43/Patri.jpg" },
+            5: { type: "image", src: "/textures/43/Yuan.jpg" },
+            6: { type: "image", src: "/textures/43/43.jpg" },
+        },
+        cornerRadius: 0.16,
+    },
+
     standard: {
         ...DEFAULT_DICE_CONFIG,
         faceIcons: {
@@ -107,11 +126,8 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
 
     universe: {
         ...DEFAULT_DICE_CONFIG,
-
         pipStyle: "ball",
-
         bodyTexture: "/textures/universe.jpg",
-
         pipColor: new Color3(0.85, 0.87, 0.95),
         emissiveColor: new Color3(0, 0, 0),
         cornerRadius: 0.18,
@@ -134,46 +150,25 @@ export const DICE_LEGENDARY_PRESETS: Record<string, DiceConfig> = {
 
     magician: {
         ...DEFAULT_DICE_CONFIG,
-
-        // Cuerpo: violeta muy oscuro
         bodyColor: new Color3(0.5, 0.002, 0.5),
         bodyAlpha: 0.88,
-
-        // Pips: amarillo limón fluorescente
         pipColor: new Color3(0.85, 1.0, 0.02),
         pipAlpha: 1.0,
-
-        // Luz interior: violeta intenso
-        // emissiveColor: new Color3(0.5, 0.5, 0.5),
-        // emissiveColor: new Color3(0.75, 0.01, 1.0),
-
         cornerRadius: 0.16,
     },
 
     warrior: {
         ...DEFAULT_DICE_CONFIG,
-        // bodyColor: new Color3(0.7, 0.7, 0.75),
         bodyTexture: "/textures/metalic.jpg",
         pipColor: new Color3(0.25, 0.02, 0.02),
-        //   emissiveColor: new Color3(0, 0, 0),
         pipStyle: "triangle",
         cornerRadius: 0.16,
     },
 
-    // code: {
-    //     ...DEFAULT_DICE_CONFIG,
-    //     bodyColor: new Color3(0.03, 0.03, 0.03),
-    //     pipColor: new Color3(0.1, 0.95, 0.35),
-    //     emissiveColor: new Color3(0.02, 0.18, 0.06),
-    // },
     code: {
         ...DEFAULT_DICE_CONFIG,
         bodyColor: new Color3(0.03, 0.03, 0.03),
         pipColor: new Color3(0.1, 0.95, 0.35),
-        // emissiveColor: new Color3(0.08, 0.4, 0.15),
-        //emissiveColor: new Color3(0.02, 0.12, 0.05),
-        //emissiveColor: new Color3(0.05, 0.25, 0.08),
-        // emissiveColor: new Color3(0.06, 0.28, 0.09),
         emissiveColor: new Color3(0.03, 0.18, 0.07),
 
         pipStyle: "code",
