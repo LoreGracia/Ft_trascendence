@@ -24,6 +24,7 @@ import {
 	exitMatchRoom,
 	clearTurnTimeout,
 	resetTurnTimeout,
+	isPlayerInOtherRoom
 } from "../game/RoomManager";
 import { getGameFactory } from "../game/Product";
 import { validateToken } from "./TokenValidation";
@@ -103,6 +104,8 @@ io.on("connection", (socket: Socket) => {
 	}
 
 	socket.on("create_room", (game: GameType) => {
+		if (isPlayerInOtherRoom(socket))
+			return (socket.emit("doubleRoom_error"));
 		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.join(newRoom.roomCode);
@@ -110,6 +113,8 @@ io.on("connection", (socket: Socket) => {
 	});
 
 	socket.on("join_room", (roomCode: string) => {
+		if (isPlayerInOtherRoom(socket))
+			return (socket.emit("doubleRoom_error"));
 		const room = waitingRooms.get(roomCode);
 		if (room) {
 			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room))
