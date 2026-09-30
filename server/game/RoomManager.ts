@@ -145,16 +145,16 @@ export function clearTurnTimeout(roomCode: string) {
 	}
 }
 
-export function isPlayerInOtherRoom(socket: Socket): boolean {
+export function isPlayerInOtherRoom(socket: Socket): string | null {
 	for (const [_, waiting] of waitingRooms) {
 		const inWaiting = waiting.players.some(p => p.playerId === socket.data.userId);
 		if (inWaiting)
-			return true;
+			return waiting.roomCode;
 	}
 	for (const [_, match] of matchRooms) {
 		const inMatch = match.players.some(p => p.playerId === socket.data.userId);
 		if (inMatch)
-			return true;
+			return match.roomCode;
 	}
-	return false;
+	return null;
 }
