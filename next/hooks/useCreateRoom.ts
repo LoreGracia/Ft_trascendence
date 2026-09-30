@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { socket } from "@/lib/socket";
 import { createRoom } from "@/services/room";
-import type { GameType } from "@/types/game";
+import type { GameType, WaitingRoom } from "@/types/game";
 
 export const useCreateRoom = () => {
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  useEffect(() => {
-    const handleRoomCreated = (code: string) => {
-      setRoomCode(code);
+  useEffect(() => { //Cambiando code por waiting room se arregla el problema de las URL con [object, object]. Estaba passando el objeto, no el codigo. 
+    const handleRoomCreated = (room: WaitingRoom) => {
+      setRoomCode(room.roomCode);
       setIsCreating(false);
     };
 
