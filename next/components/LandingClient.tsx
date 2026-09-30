@@ -5,16 +5,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
-import type { WaitingRoom } from '@/types/game';
 import ToggleModeButton from "@/components/button/ToggleModeButton";
 import JoinButton from "@/components/SocketComponent/JoinButton";
 import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 
 
 export default function LandingClient() {
-  const { gameType, setGameType, waitingRoom, doubleRoomError } = useGameSocket();
+  const router = useRouter();
+  const { gameType, setGameType, doubleRoomError } = useGameSocket();
   const [mounted, setMounted] = useState(false);
   const [sid, setSid] = useState('');
+  const { roomCode} = useGameSocket();
 
   useEffect(() => {
     setMounted(true);
@@ -23,6 +24,12 @@ export default function LandingClient() {
     socket?.on?.('connect', onConnect);
     return () => {socket?.off?.('connect', onConnect)};
   }, []);
+
+    useEffect(() => {
+    if (roomCode) {
+      router.push(`/lobby?roomCode=${encodeURIComponent(roomCode)}`);
+    }
+  }, [roomCode, router]);
 
   return (
     <div className="column flex-wrap"> 

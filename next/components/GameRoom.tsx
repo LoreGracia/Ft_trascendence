@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useGameSocket } from '@/hooks/useGameSocket';
 import { socket } from '@/lib/socket';
-import { useSearchParams } from 'next/navigation';
 import { ArrowRight, ClipboardCopy } from "lucide-react";
 import { cn } from "@/lib/utils"
 import SelectDice from './3dDice/SelectDice';
@@ -13,8 +12,6 @@ import { Avatar } from './Avatar/Avatar';
 
 export default function GameRoom() {
   const [isRolling, setIsRolling] = useState(false);
-  const searchParams = useSearchParams();
-  const roomCode = searchParams.get('roomCode');
   const { isConnected } = useSocket();
   const [mounted, setMounted] = useState(false);
   const [socketId, setSocketId] = useState('');
@@ -41,6 +38,7 @@ export default function GameRoom() {
     standPlayer,
     getPlayerScore,
     playError,
+    roomCode,
   } = useGameSocket();
 
   const handleRoomRoll = () => {
@@ -51,7 +49,10 @@ export default function GameRoom() {
   };
 
   useEffect(() => {
+    console.log("AAAAAA");
+    socket.emit('get_roomcode', roomCode);
     if (!roomCode) return;
+    console.log("BBBBBB");
 
     const requestRoom = () => {
       console.log('[room] requesting:', roomCode);
