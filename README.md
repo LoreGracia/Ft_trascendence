@@ -20,6 +20,7 @@ Transcendence is a full-stack, real-time multiplayer dice game. Players authenti
 - Responsive desktop and mobile navigation, including a mobile bottom bar.
 - Animated 3D dice presentation using Babylon.js.
 - Local HTTPS routing through Traefik.
+- WAN routing through Pangolin.
 
 ## Team Information
 
@@ -27,7 +28,7 @@ Transcendence is a full-stack, real-time multiplayer dice game. Players authenti
 - **@pamanzan - Team Lead and Frontend Developer:** coordinates technical work, plans and tracks tasks, and contributes to the game interface and client-side experience.
 - **@jgirbau- - Backend Developer:** implements the Socket.IO server, room lifecycle, turn handling, reconnection behavior, and server-side game rules.
 - **@amarquez - Database and Authentication Developer:** maintains the Prisma/PostgreSQL model, authentication and session flows, OAuth integration, and user statistics persistence.
-- **@ecoma-ba - DevOps and Infrastructure Engineer:** maintains Docker Compose orchestration, Traefik routing, local certificate generation, and deployment support.
+- **@ecoma-ba - DevOps and Infrastructure Engineer:** maintains Docker Compose orchestration, Traefik and Pangolin routing, local certificate generation, and deployment support.
 
 Roles overlap where the feature required coordination between frontend, backend, database, and infrastructure work.
 
@@ -67,8 +68,9 @@ PostgreSQL was chosen because the project has relational data and integrity cons
 
 ### Infrastructure
 
-- Docker and Docker Compose isolate the database, Next.js app, Socket.IO server, Traefik, and the external tunnel client.
+- Docker and Docker Compose isolate the database, Next.js app, Socket.IO server, Traefik, Pangolin, and the external tunnel client.
 - Traefik 3.7 terminates local HTTPS and routes the frontend, socket server, and dashboard by hostname.
+- Pangolin terminates WAN HTTPS and routes the frontend, socket server, and dashboard via a custom domain.
 - OpenSSL generates the local development certificate used by the HTTPS entrypoint.
 
 ## Instructions
@@ -110,7 +112,7 @@ make prune    # perform fclean and prune builder cache
 ```text
 Browser
   |
-  +--> Traefik HTTPS router
+  +--> Pangolin HTTPS router
 		 |--> Next.js App Router and Better Auth
 		 |       |
 		 |       +--> Prisma --> PostgreSQL
@@ -127,7 +129,7 @@ Important boundaries:
 - `server/sockets/` authenticates socket connections and broadcasts room events.
 - `server/game/` owns dice generation, turn progression, room state, and win rules.
 - `prisma/` defines the persistent relational model and migrations.
-- `docker-compose.yml`, `traefik/`, and `certs/` provide local service orchestration and routing.
+- `docker-compose.yml`, `traefik/`, and `certs/` provide optional local service orchestration and routing.
 
 ## Database Schema
 
@@ -201,7 +203,7 @@ Additional authentication tables are `Session`, `Account`, `Verification`, and `
 | 3D dice interface | @lgracia, @pamanzan | Present dice selection and animated rolls with Babylon.js. |
 | Leaderboards | @amarquez, @lgracia, @jgirbau- | Display per-mode rankings based on persistent user statistics. |
 | Responsive interface | @lgracia, @pamanzan | Provide desktop navigation and mobile layouts for the main game flows. |
-| Containerized HTTPS deployment | @ecoma-ba | Run services through Docker Compose and route them through Traefik. |
+| Containerized HTTPS deployment | @ecoma-ba | Run services through Docker Compose and route them through Pangolin. |
 
 ## Modules
 
@@ -237,7 +239,7 @@ Only fully implemented modules are included in the point total. The following su
 - **Standard user management and authentication:** the project has secure sign-up/login, profiles, and avatars, but the subject module also requires adding/removing friends and displaying friend online status. Those requirements are not implemented in the current schema or application flow.
 - **Game statistics and match history:** the project persists game outcomes and displays leaderboards, but the subject requires a complete match history with opponents, dates, achievements, and progression. The current implementation does not provide all of those requirements.
 - **Modules of choice:** no additional custom module is claimed. The dice game, real-time multiplayer, remote players, and 3D graphics are documented under the subject's existing Gaming and user experience modules rather than presented as custom modules.
-- **Infrastructure and HTTPS:** Docker Compose, Traefik, and local HTTPS support the mandatory deployment and security requirements, but they are not counted as a Devops module because the subject's Devops modules require ELK, Prometheus/Grafana, microservices, or the specified health-check and disaster-recovery system.
+- **Infrastructure and HTTPS:** Docker Compose, Pangolin (and Traefik for optional local HTTPS) support the mandatory deployment and security requirements, but they are not counted as a Devops module because the subject's Devops modules require ELK, Prometheus/Grafana, microservices, or the specified health-check and disaster-recovery system.
 
 ## Individual Contributions
 
@@ -259,7 +261,7 @@ Implemented the Prisma schema, PostgreSQL integration, Better Auth persistence, 
 
 ### @ecoma-ba
 
-Implemented the local deployment layer: Docker Compose services, PostgreSQL container orchestration, Traefik HTTPS routing, certificate generation, and deployment support. The main challenge was making multiple services communicate consistently; the Compose network and health-checked database startup define the service dependencies.
+Implemented the local deployment layer: Docker Compose services, PostgreSQL container orchestration, Traefik and Pangolin HTTPS routing, certificate generation, and deployment support. The main challenge was making multiple services communicate consistently; the Compose network and health-checked database startup define the service dependencies.
 
 ## Resources
 
@@ -276,6 +278,7 @@ Implemented the local deployment layer: Docker Compose services, PostgreSQL cont
 - [Babylon.js documentation](https://doc.babylonjs.com/)
 - [Docker Compose documentation](https://docs.docker.com/compose/)
 - [Traefik documentation](https://doc.traefik.io/traefik/)
+- [Pangolin documentation](https://docs.pangolin.net/)
 
 These references were used to understand framework APIs, authentication, relational persistence, real-time communication, 3D rendering, container orchestration, and reverse-proxy configuration. Third-party dependencies retain their respective licenses. Project-specific visual assets should be credited according to their original licenses when redistributed.
 
