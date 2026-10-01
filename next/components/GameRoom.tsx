@@ -43,8 +43,6 @@ export default function GameRoom() {
 
   const handleRoomRoll = () => {
     if (winnerMessage && !isMyTurn) return;
-    console.log("1 ROLLDICE");
-    // console.log();
     rollDice();// acción del socket
   };
 
@@ -53,8 +51,6 @@ export default function GameRoom() {
     if (!roomCode) return;
 
     const requestRoom = () => {
-      console.log('[room] requesting:', roomCode);
-      console.log('[room] connected:', socket.connected);
       if (socket.connected) {
         socket.emit('get_room', roomCode);
       }

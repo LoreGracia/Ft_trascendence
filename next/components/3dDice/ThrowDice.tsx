@@ -132,9 +132,7 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
     }, [presetValue]);
 
     useEffect(() => {
-        // console.log(`3 EFFECT`);
         if (!lastResult || !diceInstanceRef.current || !sceneRef.current) return;
-        // console.log(`3 F ${lastResult.nums[0]?.value}`);
 
         const value = lastResult.nums[0]?.value;
         if (value === undefined) return;
@@ -150,13 +148,11 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             result: value,
             onFinish: () => {
                 setIsRolling(false);
-                console.log(`3 HAS_ROLLED ${lastResult.nums[0]?.value} A`);
                 socket.emit("has_rolled");
         }});
     }, [lastResult]);
 
     const handleRollClick = () => {
-        console.log("3.5 EFFECT");
         if (lastResult || isRolling || !diceInstanceRef.current || !sceneRef.current) return;
 
         setIsRolling(true);
@@ -170,7 +166,6 @@ export default function ThrowDice({ onClick, presetValue, lastResult, triggerRol
             result: fallbackValue,
             onFinish: () => {
                 setIsRolling(false);
-                console.log("3.5 HAS_ROLLED");
             },
         });
     };
