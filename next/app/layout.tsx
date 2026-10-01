@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { SocketProvider } from "@/components/SocketProvider";
 
 export const metadata: Metadata = {
   title: "Dice",
@@ -19,9 +18,7 @@ export default function RootLayout({
       className={`h-full antialiased`}
     >
       <body className="flex flex-col h-full">
-        <SocketProvider>
-          {children}
-        </SocketProvider>
+        {children}
       </body>
     </html>
   );
