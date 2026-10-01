@@ -19,19 +19,33 @@ export function useGameSocket() {
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [waitingRoom, setWaitingRoom] = useState<WaitingRoom | null>(null);
   const [matchRoom, setMatchRoom] = useState<MatchRoom | null>(null);
+  const [roomCode, setRoomCode] = useState<string | null>(null);
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
-  const [playError, setPlayError] = useState<string | null>(null);
   const [doubleRoomError, setDoubleRoomError] = useState<string | null>(null);
   const [isTurn, setTurn] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [playError, setPlayError] = useState<string | null>(null);
 
-  const createRoom = useCallback(() => {
-    socket.emit('create_room', gameType);
-  }, []);
+  const createRoom = (mode?: GameType) => {
+    if (!socket.connected) return;
 
-  const joinRoom = useCallback(() => {
-    if (roomCodeInput.trim()) socket.emit('join_room', roomCodeInput);
-  }, [roomCodeInput]);
+    setIsCreating(true);
+    socket.emit("create_room", mode);
+  };
+
+  const joinRoom = (roomCode: string) => {
+    if (!roomCode) return;
+    if (!socket.connected) {
+      setJoinError("Socket not conected");
+      return;
+    }
+    setIsJoining(true);
+    setJoinError(null);
+    socket.emit('join_room', roomCode);
+  };
 
   const exitRoom = useCallback(() => {
     const code = waitingRoom?.roomCode || matchRoom?.roomCode;
@@ -42,6 +56,7 @@ export function useGameSocket() {
       setLastRoll(null);
       setWinnerMessage('');
       router.push(`/landing`);
+      socket.emit("get_roomCode");
     }
   }, [waitingRoom, matchRoom]);
 
@@ -54,6 +69,7 @@ export function useGameSocket() {
       setLastRoll(null);
       setWinnerMessage('');
       router.push(`/landing`);
+      socket.emit("get_roomCode");
     }
   }, [waitingRoom, matchRoom]);
 
@@ -84,9 +100,20 @@ export function useGameSocket() {
   useEffect(() => {
     const handleRoomCreated = (code: WaitingRoom) => {
       setWaitingRoom(code);
+      setRoomCode(code.roomCode);
+      setIsCreating(false);
+      router.push(`/lobby?roomCode=${code.roomCode}`);
     };
 
-    const handlePlayerJoined = (roomData: WaitingRoom) => setWaitingRoom(roomData);
+    const handlePlayerJoined = (roomData: WaitingRoom) => {
+      setWaitingRoom(roomData);
+      setRoomCode(roomData.roomCode);
+      setIsJoining(false);
+      setJoinError(null);
+      router.push(`/lobby?roomCode=${roomData.roomCode}`);
+    }
+
+    const handleRoomCode = (roomCode: string | null) => setRoomCode(roomCode);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
       const player = waitingRoom?.players.find(p => p.socketId === socket.id);
@@ -147,8 +174,14 @@ export function useGameSocket() {
       setDoubleRoomError("You are already in a room");
     };
 
+    const handleJoinError = () => {
+      setIsJoining(false);
+      setJoinError("Unable to join room");
+    };
+
     socket.on('room_created', handleRoomCreated);
     socket.on('player_joined', handlePlayerJoined);
+    socket.on('player_roomCode', handleRoomCode);
     socket.on('player_status_changed', handlePlayerStatusChanged);
     socket.on('game_started', handleGameStarted);
     socket.on('dice_rolled', handleDiceRolled);
@@ -158,18 +191,21 @@ export function useGameSocket() {
     socket.on('game_not_started', handlePlayError);
     // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
+    socket.on("join_error", handleJoinError);
 
     return () => {
       socket.off('room_created', handleRoomCreated);
       socket.off('player_joined', handlePlayerJoined);
+      socket.off('player_roomCode', handleRoomCode);
       socket.off('player_status_changed', handlePlayerStatusChanged);
       socket.off('game_started', handleGameStarted);
       socket.off('dice_rolled', handleDiceRolled);
       socket.off('roll_number', handleRoll);
       socket.off('match_won', handleMatchWon);
-      socket.off('doubleRoom_error');
-      socket.off('game_not_started');
+      socket.off('doubleRoom_error', handleDoubleRoomError);
+      socket.off('game_not_started', handlePlayError);
       socket.off('error_turn');
+      socket.off("join_error", handleJoinError);
 
     };
   }, []);
@@ -182,21 +218,25 @@ export function useGameSocket() {
     [matchRoom],
   );
 
+
   return {
     roomCodeInput,
+    roomCode,
     setRoomCodeInput,
     gameType,
     setGameType,
     diceModel,
     setDiceModel,
+    isCreating,
+    createRoom,
+    isJoining,
+    joinRoom,
     waitingRoom,
     matchRoom,
     lastRoll,
     winnerMessage,
     isTurn,
     isMyTurn,
-    createRoom,
-    joinRoom,
     exitRoom,
     exitMatch,
     toggleReadyStatus,
@@ -204,6 +244,7 @@ export function useGameSocket() {
     rollDice,
     standPlayer,
     getPlayerScore,
+    joinError,
     playError,
     doubleRoomError
   };

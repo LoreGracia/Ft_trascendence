@@ -22,8 +22,8 @@ type AppSidebarProps = {
 
 export function AppSidebar({ className, user }: AppSidebarProps) {
 	const pathname = usePathname();
-	const { waitingRoom, matchRoom } = useGameSocket();
-	const navigation = getNavigation(Boolean(waitingRoom || matchRoom));
+	const { roomCode } = useGameSocket();
+	const navigation = getNavigation(Boolean(roomCode));
 	return (
 		<Sidebar className={className}>
 			<SidebarHeader>

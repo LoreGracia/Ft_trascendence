@@ -108,6 +108,7 @@ io.on("connection", (socket: Socket) => {
 			return (socket.emit("doubleRoom_error"));
 		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game);
 		waitingRooms.set(newRoom.roomCode, newRoom);
+		socket.data.roomCode = newRoom.roomCode;
 		socket.join(newRoom.roomCode);
 		socket.emit("room_created", newRoom);
 	});
@@ -120,6 +121,7 @@ io.on("connection", (socket: Socket) => {
 			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room))
 				socket.emit("join_error");
 			else {
+				socket.data.roomCode = roomCode;
 				socket.join(roomCode);
 				io.to(roomCode).emit("player_joined", room);
 				if (room.players.length === 6)
@@ -127,6 +129,9 @@ io.on("connection", (socket: Socket) => {
 			}
 		} else
 			socket.emit("join_error");
+	});
+	socket.on('get_roomCode', () => {
+		socket.emit('player_roomCode', isPlayerInOtherRoom(socket));
 	});
 
 	socket.on('get_room', (roomCode: string) => {

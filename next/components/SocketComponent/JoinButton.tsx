@@ -1,18 +1,10 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useJoinRoom } from "@/hooks/useJoinRoom";
+import { useState } from "react";
+import { useGameSocket } from "@/hooks/useGameSocket";
 
 export default function JoinButton() {
-  const router = useRouter();
   const [roomCodeInput, setRoomCodeInput] = useState("");
-  const { joinRoom, isJoining, joinedRoomCode, error } = useJoinRoom();
-
-  useEffect(() => {
-    if (joinedRoomCode) {
-      router.push(`/lobby?roomCode=${encodeURIComponent(joinedRoomCode)}`);
-    }
-  }, [joinedRoomCode, router]);
+  const { joinRoom, isJoining, roomCode , joinError } = useGameSocket();
 
   return (
     <div>
@@ -27,13 +19,13 @@ export default function JoinButton() {
         <button
           onClick={() => joinRoom(roomCodeInput)}
           type="button"
-          disabled={roomCodeInput.trim().length !== 5 || joinedRoomCode != null}
+          disabled={roomCodeInput.trim().length !== 5 || roomCode != null}
           className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
         >
-          {isJoining ? "Joining..." : "Join room"}
+          {isJoining && roomCode === null? "Joining..." : "Join room"}
         </button>
       </div>
-      {error && <p>{error}</p>}
+      {joinError && <p>{joinError}</p>}
     </div>
   );
 }
