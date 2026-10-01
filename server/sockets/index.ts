@@ -118,14 +118,15 @@ io.on("connection", (socket: Socket) => {
 			return (socket.emit("doubleRoom_error"));
 		const room = waitingRooms.get(roomCode);
 		if (room) {
+			if (room.players.length === 6)
+				io.to(roomCode).emit("room_full", room);
 			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room))
 				socket.emit("join_error");
 			else {
 				socket.data.roomCode = roomCode;
 				socket.join(roomCode);
 				io.to(roomCode).emit("player_joined", room);
-				if (room.players.length === 6)
-					closeRoom(room);
+
 			}
 		} else
 			socket.emit("join_error");
