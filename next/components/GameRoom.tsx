@@ -9,8 +9,10 @@ import SelectDice from './3dDice/SelectDice';
 import { useSocket } from "@/components/SocketProvider";
 import ThrowDice from "@/components/3dDice/ThrowDice";
 import { Avatar } from './Avatar/Avatar';
+import { useRouter } from 'next/navigation';
 
 export default function GameRoom() {
+  const router = useRouter();
   const [isRolling, setIsRolling] = useState(false);
   const { isConnected } = useSocket();
   const [mounted, setMounted] = useState(false);
@@ -21,6 +23,7 @@ export default function GameRoom() {
     setMounted(true);
     setSocketId(socket.id ?? '');
   }, []);
+
   const {
     diceModel,
     setDiceModel,
@@ -50,8 +53,7 @@ export default function GameRoom() {
 
   useEffect(() => {
     socket.emit('get_roomCode');
-    if (!roomCode) return;
-
+    if (!roomCode) router.push(`/landing`);
     const requestRoom = () => {
       console.log('[room] requesting:', roomCode);
       console.log('[room] connected:', socket.connected);
@@ -234,7 +236,7 @@ export default function GameRoom() {
                 cursor: isMyTurn ? 'pointer' : 'not-allowed',
               }}
             >
-              {isRolling ? "Tirando..." : "Throw 🎲"}
+              {isRolling ? "Throwing..." : "Throw 🎲"}
             </button>
 
             {matchRoom.gameType === 'ADD42' && (

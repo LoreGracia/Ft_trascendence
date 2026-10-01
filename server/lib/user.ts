@@ -66,6 +66,7 @@ export async function updateGameDb(match: MatchRoom) {
             const isWin = player.state === "WIN";
             const isLoss = player.state === "LOSE";
             const isTie = player.state === "TIE";
+            const points = isWin ? 3 : isTie ? 1 : 0;
 
             return prisma.userStats.upsert({
                 where: {
@@ -79,6 +80,7 @@ export async function updateGameDb(match: MatchRoom) {
                     wins: isWin ? { increment: 1 } : undefined,
                     losses: isLoss ? { increment: 1 } : undefined,
                     ties: isTie ? { increment: 1 } : undefined,
+                    totalPoints: { increment: points }, 
                 },
                 create: {
                     userId: player.playerId,
@@ -87,6 +89,7 @@ export async function updateGameDb(match: MatchRoom) {
                     wins: isWin ? 1 : 0,
                     losses: isLoss ? 1 : 0,
                     ties: isTie ? 1 : 0,
+                    totalPoints: points,
                 },
             });
         });
