@@ -30,19 +30,21 @@ enum Outcome {
 }
 
 model User {
-	id				String @id
-	name			String?
-	email			String
-	emailVerified	Boolean @default(false)
-	image			String?
-	createdAt		DateTime @default(now())
-	updatedAt		DateTime @updatedAt
+	id					String @id
+	name				String?
+	email				String
+	emailVerified		Boolean @default(false)
+	twoFactorEnabled	Boolean?
+	image				String?
+	createdAt			DateTime @default(now())
+	updatedAt			DateTime @updatedAt
 	
-	sessions		Session[]
-	accounts		Account[]
+	sessions			Session[]
+	accounts			Account[]
+	twoFactor			TwoFactor[]
 
-	playerGames		PlayerGame[]
-	stats			UserStats[]
+	playerGames			PlayerGame[]
+	stats				UserStats[]
 
 	@@unique([email])
 	@@unique([name])
@@ -109,6 +111,19 @@ model Jwks {
 	crv			String?
 
 	@@map("jwks")
+}
+
+model TwoFactor {
+	id						String @id
+	user					User @relation(fields: [userId], references: [id])
+	userId					String
+	secret					String
+	backupCodes				String
+	verified				Boolean
+	failedVerificationCount	Int
+	lockedUntil				DateTime? @db.Timestamptz(3)
+
+	@@map("twoFactor")
 }
 
 model Game {

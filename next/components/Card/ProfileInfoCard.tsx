@@ -4,7 +4,7 @@ import { LucideIcon } from "lucide-react";
 type ProfileInfoCardProps = {
 	icon: LucideIcon;
 	label: string;
-	value: string;
+	value: string | number;
 	tone?: "success" | "danger" | "warning";
 };
 

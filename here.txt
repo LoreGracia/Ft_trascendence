@@ -1,0 +1,1484 @@
+"use client";
+import Link from 'next/link';
+import PatternControl from "@/components/Pattern/PatternControl";
+import { useState, useTransition } from "react";
+import { loginSchema } from "@/lib/validation";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import TextInput from '@/components/Input/Input';
+import { GithubButton } from "@/components/button/GithubButton";
+import AuthForm from '@/components/Form/AuthForm';
+
+export default function LogIn() {
+	const router = useRouter();
+	const [paused, setPaused] = useState(false);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [isPending, startTransition] = useTransition();
+
+	function clearError(field: string) {
+		setErrors((prev) => {
+			const next = { ...prev };
+			delete next[field];
+			return next;
+		});
+	}
+
+	async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
+		const formData = new FormData(e.currentTarget);
+		const rawData = {
+			email: formData.get("email"),
+			password: formData.get("password"),
+		};
+
+		const result = loginSchema.safeParse(rawData);
+		if (!result.success) {
+			const fieldErrors: Record<string, string> = {};
+			for (const issue of result.error.issues) {
+				fieldErrors[issue.path[0] as string] = issue.message;
+		}
+		setErrors(fieldErrors);
+		return;
+		}
+
+		setErrors({});
+
+		startTransition(async () => {
+			const { error } = await authClient.signIn.email(result.data, {
+				onSuccess: () => router.push("/landing"),
+			});
+
+			if (error) {
+				setErrors({ password: error.message ?? "Invalid email or password" });
+			}
+		});
+	}
+	return (
+		<>
+		<PatternControl
+			paused={paused}
+			onToggle={() => setPaused(!paused)}
+		/>
+		<main className="container flex flex-auto justify-center items-center">
+			<Link
+				className="corner-right button button-squere button--highlight"
+				href={'/signup'}
+				target="_self"
+				rel="noopener noreferrer"
+			>
+				Sign up
+			</Link>
+			<div className="container">
+				<section className="box box--primary">
+					<AuthForm onSubmit={handleLogin}>
+						<TextInput
+							type="email"
+							name="email"
+							label="Email"
+							placeholder="dicelover666@mail.com"
+							error={errors.email}
+							onChange={() => clearError("email")}
+							disabled={isPending}
+						/>
+						<TextInput
+							type="password"
+							name="password"
+							label="Password"
+							placeholder="Insert password..."
+							error={errors.password}
+							onChange={() => clearError("password")}
+							disabled={isPending}
+						/>
+
+						<div className="auth-actions">
+							<button
+								type="submit"
+								className="button button-squere button--highlight hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+								disabled={isPending}
+								>
+								{isPending ? "Logging in…" : "Login"}
+							</button>
+
+							<div className="auth-divider" role="separator">
+								<span>or</span>
+							</div>
+							<GithubButton />
+						</div>
+					</AuthForm>
+				</section>
+			</div>
+		</main>
+		</>
+	)
+}"use client";
+import Link from 'next/link';
+import PatternControl from "@/components/Pattern/PatternControl";
+import { useState, useTransition } from "react";
+import { signupSchema } from "@/lib/validation";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import TextInput from '@/components/Input/Input';
+import { GithubButton } from "@/components/button/GithubButton";
+import AuthForm from '@/components/Form/AuthForm';
+
+export default function SignUp() {
+	const router = useRouter();
+	const [paused, setPaused] = useState(false);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [isPending, startTransition] = useTransition();
+
+	function clearError(field: string) {
+		setErrors((prev) => {
+		const next = { ...prev };
+		delete next[field];
+		return next;
+		});
+  }
+
+	async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
+		const formData = new FormData(e.currentTarget);
+		const rawData = {
+		name: formData.get("name"),
+		email: formData.get("email"),
+		password: formData.get("password"),
+		};
+
+		const result = signupSchema.safeParse(rawData);
+		if (!result.success) {
+		const fieldErrors: Record<string, string> = {};
+		for (const issue of result.error.issues) {
+			fieldErrors[issue.path[0] as string] = issue.message;
+		}
+		setErrors(fieldErrors);
+		return;
+		}
+
+		setErrors({});
+		
+		startTransition(async () => {
+		const { error } = await authClient.signUp.email(result.data, {
+			onSuccess: () => router.push("/landing"),
+		});
+
+		if (error) {
+			if (error.code === "USERNAME_TAKEN") {
+			setErrors({ name: error.message });
+			} else if (error.code === "EMAIL_TAKEN") {
+			setErrors({ email: error.message });
+			} else {
+			setErrors({ email: error.message ?? "Could not create account" });
+			}
+		}
+		});
+	}
+	return (
+		<>
+		<PatternControl
+			paused={paused}
+			onToggle={() => setPaused(!paused)}
+		/>
+		<main className="container">
+			<Link
+				className="corner-right button button-squere button--highlight"
+				href={'/login'}
+				target="_self"
+				rel="noopener noreferrer"
+			>
+				Log in
+			</Link>
+			{/* <div className="container"> */}
+				<section className="box box--primary">
+					<AuthForm onSubmit={handleRegister}>
+						<TextInput
+							type="text"
+							name="name"
+							label="Username"
+							placeholder="dicelover666"
+							error={errors.name}
+							onChange={() => clearError("name")}
+						/>
+						<TextInput
+							type="email"
+							name="email"
+							label="Email"
+							placeholder="dicelover666@mail.com"
+							error={errors.email}
+							onChange={() => clearError("email")}
+						/>
+						<TextInput
+							type="password"
+							name="password"
+							label="Password"
+							placeholder="Insert password..."
+							error={errors.password}
+							onChange={() => clearError("password")}
+						/>
+						<div className="auth-actions">
+							<button
+								type="submit"
+								className="button button-squere button--highlight hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+								disabled={isPending}
+							>
+								{isPending ? "Signing up…" : "Sign up"}
+							</button>
+							<div className="auth-divider" role="separator">
+								<span>or</span>
+							</div>
+							<GithubButton />
+						</div>
+					</AuthForm>
+				</section>
+			{/* </div> */}
+		</main>
+		</>
+	)
+}"use server";
+
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
+import { usernameSchema } from "@/lib/validation";
+
+type Result = { ok: true } | { ok: false; error: string };
+
+export async function setUsername(formData: FormData): Promise<Result> {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (!session) return { ok: false, error: "Not authenticated" };
+	if (session.user.name) return { ok: false, error: "Username already set" };
+
+	const parsed = usernameSchema.safeParse(formData.get("username"));
+	if (!parsed.success) {
+		return { ok: false, error: parsed.error.issues[0].message };
+	}
+
+	const username = parsed.data;
+
+	const existing = await prisma.user.findFirst({
+		where: { name: username, NOT: { id: session.user.id } },
+		select: { id: true },
+	});
+
+	if (existing) return { ok: false, error: "Username already taken" };
+
+	await prisma.user.update({
+		where: { id: session.user.id },
+		data: { name: username },
+	});
+
+	return { ok: true };
+}"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import TextInput from "@/components/Input/Input";
+import { setUsername } from "./actions";
+import AuthForm from "@/components/Form/AuthForm";
+
+export default function CompleteProfileForm() {
+	const router = useRouter();
+	const [error, setError] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
+
+	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		setError(null);
+
+		const formData = new FormData(e.currentTarget);
+
+		startTransition(async () => {
+			const result = await setUsername(formData);
+			if (!result.ok) {
+				setError(result.error);
+				return;
+			}
+			router.push("/landing");
+			router.refresh();
+		});
+	}
+
+	return (
+		<AuthForm onSubmit={handleSubmit}>
+			<TextInput
+				type="text"
+				name="username"
+				label="Username"
+				placeholder="dicelover666"
+				error={error ?? undefined}
+				onChange={() => setError(null)}
+			/>
+			<button
+				type="submit"
+				disabled={isPending}
+				className="button button-squere bg-(--black) text-(--white) mt-5 hover:bg-(--light) disabled:hover-none disabled:bg-(--light)"
+			>
+				{isPending ? "Saving…" : "Continue"}
+			</button>
+		</AuthForm>
+	);
+}import { z } from "zod";
+
+const emailSchema = z.string().trim().toLowerCase().pipe(z.email("Enter a valid email"));
+const passwordSchema = z.string().min(8, "Password must be at least 8 characters").max(26, "Password cannot be longer than 26 characters");
+
+export const usernameSchema = z
+	.string()
+	.trim()
+	.min(3, "Username must be at least 3 characters")
+	.max(20, "Username cannot be longer than 20 characters")
+	.regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscores");
+
+export const loginSchema = z.object({
+	email: emailSchema,
+	password: passwordSchema,
+});
+
+export const signupSchema = z.object({
+	name: usernameSchema,
+	email: emailSchema,
+	password: passwordSchema,
+});
+
+export const updateProfileSchema = z.object({
+	name: usernameSchema.optional(),
+	email: emailSchema.optional(),
+	image: z.string().trim().url("Invalid image URL").optional(),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+export type SignupInput = z.infer<typeof signupSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { prisma } from "./prisma";
+import { jwt } from "better-auth/plugins";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { signupSchema, loginSchema } from "./validation";
+
+export const auth = betterAuth({
+	database: prismaAdapter(prisma, {
+		provider: "postgresql",
+	}),
+
+	emailAndPassword: {
+		enabled: true, 
+	},
+
+	baseURL: process.env.NEXT_PUBLIC_URL,
+	socialProviders: {
+		github: {
+			clientId: process.env.GITHUB_CLIENT_ID as string,
+			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			mapProfileToUser: (profile) => {
+				return {
+					email: profile.email ?? `${profile.id}@github.invalid`,
+				};
+			},
+		},
+	},
+
+	plugins: [
+		jwt(),
+	],
+	hooks: {
+		before: createAuthMiddleware(async (ctx) => {
+		if (ctx.path === "/sign-up/email") {
+			const result = signupSchema.safeParse(ctx.body);
+			if (!result.success) {
+				throw new APIError("BAD_REQUEST", {
+					message: result.error.issues[0].message,
+				});
+			}
+
+			const { name, email } = result.data;
+
+			const [nameTaken, emailTaken] = await Promise.all([
+				prisma.user.findUnique({ where: { name }, select: { id: true } }),
+				prisma.user.findUnique({ where: { email }, select: { id: true } }),
+			]);
+
+			if (nameTaken) {
+				throw new APIError("CONFLICT", {
+					message: "Username already taken",
+					code: "USERNAME_TAKEN",
+				});
+			}
+			if (emailTaken) {
+				throw new APIError("CONFLICT", {
+					message: "Email already registered",
+					code: "EMAIL_TAKEN",
+				});
+			}
+		}
+
+		if (ctx.path === "/sign-in/email") {
+			const result = loginSchema.safeParse(ctx.body);
+			if (!result.success) {
+				throw new APIError("BAD_REQUEST", {
+					message: result.error.issues[0].message,
+				})
+			}
+		}
+		})
+	},
+	databaseHooks: {
+		user: {
+		create: {
+			before: async (user, ctx) => {
+			if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
+				return { data: { ...user, name: null, image: null  } };
+			}
+			return { data: user };
+			},
+		},
+		},
+	},
+})'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/Card/Card';
+import { StatCard } from '@/components/Card/StatCard';
+import { ProfileInfoCard } from '@/components/Card/ProfileInfoCard';
+import { Avatar } from '@/components/Avatar/Avatar';
+import { Edit2, User, Mail, Calendar } from 'lucide-react';
+import type { GameStat } from '@/lib/game-stats';
+import type { Prisma } from '@/generated/prisma';
+import { ProfileFormValues, useProfileForm } from '@/hooks/useProfileForm';
+import { ProfileEditForm } from '@/components/Form/ProfileEditForm';
+import { getAvatarUrl } from '@/lib/avatar';
+import { updateUserProfile } from '@/lib/user';
+
+type ProfileUser = Prisma.UserGetPayload<{ include: { stats: true } }>;
+
+function displayValue(value: string | number | null) {
+	return value && value !== '' ? value : '—';
+}
+
+function formatDate(dateValue: string | Date) {
+	if (!dateValue)
+		return '—';
+	return new Intl.DateTimeFormat('en-EN', {
+		year: 'numeric', month: 'long', day: 'numeric',
+	}).format(new Date(dateValue));
+}
+
+export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameStat[] }) {
+
+	const [isEditing, setIsEditing] = useState(false);
+	// const { values, set, reset, clearPasswords } = useProfileForm(user);
+	const router = useRouter();
+
+	async function handleSubmit(values: ProfileFormValues) {
+		const result = await updateUserProfile({
+			name: values.name,
+			email: values.email || undefined,
+			image: getAvatarUrl(values.seed),
+		});
+		if (!result.ok)
+			return { field: result.field, error: result.error };
+		setIsEditing(false);
+		router.refresh();
+		return null;
+	}
+	return (
+		<main className="container">
+			<div className="profile-layout">
+				{/* <div className="profile-banner" /> */}
+				<div className="profile-columns">
+					<aside className="profile-sidebar">
+						<Card className="card--padded profile-header">
+							<Avatar image={user.image} name={user.name} size="lg" />
+							<h1 className="profile-header__name">{displayValue(user.name)}</h1>
+							{!isEditing && (
+									<button
+									type="button"
+									className="button button-squere button--secondary"
+									onClick={() => setIsEditing(true)}
+								>
+									<Edit2 size={14} />
+									Edit Profile
+								</button>
+							)}
+						</Card>
+
+					</aside>
+					<section>
+						{isEditing ? (
+							<ProfileEditForm
+								user={user}
+								onSubmit={handleSubmit}
+								onCancel={() => setIsEditing(false)}
+							/>
+						) : (
+						<>
+							<h2 className="section-title">Personal Information</h2>
+							<div className="info-grid">
+								<ProfileInfoCard icon={User} label="Username" value={displayValue(user.name)} />
+								<ProfileInfoCard icon={Mail} label="Email Address" value={displayValue(user.email)} />
+								<ProfileInfoCard icon={Calendar} label="Joined Date" value={formatDate(user.createdAt)} />
+							</div>
+							<div className="stats-grid">
+								<h2 className="stats-title ">Game Statistics</h2>
+								{stats.map((stat) => (
+								<StatCard key={stat.gameType} stat={stat} />
+								))}
+							</div>
+						</>
+						)}
+					</section>
+				</div>
+			</div>
+		</main>
+	);
+}'use client';
+
+import { useState } from 'react';
+import { Camera } from 'lucide-react';
+import { AvatarPicker } from '@/components/Avatar/AvatarPicker';
+import { StatusBanner } from '@/components/Form/StatusBanner';
+import { ProfileFormValues, useProfileForm, type ProfileFormUser } from '@/hooks/useProfileForm';
+import { getAvatarUrl } from '@/lib/avatar';
+import TextInput from '../Input/Input';
+
+type ProfileEditFormProps = {
+	user: ProfileFormUser;
+	onSubmit: (values: ProfileFormValues) => Promise<{ field?: 'name' | 'email' | 'image'; error: string } | null>;
+	onCancel: () => void;
+};
+
+export function ProfileEditForm({ user, onSubmit, onCancel }: ProfileEditFormProps) {
+	const { values, set } = useProfileForm(user);
+	const [submitting, setSubmitting] = useState(false);
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+	const [formError, setFormError] = useState<string | null>(null);
+
+	async function handleSubmit(e) {
+		e.preventDefault();
+		setFieldErrors({});
+		setFormError(null);
+		setSubmitting(true);
+
+		const result = await onSubmit(values);
+		setSubmitting(false);
+
+		if (!result) {
+			return;
+		}
+		if (result.field) setFieldErrors({ [result.field]: result.error });
+		else setFormError(result.error);
+	}
+
+	return (
+		<form className="profile-form" onSubmit={handleSubmit}>
+			<div className="profile-form__avatar-preview">
+				<img
+					src={getAvatarUrl(values.seed)}
+					alt="Selected avatar"
+					className="avatar avatar--lg"
+				/>
+				<span className="profile-form__avatar-badge" aria-hidden="true">
+					<Camera size={14} />
+				</span>
+			</div>
+			<TextInput
+				label="Full Name"
+				name="name"
+				value={values.name}
+				onChange={(e) => set('name', e.target.value)}
+				disabled={submitting}
+				error={fieldErrors.name}
+			/>
+			<TextInput
+				label="Email Address"
+				type="email"
+				name="email"
+				value={values.email}
+				onChange={(e) => set('email', e.target.value)}
+				disabled={submitting}
+				error={fieldErrors.email}
+			/>
+			<AvatarPicker
+				selected={values.seed}
+				onSelect={(seed) => set('seed', seed as typeof values.seed)}
+			/>
+			{formError && <StatusBanner tone="danger">{formError}</StatusBanner>}
+			<div className="profile-form__actions">
+				<button
+					type="submit"
+					className="button button-squere button--highlight"
+					disabled={submitting}
+					>
+					{submitting ? 'Saving…' : 'Save'}
+				</button>
+				<button
+					type="button"
+					className="button button-squere button--secondary"
+					onClick={onCancel}
+					disabled={submitting}
+				>
+					Cancel
+				</button>
+			</div>
+		</form>
+	);
+}'use client';
+
+import { Check } from 'lucide-react';
+import { getAvailableAvatars } from '@/lib/avatar';
+import './Avatar.css';
+
+type AvatarPickerProps = {
+	selected: string;
+	onSelect: (seed: string) => void;
+};
+
+export function AvatarPicker({ selected, onSelect }: AvatarPickerProps) {
+	const avatars = getAvailableAvatars();
+
+	return (
+		<div className="avatar-picker" role="radiogroup" aria-label="Choose your avatar">
+		{avatars.map(({ seed, url }) => {
+			const isSelected = seed === selected;
+			return (
+				<button
+					key={seed}
+					type="button"
+					role="radio"
+					aria-checked={isSelected}
+					aria-label={`Avatar ${seed}`}
+					className="avatar-picker__item"
+					data-selected={isSelected || undefined}
+					onClick={() => onSelect(seed)}
+				>
+					<img src={url} alt="" className="avatar-picker__image" loading="lazy" />
+					{isSelected && (
+					<span className="avatar-picker__check" aria-hidden="true">
+						<Check size={16} />
+					</span>
+					)}
+				</button>
+			);
+		})}
+		</div>
+	);
+}'use server'
+
+import { headers } from 'next/headers'
+import { Prisma } from '../generated/prisma/client';
+import { auth } from '@/lib/auth'
+import { prisma } from './prisma'
+import { updateProfileSchema } from '@/lib/validation'
+
+export async function getCurrentUserProfile() {
+	const session = await auth.api.getSession({ headers: await headers() })
+	if (!session?.user?.id)
+		return null;
+
+	try {
+		return await prisma.user.findUnique({
+			where: {
+				id: session.user.id,
+			},
+			include: {
+				stats: {
+					orderBy: {
+						gameType: 'asc',
+					},
+				},
+			},
+		})
+	} catch (error) {
+		return null;
+	}
+}
+
+export async function updateUserProfile(input: {
+	name?: string
+	email?: string
+	image?: string
+}) {
+	const session = await auth.api.getSession({ headers: await headers() });
+	if (!session?.user?.id)
+		return { ok: false as const, error: 'Not authorized.' }
+
+	const parsed = updateProfileSchema.safeParse(input);
+	if (!parsed.success) {
+		const issue = parsed.error.issues[0];
+		return {
+			ok: false as const,
+			field: issue.path[0] as 'name' | 'email' | 'image',
+			error: issue.message,
+		}
+	}
+
+	const updateData: Prisma.UserUpdateInput = {};
+	if (parsed.data.name !== undefined)
+		updateData.name = parsed.data.name;
+	if (parsed.data.email !== undefined)
+		updateData.email = parsed.data.email;
+	if (parsed.data.image !== undefined)
+		updateData.image = parsed.data.image;
+
+	try {
+		const user = await prisma.user.update({
+			where: { id: session.user.id },
+			data: updateData,
+			include: { stats: true },
+		})
+		return { ok: true as const, data: user }
+	} catch (error) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+			const field = (error.meta?.target as string[] | undefined)?.[0]
+			if (field === 'email')
+				return { ok: false as const, field: 'email' as const, error: 'That email is already in use.' }
+			if (field === 'name')
+				return { ok: false as const, field: 'name' as const, error: 'That username is already taken.' }
+			return { ok: false as const, error: 'That value is already in use.' }
+		}
+		return { ok: false as const, error: 'Could not update profile.' }
+	}
+}
+
+export interface LeaderboardUserStats {
+	name: string;
+	wins: number;
+	ties: number;
+	losses: number;
+	avg: number;
+	image: string;
+	id: string
+}
+
+export async function fetchLeaderboardStats(): Promise<{
+	FreePlay: LeaderboardUserStats[];
+	Add42: LeaderboardUserStats[];
+}> {
+	try {
+		const users = await prisma.user.findMany({
+			where: { stats: { some: { gamesPlayed: { gt: 0 } } } },
+			include: {
+				stats: true,
+			},
+		});
+		const freePlayPlayers = users.map((user) => {
+			
+			const stat = user.stats?.find((s) => s.gameType === 'FREE_PLAY')
+
+			if (!stat || stat.gamesPlayed === 0) return null;
+
+			return {
+				name: user.name || 'Unknown',
+				image: user.image || null,
+				wins: stat.wins || 0,
+				ties: stat.ties || 0,
+				losses: stat.losses || 0,
+				avg: (stat.wins * 3 + stat.ties),
+				id: user.id,
+			}
+		}).filter((p): p is LeaderboardUserStats => p !== null).sort((a, b) => b.avg - a.avg).slice(0, 6)
+
+
+		const add42Players = users.map((user) => {
+			const stat = user.stats?.find((s) => s.gameType === 'ADD42')
+
+			if (!stat || stat.gamesPlayed === 0) return null
+
+			return {
+				name: user.name || 'Unknown',
+				image: user.image || null,
+				wins: stat.wins || 0,
+				ties: stat.ties || 0,
+				losses: stat.losses || 0,
+				avg: (stat.wins * 3 + stat.ties),
+				id: user.id,
+			}
+		}).filter((p): p is LeaderboardUserStats => p !== null).sort((a, b) => b.avg - a.avg).slice(0, 6)
+		return {
+			FreePlay: freePlayPlayers,
+			Add42: add42Players,
+		}
+	} catch (error) {
+		return {
+			FreePlay: [],
+			Add42: [],
+		}
+	}
+}import { InputHTMLAttributes, useState } from "react";
+import "./Input.css";
+import { Eye, EyeClosed } from "lucide-react";
+
+type TextInputProps = InputHTMLAttributes<HTMLInputElement> & {
+  label?: string;
+  error?: string;
+};
+
+export default function TextInput({ label, error, ...props}: TextInputProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = props.type === "password";
+  return (
+    <div>
+      { label && <h2>{label}</h2>}
+      <div className="flex items-center relative">
+        <input
+          {...props}
+          type={isPassword && showPassword ? "text" : props.type}
+          className={`input ${props.className ?? ""}, className="rounded-lg ps-4 pb-2 pt-2 "`}
+        />
+        {isPassword && (
+            <button
+              className="absolute  right-2 bg-(--white)"
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ?
+              (<Eye size={12} color="var(--black)" /> ) : 
+              (<EyeClosed size={12} color="var(--black)" /> )
+              }
+            </button>
+        )}
+      </div>
+      {error && <p className="field-error text-(--t-error)">{error}</p>}
+    </div>
+  );
+}services:
+  db:
+    image: postgres:17-alpine
+    container_name: transcendence-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - transcendence-net
+
+  next-app:
+    build:
+      context: .
+      dockerfile: next/Dockerfile
+      target: dev # canviar a prod per entregar
+    command: sh -c 'npx prisma migrate deploy && npm run dev' # canviar a npm run build && npm run start
+    container_name: transcendence-app
+    restart: no
+    stop_grace_period: 5s
+    volumes:
+      # surgical bind mounts for hot-reload
+      - ./next/app:/app/app
+      - ./next/components:/app/components
+      - ./next/lib:/app/lib
+      - ./next/hooks:/app/hooks
+      - ./next/public:/app/public
+      - ./next/next.config.ts:/app/next.config.ts
+      # prisma schema + migrations for migrate deploy at runtime
+      - ./prisma:/app/prisma:ro
+      # named volumes for generated/build content (fast + persistent)
+      - next-modules:/app/node_modules
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+    env_file: ".env.local"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - transcendence-net
+
+  socket:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: server-backend
+    restart: no
+    volumes:
+      - server-modules:/server/node_modules
+      - ./server/sockets:/server/sockets
+      - ./server/game:/server/game
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
+      AUTH_INTERNAL_URL: http://next-app:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - transcendence-net
+
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: no
+    security_opt:
+      - no-new-privileges:true
+
+    networks:
+      - transcendence-net
+
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+
+    volumes:
+      - ./certs:/certs:ro
+      - ./traefik:/dynamic:ro
+
+    command:
+      # EntryPoints
+      - "--entrypoints.web.address=:8000"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:8443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      - "--providers.file.filename=/dynamic/config.yaml"
+
+      # API & Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+    
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: no
+    environment:
+      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
+      - NEWT_ID=${NEWT_ID}
+      - NEWT_SECRET=${NEWT_SECRET}
+    depends_on:
+      next-app:
+        condition: service_started
+      socket:
+        condition: service_started
+    networks:
+      - transcendence-net
+
+volumes:
+  db-data:
+  next-modules:
+  server-modules:
+  prisma-client-app:
+  prisma-client-server:
+
+networks:
+  transcendence-net:
+generator client_app {
+	provider = "prisma-client"
+	output = "/app/generated/prisma"
+}
+
+generator client_server {
+	provider = "prisma-client"
+	output = "/server/generated/prisma"
+}
+
+datasource db {
+	provider = "postgresql"
+}
+
+enum GameStatus {
+	WAITING
+	PLAYING
+	FINISHED
+}
+
+enum GameType {
+	FREE_PLAY
+	ADD42
+}
+
+enum Outcome {
+	WIN
+	LOSE
+	TIE
+}
+
+model User {
+	id				String @id
+	name			String?
+	email			String
+	emailVerified	Boolean @default(false)
+	image			String?
+	createdAt		DateTime @default(now())
+	updatedAt		DateTime @updatedAt
+	
+	sessions		Session[]
+	accounts		Account[]
+
+	playerGames		PlayerGame[]
+	stats			UserStats[]
+
+	@@unique([email])
+	@@unique([name])
+	@@map("user")
+}
+
+model Session {
+	id			String @id
+	expiresAt	DateTime
+	token		String
+	createdAt	DateTime @default(now())
+	updatedAt	DateTime @updatedAt
+	ipAddress	String?
+	userAgent	String?
+	userId 		String
+	user		User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@unique([token])
+	@@index([userId])
+	@@map("session")
+}
+
+model Account {
+	id						String @id
+	issuer					String
+	accountId				String
+	providerId				String
+	userId					String
+	user					User @relation(fields: [userId], references: [id], onDelete: Cascade)
+	accessToken				String?
+	refreshToken			String?
+	idToken					String?
+	accessTokenExpiresAt	DateTime?
+	refreshTokenExpiresAt	DateTime?
+	scope					String?
+	password				String?
+	createdAt				DateTime @default(now())
+	updatedAt				DateTime @updatedAt
+
+	@@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
+	@@index([userId])
+	@@map("account")
+}
+
+model Verification {
+	id			String @id
+	identifier	String
+	value 		String
+	expiresAt	DateTime
+	createdAt	DateTime @default(now())
+	updatedAt	DateTime @updatedAt
+
+	@@index([identifier])
+	@@map("verification")
+}
+
+model Jwks {
+	id			String @id
+	publicKey	String
+	privateKey	String
+	createdAt	DateTime
+	expiresAt	DateTime?
+	alg			String?
+	crv			String?
+
+	@@map("jwks")
+}
+
+model Game {
+	id			String @id @default(cuid())
+	status		GameStatus @default(WAITING)
+	gameType	GameType
+	createdAt	DateTime @default(now())
+
+	players		PlayerGame[]
+
+	@@index([status, gameType])
+}
+
+model PlayerGame {
+	id			String @id @default(cuid())
+	userId		String
+	gameId		String
+	outcome		Outcome?
+	totalPoints	Int @default(0)
+	rank		Int?
+	joinedAt	DateTime @default(now())
+
+	user		User @relation(fields: [userId], references: [id])
+	game		Game @relation(fields: [gameId], references: [id])
+
+	rolls		Roll[]
+
+	@@unique([userId, gameId])
+	@@index([gameId])
+}
+
+model Roll {
+	id			String @id @default(cuid())
+	playerId	String
+	value		Int
+	round		Int
+	createdAt	DateTime @default(now())
+
+	player		PlayerGame @relation(fields: [playerId], references: [id])
+
+	@@index([playerId])
+}
+
+model UserStats {
+	id			String @id @default(cuid())
+	userId		String
+	gameType	GameType
+	gamesPlayed	Int @default(0)
+	wins		Int @default(0)
+	losses		Int @default(0)
+	ties		Int @default(0)
+	totalPoints Int @default(0)
+	updatedAt	DateTime @default(now())
+
+	user		User @relation(fields: [userId], references: [id])
+
+	@@unique([userId, gameType])
+	@@index([gameType, totalPoints])
+}DOCKER_COMPOSE = docker-compose --env-file .env.local
+
+all: up
+
+up: https
+	$(DOCKER_COMPOSE) up
+
+re:
+	$(DOCKER_COMPOSE) up --build
+
+down:
+	$(DOCKER_COMPOSE) down
+
+clean:
+	$(DOCKER_COMPOSE) down --rmi all -v
+
+fclean: clean
+	docker system prune -af
+	docker volume prune -f
+
+prune: fclean
+	docker builder prune -af
+
+https: certs/local.key certs/local.crt
+
+certs/local.key certs/local.crt:
+	mkdir -p certs
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+			-keyout certs/local.key -out certs/local.crt \
+			-subj "/CN=*" \
+			-addext "subjectAltName=DNS:dice.localhost,DNS:socket.localhost"
+
+.PHONY: all clean fclean prune re
+# syntax=docker/dockerfile:1.7
+
+# ---------- base ----------
+FROM node:24-slim AS base
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# ---------- deps ----------
+FROM base AS deps
+COPY next/package.json next/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
+# ---------- prisma ----------
+FROM base AS prisma
+COPY --from=deps /app/node_modules ./node_modules
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY next/prisma.config.ts ./prisma.config.ts
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+RUN npx prisma generate --generator client_app
+
+# ---------- dev ----------
+FROM base AS dev
+COPY --from=deps   /app/node_modules ./node_modules
+COPY --from=prisma /app/generated    ./generated
+COPY next/ .
+CMD ["npm", "run", "dev"]
+
+# ---------- prod ----------
+FROM base AS prod
+COPY --from=deps   /app/node_modules ./node_modules
+COPY --from=prisma /app/generated    ./generated
+COPY next/ .
+CMD [ "npm", "run", "build" ";", "npm", "run", "start"]
+# syntax=docker/dockerfile:1.7
+
+# ---------- base ----------
+FROM node:24-slim AS base
+WORKDIR /server
+
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------- deps ----------
+FROM base AS deps
+COPY server/package.json server/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
+# ---------- prisma ----------
+FROM base AS prisma
+COPY --from=deps /server/node_modules ./node_modules
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY server/prisma.config.ts ./prisma.config.ts
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+RUN npx prisma generate --generator client_server
+
+# ---------- dev ----------
+FROM base AS dev
+COPY --from=deps   /server/node_modules ./node_modules
+COPY --from=prisma /server/generated    ./generated
+COPY server/ .
+CMD ["npx", "tsx", "sockets/index.ts"]
+
+.
+├── certs
+│   ├── local.crt
+│   └── local.key
+├── docker-compose.yml
+├── here.txt
+├── Makefile
+├── next
+│   ├── app
+│   │   ├── api
+│   │   │   └── auth
+│   │   │       └── [...all]
+│   │   │           └── route.ts
+│   │   ├── errorPages
+│   │   │   ├── 403
+│   │   │   │   └── page.tsx
+│   │   │   ├── 404
+│   │   │   │   └── page.tsx
+│   │   │   ├── 500
+│   │   │   │   └── page.tsx
+│   │   │   └── 503
+│   │   │       └── page.tsx
+│   │   ├── error.tsx
+│   │   ├── forbidden
+│   │   │   └── page.tsx
+│   │   ├── global-error.tsx
+│   │   ├── globals.css
+│   │   ├── icon.png
+│   │   ├── layout.tsx
+│   │   ├── loading.tsx
+│   │   ├── not-found.tsx
+│   │   ├── (onboarding)
+│   │   │   └── complete-profile
+│   │   │       ├── actions.ts
+│   │   │       ├── CompleteProfileForm.tsx
+│   │   │       └── page.tsx
+│   │   ├── (overview)
+│   │   │   └── page.tsx
+│   │   ├── (protected)
+│   │   │   ├── landing
+│   │   │   │   └── (overview)
+│   │   │   │       └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── leaderboard
+│   │   │   │   └── (overview)
+│   │   │   │       ├── page.css
+│   │   │   │       └── page.tsx
+│   │   │   ├── lobby
+│   │   │   │   └── (overview)
+│   │   │   │       └── page.tsx
+│   │   │   ├── privacy-politics
+│   │   │   │   └── (overview)
+│   │   │   │       └── page.tsx
+│   │   │   └── profile
+│   │   │       └── (overview)
+│   │   │           ├── page.tsx
+│   │   │           ├── Profile.css
+│   │   │           └── ProfileView.tsx
+│   │   ├── (session)
+│   │   │   ├── layout.tsx
+│   │   │   ├── login
+│   │   │   │   └── (overview)
+│   │   │   │       └── page.tsx
+│   │   │   └── signup
+│   │   │       └── (overview)
+│   │   │           └── page.tsx
+│   │   └── terms
+│   │       └── page.tsx
+│   ├── components
+│   │   ├── 3dDice
+│   │   │   ├── animationDice
+│   │   │   │   └── diceAnimation.ts
+│   │   │   ├── bodyDice
+│   │   │   │   ├── diceFactory.ts
+│   │   │   │   ├── faceIconFactory.ts
+│   │   │   │   ├── pipFactory.ts
+│   │   │   │   └── roundedBox.ts
+│   │   │   ├── connect
+│   │   │   │   └── useDiceSocket.ts
+│   │   │   ├── DiceScene.module.css
+│   │   │   ├── exampleDice
+│   │   │   │   └── diceExamples.ts
+│   │   │   ├── IndexDice.tsx
+│   │   │   ├── modelDice
+│   │   │   │   ├── diceConfig.ts
+│   │   │   │   └── modelDice.ts
+│   │   │   ├── select
+│   │   │   │   ├── diceCarouselItem.tsx
+│   │   │   │   └── diceOptions.ts
+│   │   │   ├── SelectDice.tsx
+│   │   │   ├── startThrow
+│   │   │   │   └── diceRoll.ts
+│   │   │   ├── ThrowDice.tsx
+│   │   │   └── utils
+│   │   │       └── diceCamera.ts
+│   │   ├── app-sidebar.tsx
+│   │   ├── Avatar
+│   │   │   ├── Avatar.css
+│   │   │   ├── AvatarPicker.tsx
+│   │   │   ├── Avatar.tsx
+│   │   │   └── MobileProfile.tsx
+│   │   ├── BottomBar.tsx
+│   │   ├── button
+│   │   │   ├── Button.css
+│   │   │   ├── Button.tsx
+│   │   │   ├── GithubButton.tsx
+│   │   │   ├── GithubIcon.tsx
+│   │   │   ├── LogoutButton.tsx
+│   │   │   └── ToggleModeButton.tsx
+│   │   ├── Card
+│   │   │   ├── Card.css
+│   │   │   ├── Card.tsx
+│   │   │   ├── ProfileInfoCard.tsx
+│   │   │   └── StatCard.tsx
+│   │   ├── Error
+│   │   │   ├── DiceErrorContinuous.tsx
+│   │   │   ├── DiceErrorTriple.tsx
+│   │   │   ├── DiceError.tsx
+│   │   │   ├── ErrorLayout.tsx
+│   │   │   └── ErrorText.tsx
+│   │   ├── Form
+│   │   │   ├── AuthForm.tsx
+│   │   │   ├── ProfileEditForm.tsx
+│   │   │   └── StatusBanner.tsx
+│   │   ├── GameComponent.tsx
+│   │   ├── GameRoom.tsx
+│   │   ├── Input
+│   │   │   ├── Input.css
+│   │   │   └── Input.tsx
+│   │   ├── LandingClient.tsx
+│   │   ├── Leaderboard
+│   │   │   ├── LeaderboardCard.css
+│   │   │   └── LeaderboardCard.tsx
+│   │   ├── Pattern
+│   │   │   ├── PatternControl.tsx
+│   │   │   └── Pattern.css
+│   │   ├── SocketComponent
+│   │   │   ├── CreateRoomButton.tsx
+│   │   │   ├── ExitButton.tsx
+│   │   │   ├── JoinButton.tsx
+│   │   │   └── RoomCode.tsx
+│   │   ├── SocketProvider.tsx
+│   │   ├── Terms
+│   │   │   └── Terms.tsx
+│   │   └── ui
+│   │       ├── sidebarLateral.tsx
+│   │       ├── table.tsx
+│   │       └── tooltip.tsx
+│   ├── components.json
+│   ├── Dockerfile
+│   ├── eslint.config.mjs
+│   ├── hooks
+│   │   ├── useCreateRoom.ts
+│   │   ├── useExitRoom.ts
+│   │   ├── useGameSocket.ts
+│   │   ├── useJoinRoom.ts
+│   │   └── useProfileForm.ts
+│   ├── lib
+│   │   ├── auth-client.ts
+│   │   ├── auth.ts
+│   │   ├── avatar.ts
+│   │   ├── game-modes.ts
+│   │   ├── game-stats.ts
+│   │   ├── game.utils.ts
+│   │   ├── navigation.ts
+│   │   ├── prisma.ts
+│   │   ├── socket.ts
+│   │   ├── user.ts
+│   │   ├── utils.ts
+│   │   └── validation.ts
+│   ├── next.config.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── prisma.config.ts
+│   ├── public
+│   │   ├── dice-icon-mockup.svg
+│   │   ├── dice-mockup.svg
+│   │   ├── favicon.svg
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── icons.svg
+│   │   ├── loading.svg
+│   │   ├── pattern.png
+│   │   ├── textures
+│   │   │   ├── metalic2.jpg
+│   │   │   ├── metalic.jpg
+│   │   │   └── universe.jpg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── services
+│   │   └── room.ts
+│   ├── tsconfig.json
+│   └── types
+│       └── game.ts
+├── prisma
+│   ├── migrations
+│   │   ├── 20260824180001_init
+│   │   │   └── migration.sql
+│   │   ├── 20260902143513_add_better_auth
+│   │   │   └── migration.sql
+│   │   ├── 20260903125602_add_jwks
+│   │   │   └── migration.sql
+│   │   ├── 20260903143002_fix_jwks_fields
+│   │   │   └── migration.sql
+│   │   ├── 20260913125616_nullable_name
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   ├── schema.prisma
+│   └── seed.ts
+├── README.md
+├── server
+│   ├── Dockerfile
+│   ├── game
+│   │   ├── DiceGame.ts
+│   │   ├── GameTypes.ts
+│   │   ├── Product.ts
+│   │   ├── RoomManager.ts
+│   │   ├── Rules.ts
+│   │   └── Utils.ts
+│   ├── lib
+│   │   ├── prisma.ts
+│   │   └── user.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── prisma.config.ts
+│   └── sockets
+│       ├── index.ts
+│       └── TokenValidation.ts
+└── traefik
+    └── config.yaml
+
+72 directories, 159 files

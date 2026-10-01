@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
-import { jwt } from "better-auth/plugins";
+import { jwt, twoFactor } from "better-auth/plugins";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { signupSchema, loginSchema } from "./validation";
 
@@ -17,7 +17,7 @@ export const auth = betterAuth({
 	rateLimit: {
 		enabled: true,
 		window: 60,
-		max: 10,
+		max: 100,
 	},
 
 	baseURL: {
@@ -46,7 +46,11 @@ export const auth = betterAuth({
 
 	plugins: [
 		jwt(),
+		twoFactor({
+			issuer: "Dice",
+		}),
 	],
+	
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
 		if (ctx.path === "/sign-up/email") {
@@ -90,14 +94,14 @@ export const auth = betterAuth({
 	},
 	databaseHooks: {
 		user: {
-		create: {
-			before: async (user, ctx) => {
-			if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
-				return { data: { ...user, name: null, image: null  } };
-			}
-			return { data: user };
+			create: {
+				before: async (user, ctx) => {
+					if (ctx?.path?.startsWith("/callback/") || ctx?.path?.startsWith("/oauth2/callback/")) {
+						return { data: { ...user, name: null, image: null  } };
+					}
+					return { data: user };
+				},
 			},
-		},
 		},
 	},
 })

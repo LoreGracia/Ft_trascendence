@@ -37,21 +37,25 @@ export default function LogIn() {
 			const fieldErrors: Record<string, string> = {};
 			for (const issue of result.error.issues) {
 				fieldErrors[issue.path[0] as string] = issue.message;
-		}
-		setErrors(fieldErrors);
-		return;
+			}
+			setErrors(fieldErrors);
+			return;
 		}
 
 		setErrors({});
 
 		startTransition(async () => {
 			const { error } = await authClient.signIn.email(result.data, {
-				onSuccess: () => router.push("/landing"),
+				onSuccess: (context) => {
+					if (context.data.twoFactorRedirect)
+						router.push("/login/verify-2fa");
+					else
+						router.push("/landing");
+				}
 			});
 
-			if (error) {
+			if (error)
 				setErrors({ password: error.message ?? "Invalid email or password" });
-			}
 		});
 	}
 	return (

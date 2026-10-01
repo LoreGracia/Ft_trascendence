@@ -6,7 +6,7 @@ import { Card } from '@/components/Card/Card';
 import { StatCard } from '@/components/Card/StatCard';
 import { ProfileInfoCard } from '@/components/Card/ProfileInfoCard';
 import { Avatar } from '@/components/Avatar/Avatar';
-import { Edit2, User, Mail, Calendar } from 'lucide-react';
+import { Edit2, User, Mail, Calendar, Shield, Settings } from 'lucide-react';
 import type { GameStat } from '@/lib/game-stats';
 import type { Prisma } from '@/generated/prisma';
 import { ProfileFormValues, useProfileForm } from '@/hooks/useProfileForm';
@@ -19,6 +19,10 @@ type ProfileUser = Prisma.UserGetPayload<{ include: { stats: true } }>;
 
 function displayValue(value: string | number | null) {
 	return value && value !== '' ? value : '—';
+}
+
+function displayTwoFactorStatus(enabled: boolean | null) {
+	return enabled ? 'Enabled' : 'Disabled';
 }
 
 function formatDate(dateValue: string | Date) {
@@ -50,7 +54,6 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 	return (
 		<div className="profile-scroll">
 			<div className="profile-layout">
-				{/* <div className="profile-banner" /> */}
 				<div className="profile-columns">
 					<aside className="profile-sidebar">
 						<Card className="card--padded profile-header">
@@ -83,6 +86,7 @@ export function ProfileView({ user, stats }: { user: ProfileUser; stats: GameSta
 								<ProfileInfoCard icon={User} label="Username" value={displayValue(user.name)} />
 								<ProfileInfoCard icon={Mail} label="Email Address" value={displayValue(user.email)} />
 								<ProfileInfoCard icon={Calendar} label="Joined Date" value={formatDate(user.createdAt)} />
+								<ProfileInfoCard icon={Shield} label="Two Factor Authentication" value={displayTwoFactorStatus(user.twoFactorEnabled)} />
 							</div>
 							<div className="stats-grid">
 								<h2 className="stats-title ">Game Statistics</h2>
