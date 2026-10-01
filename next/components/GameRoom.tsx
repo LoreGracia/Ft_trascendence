@@ -22,6 +22,7 @@ export default function GameRoom() {
   useEffect(() => {
     setMounted(true);
     setSocketId(socket.id ?? '');
+    socket.emit('get_roomCode');
   }, []);
 
   const {
@@ -52,8 +53,8 @@ export default function GameRoom() {
   };
 
   useEffect(() => {
-    socket.emit('get_roomCode');
-    if (!roomCode) router.push(`/landing`);
+    // socket.emit('get_roomCode');
+    if (!roomCode) return;
     const requestRoom = () => {
       console.log('[room] requesting:', roomCode);
       console.log('[room] connected:', socket.connected);

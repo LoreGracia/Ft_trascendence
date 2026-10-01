@@ -105,7 +105,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
             </div>
             <button
                 onClick={toggleReadyStatus}
-                className={playerState === 'UNLOCKED' ? "mt-10 md:mt-15 p-2 mb-3 md:mb-5 rounded-lg button--highlight" : "p-2 mb-10 rounded-lg button--secondary"}>
+                className={playerState === 'UNLOCKED' ? "mt-10 md:mt-15 p-2 mb-3 md:mb-5 rounded-lg button--highlight" : "mt-10 p-2 mb-10 rounded-lg button--secondary"}>
                 {playerState === 'LOCKED' ? "Not ready" : "Ready"}
             </button>
             {playerState === "UNLOCKED" &&
