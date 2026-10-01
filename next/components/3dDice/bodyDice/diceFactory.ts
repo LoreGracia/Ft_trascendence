@@ -99,19 +99,8 @@ export const createDiceInstance = (
                 true,
                 false,
                 Texture.TRILINEAR_SAMPLINGMODE,
-                () => {
-                    // console.log(
-                    //     "✅ TEXTURA CARGADA:",
-                    //     resolvedConfig.bodyTexture
-                    // );
-                },
-                (message) => {
-                    // console.error(
-                    //     "❌ ERROR CARGANDO TEXTURA:",
-                    //     resolvedConfig.bodyTexture,
-                    //     message
-                    // );
-                }
+                () => {},
+                () => {}
             );
 
             bodyMaterial.diffuseTexture = bodyTexture;

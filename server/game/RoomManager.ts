@@ -114,8 +114,6 @@ export function exitMatchRoom(io: Server, socket: Socket, roomCode: string) {
 			io.to(roomCode).emit("player_status_changed", match);
 		}
 	}
-	else
-		console.log("Room no longer exists.")
 }
 
 export function resetTurnTimeout(io: Server, roomCode: string) {

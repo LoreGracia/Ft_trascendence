@@ -116,7 +116,6 @@ export function useGameSocket() {
     const handleRoomCode = (roomCode: string | null) => setRoomCode(roomCode);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      const player = waitingRoom?.players.find(p => p.socketId === socket.id);
       if (data.state === 'OPEN') {
         setWaitingRoom(data as WaitingRoom);
       }
@@ -127,12 +126,6 @@ export function useGameSocket() {
     const handleGameStarted = (matchData: MatchRoom) => {
       setWaitingRoom(null);
       setMatchRoom(matchData);
-      // setLastRoll({
-      //   idPlayer: "0",
-      //   gameType: matchData.gameType,
-      //   nums: [{ value: 0 }]
-      // });
-      // console.log(`lastRoll ${lastRoll.nums[0]?.value} F`);
       setWinnerMessage('');
     };
 
