@@ -35,6 +35,12 @@ export const AVATAR_SEEDS = [
 	'dannyel',
 	'gasroman',
 	'...',
+	'mart@',
+	'sup',
+	'Magic',
+	'tulip',
+	'^v^',
+	'T.T',
 ] as const
 
 export type AvatarSeed = (typeof AVATAR_SEEDS)[number]
