@@ -109,7 +109,7 @@ export default function SelectDice({ selected, playerState, onSelect, toggleRead
                 {playerState === 'LOCKED' ? "Not ready" : "Ready"}
             </button>
             {playerState === "UNLOCKED" &&
-            <div className="flex flex-col w-full pb-30 h-">
+            <div className="flex flex-col items-center w-full pb-30 h-">
                 <h2 className="text-(--dark) size-5 m-0 text-center w-full">Select your dice</h2>
                 <div ref={carouselRef} className={styles.diceScene__carousel}>
                     {PRESET_OPTIONS.map((option) => (

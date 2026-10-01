@@ -19,6 +19,7 @@ export default function LandingClient() {
 
   useEffect(() => {
     setMounted(true);
+    socket.emit('get_roomCode');
     if (socket?.id) setSid(socket.id);
     const onConnect = () => setSid(socket.id ?? '');
     socket?.on?.('connect', onConnect);

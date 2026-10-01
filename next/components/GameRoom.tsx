@@ -49,10 +49,8 @@ export default function GameRoom() {
   };
 
   useEffect(() => {
-    console.log("AAAAAA");
-    socket.emit('get_roomcode', roomCode);
+    socket.emit('get_roomCode');
     if (!roomCode) return;
-    console.log("BBBBBB");
 
     const requestRoom = () => {
       console.log('[room] requesting:', roomCode);

@@ -22,7 +22,7 @@ export default function JoinButton() {
           disabled={roomCodeInput.trim().length !== 5 || roomCode != null}
           className="button rounded-e-2xl bg-(--white) shadow-2sl hover:bg-(--light) disabled:bg-(--light)"
         >
-          {isJoining ? "Joining..." : "Join room"}
+          {isJoining && roomCode === null? "Joining..." : "Join room"}
         </button>
       </div>
       {joinError && <p>{joinError}</p>}

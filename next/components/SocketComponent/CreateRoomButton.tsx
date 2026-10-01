@@ -19,10 +19,10 @@ export default function CreateRoomButton({ mode }: CreateRoomButtonProps) {
         type="button"
         onClick={handleCreateRoom}
         disabled={isCreating || roomCode != null}
-        className="button button-round button--highlight whitespace-nowrap disabled:bg-amber-400"
+        className="button button-round button--highlight whitespace-nowrap"
       >
         <Plus />
-        {isCreating ? "Creating..." : "Create room"}
+        {(isCreating && roomCode === null)? "Creating..." : "Create room"}
       </button>
     </div>
   );

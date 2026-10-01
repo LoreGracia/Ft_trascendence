@@ -99,10 +99,10 @@ export function useGameSocket() {
 
   useEffect(() => {
     const handleRoomCreated = (code: WaitingRoom) => {
+      setWaitingRoom(code);
       setRoomCode(code.roomCode);
       setIsCreating(false);
-      setWaitingRoom(code);
-      router.push(`/lobby?roomCode=${roomCode}`);
+      router.push(`/lobby?roomCode=${code.roomCode}`);
     };
 
     const handlePlayerJoined = (roomData: WaitingRoom) => {
@@ -110,7 +110,7 @@ export function useGameSocket() {
       setRoomCode(roomData.roomCode);
       setIsJoining(false);
       setJoinError(null);
-      router.push(`/lobby?roomCode=${roomCode}`);
+      router.push(`/lobby?roomCode=${roomData.roomCode}`);
     }
 
     const handleRoomCode = (roomCode: string | null) => setRoomCode(roomCode);
