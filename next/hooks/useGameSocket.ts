@@ -23,6 +23,7 @@ export function useGameSocket() {
   const [lastRoll, setLastRoll] = useState<LastRoll | null>(null);
   const [winnerMessage, setWinnerMessage] = useState('');
   const [doubleRoomError, setDoubleRoomError] = useState<string | null>(null);
+  const [roomFullError, setRoomFullError] = useState<string | null>(null);
   const [isTurn, setTurn] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -116,9 +117,6 @@ export function useGameSocket() {
     const handleRoomCode = (roomCode: string | null) => setRoomCode(roomCode);
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
-      const player = waitingRoom?.players.find(p => p.socketId === socket.id);
-      console.log(`DiceModel es ${player?.diceModel}`);
-      console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
         setWaitingRoom(data as WaitingRoom);
       }
@@ -129,24 +127,16 @@ export function useGameSocket() {
     const handleGameStarted = (matchData: MatchRoom) => {
       setWaitingRoom(null);
       setMatchRoom(matchData);
-      // setLastRoll({
-      //   idPlayer: "0",
-      //   gameType: matchData.gameType,
-      //   nums: [{ value: 0 }]
-      // });
-      // console.log(`lastRoll ${lastRoll.nums[0]?.value} F`);
       setWinnerMessage('');
     };
 
     const handleRoll = ({ roll }: { roll: LastRoll }) => {
-      console.log(`2 ROLL_NUMBER ${roll.nums[0]?.value} A`);
       setLastRoll(roll);
       setTurn(roll.idPlayer);
     };
 
 
     const handleDiceRolled = ({ match }: { match: MatchRoom; }) => {
-      console.log("4 DICE_ROLLED");
       setMatchRoom(match);
     };
 
@@ -174,6 +164,10 @@ export function useGameSocket() {
       setDoubleRoomError("You are already in a room");
     };
 
+    const handleRoomFullError = () => {
+      setRoomFullError("Room is full");
+    };
+
     const handleJoinError = () => {
       setIsJoining(false);
       setJoinError("Unable to join room");
@@ -188,6 +182,7 @@ export function useGameSocket() {
     socket.on('roll_number', handleRoll);
     socket.on('match_won', handleMatchWon);
     socket.on('doubleRoom_error', handleDoubleRoomError);
+    socket.on('room_full', handleRoomFullError);
     socket.on('game_not_started', handlePlayError);
     // socket.on('game_not_started', () => alert('Todos los jugadores deben estar en estado LOCKED/listos.'));
     socket.on('error_turn', (msg: string) => alert(msg));
@@ -203,6 +198,7 @@ export function useGameSocket() {
       socket.off('roll_number', handleRoll);
       socket.off('match_won', handleMatchWon);
       socket.off('doubleRoom_error', handleDoubleRoomError);
+      socket.off('room_full', handleRoomFullError);
       socket.off('game_not_started', handlePlayError);
       socket.off('error_turn');
       socket.off("join_error", handleJoinError);
@@ -246,6 +242,7 @@ export function useGameSocket() {
     getPlayerScore,
     joinError,
     playError,
-    doubleRoomError
+    doubleRoomError,
+    roomFullError
   };
 }

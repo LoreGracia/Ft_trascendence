@@ -12,7 +12,7 @@ import CreateRoomButton from "@/components/SocketComponent/CreateRoomButton";
 
 export default function LandingClient() {
   const router = useRouter();
-  const { gameType, setGameType, doubleRoomError } = useGameSocket();
+  const { gameType, setGameType, doubleRoomError, roomFullError } = useGameSocket();
   const [mounted, setMounted] = useState(false);
   const [sid, setSid] = useState('');
   const { roomCode} = useGameSocket();
@@ -43,6 +43,7 @@ export default function LandingClient() {
         <JoinButton/>
       </div>
       {doubleRoomError && <p className='text-(--t-error)'>{doubleRoomError}</p>}
+      {roomFullError && <p className='text-(--t-error)'>{roomFullError}</p>}
       <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{mounted ? sid : ''}</code>
