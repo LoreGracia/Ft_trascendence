@@ -91,7 +91,7 @@ export default function GameRoom() {
   };
 
   return (
-    <div className="flex flex-col h-full pt-20 pb-15 p-10 md:p-20">
+    <div className="flex flex-col pt-20 pb-15 p-10 md:p-20 min-h-fit">
       <p className="ms-10 text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
@@ -252,7 +252,7 @@ export default function GameRoom() {
             </button>
           </div>
           {isTurn &&
-            <div className="flex justify-evenly items-center size-30 md:size-70 md:flex-row-reverse">
+            <div className="flex justify-evenly items-center size-30 min-h-30 md:size-70 md:flex-row-reverse">
               <ThrowDice
                 // onClick={handleRoomRoll}
                 presetValue={matchRoom.players.find((p) => p.playerId === isTurn)?.diceModel ?? 'default'}
