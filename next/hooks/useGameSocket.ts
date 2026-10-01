@@ -117,8 +117,6 @@ export function useGameSocket() {
 
     const handlePlayerStatusChanged = (data: WaitingRoom | MatchRoom) => {
       const player = waitingRoom?.players.find(p => p.socketId === socket.id);
-      console.log(`DiceModel es ${player?.diceModel}`);
-      console.log(`Data state is ${data.state}`);
       if (data.state === 'OPEN') {
         setWaitingRoom(data as WaitingRoom);
       }
@@ -139,14 +137,12 @@ export function useGameSocket() {
     };
 
     const handleRoll = ({ roll }: { roll: LastRoll }) => {
-      console.log(`2 ROLL_NUMBER ${roll.nums[0]?.value} A`);
       setLastRoll(roll);
       setTurn(roll.idPlayer);
     };
 
 
     const handleDiceRolled = ({ match }: { match: MatchRoom; }) => {
-      console.log("4 DICE_ROLLED");
       setMatchRoom(match);
     };
 
