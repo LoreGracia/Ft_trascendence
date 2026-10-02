@@ -25,9 +25,9 @@ export function createWaitingRoom(playerId: string, socketId: string, userName: 
 	return room;
 }
 
-export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom): boolean {
+export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom, userImage: string): boolean {
 	if (room.state === "OPEN") {
-		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default" });
+		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default", userImage: userImage });
 		return true
 	} else
 		return false;

@@ -120,7 +120,7 @@ io.on("connection", (socket: Socket) => {
 		if (room) {
 			if (room.players.length === 6)
 				return socket.emit("room_full");
-			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room))
+			if (!addPlayerToRoom(socket.data.userId, socket.id, socket.data.userName, room, socket.data.userImage))
 				socket.emit("join_error");
 			else {
 				socket.data.roomCode = roomCode;
