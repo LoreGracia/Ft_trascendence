@@ -15,19 +15,19 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType): WaitingRoom {
+export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType, userImage: string): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default" }],
+		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default", userImage: userImage }],
 		state: "OPEN",
 	};
 	return room;
 }
 
-export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom): boolean {
+export function addPlayerToRoom(playerId: string, socketId: string, userId: string, room: WaitingRoom, userImage: string): boolean {
 	if (room.state === "OPEN") {
-		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default" });
+		room.players.push({ playerId: playerId, socketId: socketId, name: userId, state: "UNLOCKED", diceModel: "default", userImage: userImage });
 		return true
 	} else
 		return false;
