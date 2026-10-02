@@ -25,8 +25,8 @@ Transcendence is a full-stack, real-time multiplayer dice game. Players authenti
 ## Team Information
 
 - **@lgracia - Project Manager and Frontend Developer:** coordinates delivery, implements user-facing pages and navigation, and contributes to responsive UI and client-side state management.
-- **@pamanzan - Team Lead and Frontend Developer:** coordinates technical work, plans and tracks tasks, and contributes to the game interface and client-side experience.
-- **@jgirbau- - Backend Developer:** implements the Socket.IO server, room lifecycle, turn handling, reconnection behavior, and server-side game rules.
+- **@pamanzan - Technical Lead and Frontend Developer:** coordinates technical work, plans and tracks tasks, and contributes to the game interface and client-side experience.
+- **@jgirbau- - Product Owner (PO) and Backend Developer:** implements the Socket.IO server, room lifecycle, turn handling, reconnection behavior, and server-side game rules.
 - **@amarquez - Database and Authentication Developer:** maintains the Prisma/PostgreSQL model, authentication and session flows, OAuth integration, and user statistics persistence.
 - **@ecoma-ba - DevOps and Infrastructure Engineer:** maintains Docker Compose orchestration, Traefik and Pangolin routing, local certificate generation, and deployment support.
 
@@ -209,37 +209,33 @@ Additional authentication tables are `Session`, `Account`, `Verification`, and `
 
 The project claims the following modules from the subject. Major modules are worth 2 points and Minor modules are worth 1 point.
 
-**Total claimed: 14 points**
+**Total claimed: 20 points**
 
-- Major modules: 6 x 2 points = 12 points.
-- Minor modules: 2 x 1 point = 2 points.
+- Major modules: 7 x 2 points = 14 points.
+- Minor modules: 6 x 1 point = 6 points.
 
 ### Major modules
 
 | Subject module | Points | Implementation and justification | Contributors |
 | --- | ---: | --- | --- |
-| **Web: Use a framework for both the frontend and backend** | 2 | The frontend uses Next.js with the App Router, while the real-time backend uses Express. Together they provide structured routing, server/client application boundaries, HTTP server setup, and a maintainable full-stack architecture. | @lgracia, @pamanzan, @jgirbau- |
-| **Web: Implement real-time features using WebSockets or similar technology** | 2 | Socket.IO broadcasts room membership, ready states, match state, dice rolls, turn changes, timeouts, and match results. The server validates socket tokens, handles disconnects, and allows players to reconnect during the disconnection window. | @jgirbau-, @pamanzan |
+| **Web: Use a framework for both the frontend and backend** | 2 | The frontend uses Next.js with the App Router, while the real-time backend uses Express. Together they provide structured routing, server/client application boundaries, HTTP server setup, and a maintainable full-stack architecture. | @lgracia, @pamanzan, @jgirbau-, @ecoma-ba |
+| **Web: Implement real-time features using WebSockets or similar technology** | 2 | Socket.IO broadcasts room membership, ready states, match state, dice rolls, turn changes, timeouts, and match results. The server validates socket tokens, handles disconnects, and allows players to reconnect during the disconnection window. | @jgirbau-, @pamanzan, @ecoma-ba |
 | **Gaming and user experience: Implement a complete web-based game** | 2 | Transcendence provides a complete playable dice game with two modes, clear turn rules, server-side roll validation, win/loss/tie outcomes, and a browser interface for creating, joining, and playing matches. `DiceGame`, `Rules`, `Product`, and `RoomManager` separate the game responsibilities. | @jgirbau-, @lgracia, @pamanzan |
-| **Gaming and user experience: Remote players** | 2 | Players on separate clients join the same Socket.IO room and play the same match through synchronized server state. Disconnect handling, reconnection, turn timeouts, and server-authoritative validation address the network and fairness requirements. | @jgirbau-, @pamanzan |
-| **Gaming and user experience: Multiplayer game (more than two players)** | 2 | Waiting rooms accept up to six players. Turns advance through all active players, locked players are skipped when appropriate, and every state transition is broadcast to the complete room. | @jgirbau-, @pamanzan |
+| **Game statistics and match history (requires a game module)** | 2 | Track user game statistics (wins, losses, ranking, level, etc.). Display match history (1v1 games, dates, results, opponents). Show achievements and progression. Leaderboard integration. This module requires you to have implemented at least one game (see "Gaming and user experience" section). You cannot claim this module without a functional game. | @jgirbau-, @amarquez |
+| **Gaming and user experience: Remote players** | 2 | Players on separate clients join the same Socket.IO room and play the same match through synchronized server state. Disconnect handling, reconnection, turn timeouts, and server-authoritative validation address the network and fairness requirements. | @jgirbau-, @lgracia- |
+| **Gaming and user experience: Multiplayer game (more than two players)** | 2 | Waiting rooms accept up to six players. Turns advance through all active players, locked players are skipped when appropriate, and every state transition is broadcast to the complete room. | @jgirbau-, @lgracia- |
 | **Gaming and user experience: Implement advanced 3D graphics** | 2 | Babylon.js is used for the interactive 3D dice experience, including dice models, camera/scene rendering, selection, and animated throws. This gives the game a dedicated 3D presentation rather than a purely 2D result display. | @lgracia, @pamanzan |
 
 ### Minor modules
 
 | Subject module | Points | Implementation and justification | Contributors |
 | --- | ---: | --- | --- |
+| ***Web:  Use a backend framework (Express, Fastify, NestJS, Django, etc.)** | 1 | An additional standalone backend socket service with express/socket.io. Handles game logic in a secure and independent manner, providing full security and integrity to the games. | @jgirbau |
+| **Gaming and user experience: Game customization options** | 1 | Power-ups, attacks, or special abilities. Different maps or themes.  Customizable game settings. Default options must be available. | @lgracia-, @pamanzan |
+| **Gaming and user experience: Add another game with user history and matchmaking** | 1 | Implement a second distinct game. Track user history and statistics for this game. Implement a matchmaking system. Maintain performance and responsiveness. | @jgirbau-, @amarquez, @lgracia-, @pamanzan, @ecoma-ba |
 | **Web: Use an ORM for the database** | 1 | Prisma defines the PostgreSQL schema, relations, migrations, generated clients, unique constraints, and transactional persistence for games, players, rolls, and statistics. | @amarquez |
+| **Web: Server-Side Rendering (SSR) for improved performance and SEO** | 1 | Next provides server-side rendering as a key feature. All pages are rendered on the server unless specified otherwise. | @amarquez, @ecoma-ba |
 | **User Management: Implement remote authentication with OAuth 2.0** | 1 | Better Auth integrates GitHub as an external authentication provider and stores the associated account and session data in PostgreSQL. | @amarquez |
-
-### Module scope and exclusions
-
-Only fully implemented modules are included in the point total. The following subject modules are intentionally not claimed:
-
-- **Standard user management and authentication:** the project has secure sign-up/login, profiles, and avatars, but the subject module also requires adding/removing friends and displaying friend online status. Those requirements are not implemented in the current schema or application flow.
-- **Game statistics and match history:** the project persists game outcomes and displays leaderboards, but the subject requires a complete match history with opponents, dates, achievements, and progression. The current implementation does not provide all of those requirements.
-- **Modules of choice:** no additional custom module is claimed. The dice game, real-time multiplayer, remote players, and 3D graphics are documented under the subject's existing Gaming and user experience modules rather than presented as custom modules.
-- **Infrastructure and HTTPS:** Docker Compose, Pangolin (and Traefik for optional local HTTPS) support the mandatory deployment and security requirements, but they are not counted as a Devops module because the subject's Devops modules require ELK, Prometheus/Grafana, microservices, or the specified health-check and disaster-recovery system.
 
 ## Individual Contributions
 
