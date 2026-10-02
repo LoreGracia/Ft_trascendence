@@ -9,6 +9,7 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { MobileBottomBar } from "@/components/BottomBar"
 import { MobileProfile } from "@/components/Avatar/MobileProfile";
+import { SocketProvider } from "@/components/SocketProvider";
 
 export default async function ProtectedLayout({
 	children,
@@ -26,14 +27,16 @@ export default async function ProtectedLayout({
 	const user = { name: session.user.name, image: session.user.image };
 
 	return (
-		<SidebarProvider>
-		<AppSidebar className="list-none hidden md:flex" user={user} />
-		<MobileBottomBar />
-		<MobileProfile user={user}/>
-		<LogoutButton className="absolut flex flex-col items-end corner-right z-50 p-2 rounded-lg hover:bg-(--accent)"><LogOut/></LogoutButton>
-		<SidebarInset>
-			{children}
-		</SidebarInset>
-		</SidebarProvider>
+        <SocketProvider>
+			<SidebarProvider>
+			<AppSidebar className="list-none hidden md:flex" user={user} />
+			<MobileBottomBar />
+			<MobileProfile user={user}/>
+			<LogoutButton className="absolut flex flex-col items-end corner-right z-50 p-2 rounded-lg hover:bg-(--accent)"><LogOut/></LogoutButton>
+			<SidebarInset>
+				{children}
+			</SidebarInset>
+			</SidebarProvider>
+        </SocketProvider>
 	);
 }
