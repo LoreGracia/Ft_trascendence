@@ -85,9 +85,7 @@ export default function GameRoom() {
       await navigator.clipboard.writeText(waitingRoom.roomCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch (err) {
-      console.error('No se pudo copiar al portapapeles:', err);
-    }
+    } catch (err) {}
   };
 
   return (
