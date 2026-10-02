@@ -106,7 +106,7 @@ io.on("connection", (socket: Socket) => {
 	socket.on("create_room", (game: GameType) => {
 		if (isPlayerInOtherRoom(socket))
 			return (socket.emit("doubleRoom_error"));
-		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game);
+		const newRoom = createWaitingRoom(socket.data.userId, socket.id, socket.data.userName, game, socket.data.userImage);
 		waitingRooms.set(newRoom.roomCode, newRoom);
 		socket.data.roomCode = newRoom.roomCode;
 		socket.join(newRoom.roomCode);

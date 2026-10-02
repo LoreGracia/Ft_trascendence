@@ -15,11 +15,11 @@ export function generateRoomCode(length: number = 5): string {
 	return code;
 }
 
-export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType): WaitingRoom {
+export function createWaitingRoom(playerId: string, socketId: string, userName: string, game: GameType, userImage: string): WaitingRoom {
 	const room: WaitingRoom = {
 		roomCode: generateRoomCode(),
 		gameType: game,
-		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default" }],
+		players: [{ playerId: playerId, socketId: socketId, name: userName, state: "UNLOCKED", diceModel: "default", userImage: userImage }],
 		state: "OPEN",
 	};
 	return room;
