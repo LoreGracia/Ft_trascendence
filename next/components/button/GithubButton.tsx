@@ -15,7 +15,6 @@ export function GithubButton() {
         callbackURL: "/complete-profile",
       });
     } catch (err) {
-      console.error("Github sign-in failed:", err);
       setLoading(false);
     }
   }
