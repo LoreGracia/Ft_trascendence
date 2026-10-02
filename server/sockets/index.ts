@@ -156,8 +156,6 @@ io.on("connection", (socket: Socket) => {
 			changePlayerStatus(room, socket.data.userId, diceModel);
 			io.to(roomCode).emit("player_status_changed", room);
 		}
-		else
-			console.log("Room no longer exists.")
 	});
 
 	socket.on("start_game", async (roomCode: string) => {
