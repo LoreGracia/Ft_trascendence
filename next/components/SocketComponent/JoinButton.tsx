@@ -13,7 +13,7 @@ export default function JoinButton() {
           placeholder="Code"
           maxLength={5}
           value={roomCodeInput}
-          onChange={(e) => setRoomCodeInput(e.target.value)}
+          onChange={(e) => setRoomCodeInput(e.target.value.toUpperCase().slice(0, 5))}
           className="input ps-4 pb-3 pt-3 rounded-s-2xl min-w-23 max-w-30 bg-(--accent)"
         />
         <button
