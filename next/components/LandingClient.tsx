@@ -44,11 +44,11 @@ export default function LandingClient() {
       </div>
       {doubleRoomError && <p className='text-(--t-error)'>{doubleRoomError}</p>}
       {roomFullError && <p className='text-(--t-error)'>{roomFullError}</p>}
-      <p className="text-(--t-content)">
+      {/* <p className="text-(--t-content)">
         <small>
           Tu Socket ID: <code>{mounted ? sid : ''}</code>
         </small>
-      </p>
+      </p> */}
     </div>
   );
 }

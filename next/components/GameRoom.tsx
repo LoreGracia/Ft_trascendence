@@ -90,11 +90,11 @@ export default function GameRoom() {
 
   return (
     <div className="flex flex-col pt-20 pb-15 p-10 md:p-20 min-h-fit">
-      <p className="ms-10 text-(--t-content)">
+      {/* <p className="ms-10 text-(--t-content)">
         <small>
           {mounted ? `Tu Socket ID: ${socketId}` : 'Tu Socket ID: '}
         </small>
-      </p>
+      </p> */}
 
       {waitingRoom && !matchRoom && (
         <div className="flex flex-col items-center h-full">
